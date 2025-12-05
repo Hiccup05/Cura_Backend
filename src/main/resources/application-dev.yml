@@ -1,7 +1,4 @@
 spring:
-  application:
-    name: Cura
-
   datasource:
     url: jdbc:postgresql://localhost:5432/Cura
     username: postgres
