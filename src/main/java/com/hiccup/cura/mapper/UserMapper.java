@@ -2,6 +2,7 @@ package com.hiccup.cura.mapper;
 
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.request.UserRegisterDto;
+import com.hiccup.cura.response.UpdateUserResponseDto;
 import com.hiccup.cura.response.UserLoginResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -17,5 +18,9 @@ public class UserMapper {
 
     public UserLoginResponseDto userToLoginResponseDto(User user){
         return modelMapper.map(user, UserLoginResponseDto.class);
+    }
+
+    public UpdateUserResponseDto userUpdateResponseDto(User user){
+        return modelMapper.map(user, UpdateUserResponseDto.class);
     }
 }

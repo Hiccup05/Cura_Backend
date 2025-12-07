@@ -1,6 +1,5 @@
 package com.hiccup.cura;
 
-import com.hiccup.cura.repository.UserRepository;
 import com.hiccup.cura.request.UserRegisterDto;
 import com.hiccup.cura.service.UserService;
 import org.junit.jupiter.api.Test;
