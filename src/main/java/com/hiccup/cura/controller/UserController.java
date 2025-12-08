@@ -5,7 +5,7 @@ import com.hiccup.cura.request.UserRegisterDto;
 import com.hiccup.cura.response.ApiResponse;
 import com.hiccup.cura.response.UpdateUserResponseDto;
 import com.hiccup.cura.response.UserLoginResponseDto;
-import com.hiccup.cura.service.UserService;
+import com.hiccup.cura.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

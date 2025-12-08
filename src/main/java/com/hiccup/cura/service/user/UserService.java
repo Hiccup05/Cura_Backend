@@ -1,4 +1,4 @@
-package com.hiccup.cura.service;
+package com.hiccup.cura.service.user;
 
 import com.hiccup.cura.exception.UserAlreadyFound;
 import com.hiccup.cura.exception.UserNotFound;
@@ -10,8 +10,6 @@ import com.hiccup.cura.response.UpdateUserResponseDto;
 import com.hiccup.cura.response.UserLoginResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

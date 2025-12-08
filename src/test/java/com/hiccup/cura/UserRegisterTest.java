@@ -1,7 +1,7 @@
 package com.hiccup.cura;
 
 import com.hiccup.cura.request.UserRegisterDto;
-import com.hiccup.cura.service.UserService;
+import com.hiccup.cura.service.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
