@@ -9,7 +9,7 @@ import lombok.Setter;
 import java.util.Date;
 
 @Entity
-@Table(name="Users")
+@Table(name="users")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -31,4 +31,10 @@ public class User {
     @Column(name="date_of_birth")
     private Date dateOfBirth;
     private String address;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private DoctorProfile doctor;
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    private PatientProfile patientProfile;
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
+    private StaffProfile staffProfile;
 }
