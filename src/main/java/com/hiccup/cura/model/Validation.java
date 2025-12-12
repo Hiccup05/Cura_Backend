@@ -19,7 +19,6 @@ public class Validation {
     @OneToOne
     @JoinColumn(name="user_id")
     private User user;
-
     @ManyToOne
     @JoinColumn(name="admin_id")
     private Admin admin;
