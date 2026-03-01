@@ -21,5 +21,5 @@ public class Validation {
     private User user;
     @ManyToOne
     @JoinColumn(name="admin_id")
-    private Admin admin;
+    private AdminProfile admin;
 }

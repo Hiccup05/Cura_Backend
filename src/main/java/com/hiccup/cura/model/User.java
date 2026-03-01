@@ -32,7 +32,7 @@ public class User {
     private Date dateOfBirth;
     private String address;
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private DoctorProfile doctor;
+    private DoctorProfile doctorProfile;
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
     private PatientProfile patientProfile;
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
