@@ -15,8 +15,15 @@ spring:
         format_sql: true
         auto_index_ddl: true
 
+  security.oauth2.client:
+    registration:
+      google:
+        client-id: 838511677501-gj2nojfroisk336g61vgs77oboapukv8.apps.googleusercontent.com
+        client-secret: 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
+
 api.prefix: /api/v1
 
 auth:
   token:
     jwt: ${JWT_SECRET}
+

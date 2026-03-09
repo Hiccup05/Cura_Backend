@@ -1,0 +1,35 @@
+package com.hiccup.cura.security;
+
+import com.hiccup.cura.model.User;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+
+public class CustomUser implements UserDetails {
+    private User user;
+
+    public CustomUser(User user){
+        this.user=user;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+
+        return user.getRole().stream().map(
+                role->new SimpleGrantedAuthority("ROLE_"+role.getType().name())
+        ).toList();
+    }
+
+    @Override
+    public @Nullable String getPassword() {
+        return user.getPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return user.getUsername();
+    }
+}
