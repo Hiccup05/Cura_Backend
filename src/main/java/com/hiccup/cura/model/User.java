@@ -1,23 +1,35 @@
 package com.hiccup.cura.model;
 
+import com.hiccup.cura.enums.AuthType;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity
 @Table(name="users")
 @Data
 public class User {
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String firstName;
-    private String lastName;
-    private String middleName;
     private String username;
     private String email;
     private String password;
-    private boolean isActive;
+    private String providerId;
+    private boolean active;
+
+    @Enumerated(EnumType.STRING)
+    private AuthType authType;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -26,4 +38,11 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> role;
+
+    public User(String email, String password, AuthType authType, String providerId) {
+        this.email = email;
+        this.password = password;
+        this.authType=authType;
+        this.providerId=providerId;
+    }
 }

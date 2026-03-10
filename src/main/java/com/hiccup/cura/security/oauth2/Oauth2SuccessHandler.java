@@ -1,5 +1,6 @@
 package com.hiccup.cura.security.oauth2;
 
+import com.hiccup.cura.security.AuthService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,10 +17,15 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class Oauth2SucessHandler implements AuthenticationSuccessHandler {
 
+    private final AuthService authService;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         OAuth2AuthenticationToken token=(OAuth2AuthenticationToken) authentication;
         OAuth2User oAuth2User=(OAuth2User) authentication.getPrincipal();
 
+        String registrationId =token.getAuthorizedClientRegistrationId();
+
+        authService.handleOauth2LoginRequest(oAuth2User, registrationId);
     }
 }
