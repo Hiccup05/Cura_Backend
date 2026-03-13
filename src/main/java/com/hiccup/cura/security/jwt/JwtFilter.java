@@ -1,5 +1,6 @@
 package com.hiccup.cura.security.jwt;
 
+import com.hiccup.cura.security.AuthUtil;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,14 +21,14 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-    private final JwtUtil jwtUtil;
+    private final AuthUtil authUtil;
     private final UserDetailsService userDetailsService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try{
             String token=getToken(request);
-            if(token!=null && jwtUtil.validateToken(token)){
-                String userNameFromToken= jwtUtil.getUserNameFromToken(token);
+            if(token!=null && authUtil.validateToken(token)){
+                String userNameFromToken= authUtil.getUserNameFromToken(token);
                 UserDetails userDetails=userDetailsService.loadUserByUsername(userNameFromToken);
                 Authentication authentication=new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
@@ -17,13 +19,14 @@ public class DoctorProfile {
     @OneToOne
     private User user;
 
+    @Enumerated(EnumType.STRING)
     @ManyToMany
     @JoinTable(
             name = "doctor_spec",
             joinColumns = @JoinColumn(name = "doctor_id"),
             inverseJoinColumns = @JoinColumn(name = "spec_id")
     )
-    private Specialization specialization;
+    private Set<Specialization> specialization;
 
     private int  yearsOfExperience;
     private String licenseNumber;
