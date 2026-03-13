@@ -1,4 +1,7 @@
 package com.hiccup.cura.enums;
 
-public class DoctorStatus {
+public enum DoctorStatus {
+    ACTIVE,
+    INACTIVE,
+    ON_LEAVE
 }

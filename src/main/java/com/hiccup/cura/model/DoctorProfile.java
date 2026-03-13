@@ -1,5 +1,6 @@
 package com.hiccup.cura.model;
 
+import com.hiccup.cura.enums.DoctorStatus;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,4 +31,7 @@ public class DoctorProfile {
 
     private int  yearsOfExperience;
     private String licenseNumber;
+
+    @Enumerated(EnumType.STRING)
+    private DoctorStatus doctorStatus;
 }

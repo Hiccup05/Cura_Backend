@@ -1,4 +1,4 @@
-package com.hiccup.cura.dto;
+package com.hiccup.cura.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
