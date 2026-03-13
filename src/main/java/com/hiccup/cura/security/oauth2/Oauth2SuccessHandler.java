@@ -1,6 +1,6 @@
 package com.hiccup.cura.security.oauth2;
 
-import com.hiccup.cura.dto.LoginResponseDto;
+import com.hiccup.cura.dto.response.LoginResponseDto;
 import com.hiccup.cura.security.AuthService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

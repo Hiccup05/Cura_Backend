@@ -1,11 +1,11 @@
-package com.hiccup.cura.dto;
+package com.hiccup.cura.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class LoginResponseDto {
-    private String jwtToken;
+public class SignupResponseDto {
     private Long id;
+    private String username;
 }

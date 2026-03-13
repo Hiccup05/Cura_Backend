@@ -1,9 +1,7 @@
-package com.hiccup.cura.dto;
+package com.hiccup.cura.dto.response;
 
 import com.hiccup.cura.enums.DoctorStatus;
 import com.hiccup.cura.model.Specialization;
-import com.hiccup.cura.model.User;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +14,6 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 public class DoctorDto {
-    private User user;
     private Set<Specialization> specialization;
     private int  yearsOfExperience;
     private String licenseNumber;
