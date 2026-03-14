@@ -85,6 +85,13 @@ public class DoctorService {
         return new MessageResponseDto("Doctor profile is deleted with id+ "+id, LocalDateTime.now());
     }
 
+    @Transactional
+    public DoctorDto changeStatus(Long id, DoctorStatus status){
+        DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
+        doctorProfile.setDoctorStatus(status);
+        return mapToResponseDto(doctorRepository.save(doctorProfile));
+    }
+
     private DoctorDto mapToResponseDto(DoctorProfile doctorProfile){
         return DoctorDto.builder().doctorStatus(doctorProfile.getDoctorStatus())
                 .specialization(doctorProfile.getSpecialization())
