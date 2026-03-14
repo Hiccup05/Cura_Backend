@@ -4,7 +4,7 @@ import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
 import com.hiccup.cura.dto.response.DoctorDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.enums.DoctorStatus;
-import com.hiccup.cura.exception.custom.DublicateEntryException;
+import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.model.DoctorProfile;
 import com.hiccup.cura.model.Specialization;
@@ -16,11 +16,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.print.Doc;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -31,9 +29,9 @@ public class DoctorService {
     private final SpecializationRepository specializationRepository;
 
     @Transactional
-    public DoctorDto createDoctor (Long userId, DoctorRequestDto doctorRequestDto) throws Exception{
+    public DoctorDto createDoctor (Long userId, DoctorRequestDto doctorRequestDto){
        if(doctorRepository.existsByUserId(userId)){
-           throw new DublicateEntryException("Doctor with id "+ userId+ "already exist");
+           throw new DuplicateEntryException("Doctor with id "+ userId+ "already exist");
        }
         User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User doesn't exists with id "+ userId));
        Set<Specialization> specializationSet=new HashSet<>(
@@ -81,6 +79,12 @@ public class DoctorService {
 
     public MessageResponseDto deleteDoctor(Long id){
         DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
+        DoctorProfile doctor = doctorRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with id " + id));
+
+        if (doctor.getDoctorStatus() == DoctorStatus.ACTIVE) {
+            throw new IllegalStateException("Cannot delete an active doctor. Deactivate first.");
+        }
         doctorRepository.delete(doctorProfile);
         return new MessageResponseDto("Doctor profile is deleted with id+ "+id, LocalDateTime.now());
     }
@@ -99,6 +103,4 @@ public class DoctorService {
                 .yearsOfExperience(doctorProfile.getYearsOfExperience())
                 .build();
     }
-
-
 }
