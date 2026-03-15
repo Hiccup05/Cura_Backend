@@ -24,12 +24,16 @@ public class CustomUser implements UserDetails {
     }
 
     @Override
-    public @Nullable String getPassword() {
+    public String getPassword() {
         return user.getPassword();
     }
 
     @Override
     public String getUsername() {
         return user.getUsername();
+    }
+
+    public Long getId(){
+        return user.getId();
     }
 }
