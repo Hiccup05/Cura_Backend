@@ -1,7 +1,7 @@
 package com.hiccup.cura.service.doctor.specialization;
 
+import com.hiccup.cura.dto.reqeust.SpecializationRequestDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
-import com.hiccup.cura.enums.Specializations;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.model.Specialization;
@@ -28,12 +28,12 @@ public class SpecializationService {
     }
 
     @Transactional
-    public Specialization create(Specializations name) {
-        if (specializationRepository.existsByName(name)) {
-            throw new DuplicateEntryException("Specialization already exists: " + name);
+    public Specialization create(SpecializationRequestDto requestDto) {
+        if (specializationRepository.existsByName(requestDto.getName())) {
+            throw new DuplicateEntryException("Specialization already exists: " + requestDto.getName());
         }
         Specialization specialization = new Specialization();
-        specialization.setName(name);
+        specialization.setName(requestDto.getName());
         return specializationRepository.save(specialization);
     }
 
