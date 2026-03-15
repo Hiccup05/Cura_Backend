@@ -18,6 +18,7 @@ import java.net.URI;
 public class AdminSpecializationController {
     private final SpecializationService service;
 
+    @PostMapping
     public ResponseEntity<Specialization> createSpecialization(@Valid @RequestBody  SpecializationRequestDto specializationRequestDto){
         Specialization created =service.create(specializationRequestDto);
         URI location = ServletUriComponentsBuilder
@@ -29,7 +30,7 @@ public class AdminSpecializationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<MessageResponseDto> createSpecialization(@PathVariable Long id){
+    public ResponseEntity<MessageResponseDto> deleteSpecialization(@PathVariable Long id){
         return ResponseEntity.ok(service.delete(id));
     }
 }

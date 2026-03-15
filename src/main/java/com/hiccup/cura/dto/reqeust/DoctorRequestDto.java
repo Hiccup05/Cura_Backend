@@ -15,7 +15,7 @@ import java.util.Set;
 public class DoctorRequestDto {
 //    private Long userId;
     private Set<Long> specializationIds;
-    private int  yearsOfExperience;
+    private Integer  yearsOfExperience;
     private String licenseNumber;
 //    private DoctorStatus doctorStatus;
 }

@@ -5,7 +5,7 @@ Custom exceptions
 Doctor dtos
 Crud operation doctor service
 crud operation /admin/doctor controller
-
+created specializations
 
 Things IN Progress:
 

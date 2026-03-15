@@ -65,7 +65,7 @@ public class DoctorService {
         if (request.getLicenseNumber() != null) {
             doctor.setLicenseNumber(request.getLicenseNumber());
         }
-        if (request.getYearsOfExperience() != 0) {
+        if (request.getYearsOfExperience() != null) {
             doctor.setYearsOfExperience(request.getYearsOfExperience());
         }
         if (request.getSpecializationIds() != null && !request.getSpecializationIds().isEmpty()) {
