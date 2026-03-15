@@ -1,5 +1,6 @@
 package com.hiccup.cura.service.doctor;
 
+import com.hiccup.cura.dto.reqeust.ChangeStatusRequestDto;
 import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
 import com.hiccup.cura.dto.response.DoctorDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
@@ -34,12 +35,12 @@ public class DoctorService {
            throw new DuplicateEntryException("Doctor with id "+ userId+ "already exist");
        }
         User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User doesn't exists with id "+ userId));
-       Set<Specialization> specializationSet=new HashSet<>(
-               specializationRepository.findAllById(doctorRequestDto.getSpecializationIds())
-       );
+//       Set<Specialization> specializationSet=new HashSet<>(
+//               specializationRepository.findAllById(doctorRequestDto.getSpecializationIds())
+//       );
        DoctorProfile doctorProfile=new DoctorProfile();
         doctorProfile.setUser(user);
-        doctorProfile.setSpecialization(specializationSet);
+//        doctorProfile.setSpecialization(specializationSet);
         doctorProfile.setDoctorStatus(DoctorStatus.ACTIVE);
         doctorProfile.setLicenseNumber(doctorRequestDto.getLicenseNumber());
         doctorProfile.setYearsOfExperience(doctorRequestDto.getYearsOfExperience());
@@ -90,9 +91,9 @@ public class DoctorService {
     }
 
     @Transactional
-    public DoctorDto changeStatus(Long id, DoctorStatus status){
+    public DoctorDto changeStatus(Long id, ChangeStatusRequestDto changeStatusRequestDto){
         DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
-        doctorProfile.setDoctorStatus(status);
+        doctorProfile.setDoctorStatus(changeStatusRequestDto.getDoctorStatus());
         return mapToResponseDto(doctorRepository.save(doctorProfile));
     }
 
