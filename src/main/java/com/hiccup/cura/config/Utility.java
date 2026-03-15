@@ -15,11 +15,6 @@ public class Utility {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public ModelMapper modelMapper(){
         return new ModelMapper();
     }
