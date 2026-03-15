@@ -15,5 +15,5 @@ public class Specialization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Enumerated(EnumType.STRING)
-    private Specializations specializations;
+    private Specializations name;
 }
