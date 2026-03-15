@@ -2,7 +2,7 @@ package com.hiccup.cura.model;
 
 import com.hiccup.cura.enums.AuthType;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -11,7 +11,10 @@ import java.util.Set;
 
 @Entity
 @Table(name="users")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

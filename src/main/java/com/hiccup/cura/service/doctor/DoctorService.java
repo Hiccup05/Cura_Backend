@@ -35,12 +35,12 @@ public class DoctorService {
            throw new DuplicateEntryException("Doctor with id "+ userId+ "already exist");
        }
         User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User doesn't exists with id "+ userId));
-//       Set<Specialization> specializationSet=new HashSet<>(
-//               specializationRepository.findAllById(doctorRequestDto.getSpecializationIds())
-//       );
+       Set<Specialization> specializationSet=new HashSet<>(
+               specializationRepository.findAllById(doctorRequestDto.getSpecializationIds())
+       );
        DoctorProfile doctorProfile=new DoctorProfile();
         doctorProfile.setUser(user);
-//        doctorProfile.setSpecialization(specializationSet);
+        doctorProfile.setSpecialization(specializationSet);
         doctorProfile.setDoctorStatus(DoctorStatus.ACTIVE);
         doctorProfile.setLicenseNumber(doctorRequestDto.getLicenseNumber());
         doctorProfile.setYearsOfExperience(doctorRequestDto.getYearsOfExperience());

@@ -14,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 public class DoctorDto {
+    private Long id;
     private Set<Specialization> specialization;
     private int  yearsOfExperience;
     private String licenseNumber;
