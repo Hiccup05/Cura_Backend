@@ -40,12 +40,12 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-                .authorizeHttpRequests(auth->
-                        auth.requestMatchers(G_URL).permitAll()
-                                .requestMatchers(A_URL).hasRole(RoleType.ADMIN.name())
-                                .requestMatchers(D_URL).hasRole(RoleType.DOCTOR.name())
-                                .requestMatchers(P_URL).hasRole(RoleType.PATIENT.name())
-                )
+//                .authorizeHttpRequests(auth->
+//                        auth.requestMatchers(G_URL).permitAll()
+//                                .requestMatchers(A_URL).hasRole(RoleType.ADMIN.name())
+//                                .requestMatchers(D_URL).hasRole(RoleType.DOCTOR.name())
+//                                .requestMatchers(P_URL).hasRole(RoleType.PATIENT.name())
+//                )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oAuth2-> oAuth2.failureHandler(
                         (HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)-> log.error("Oauth2Error: {}", exception.getMessage())
