@@ -1,17 +1,17 @@
 package com.hiccup.cura.controller.admin;
 
+import com.hiccup.cura.dto.reqeust.ChangeStatusRequestDto;
 import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
 import com.hiccup.cura.dto.response.DoctorDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.enums.DoctorStatus;
-import com.hiccup.cura.exception.custom.ResourceNotFoundException;
-import com.hiccup.cura.model.DoctorProfile;
 import com.hiccup.cura.service.doctor.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.print.Doc;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,7 +50,11 @@ public class AdminDoctorController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<MessageResponseDto> deleteDoctor(@PathVariable Long id){
-        doctorService.deleteDoctor(id);
-        return ResponseEntity.ok(new MessageResponseDto("Doctor deleted with id"+id, LocalDateTime.now()));
+        return ResponseEntity.ok(doctorService.deleteDoctor(id));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<DoctorDto> changeStatus(@PathVariable Long id, @RequestBody ChangeStatusRequestDto changeStatusRequestDto){
+        return ResponseEntity.ok(doctorService.changeStatus(id, changeStatusRequestDto));
     }
 }
