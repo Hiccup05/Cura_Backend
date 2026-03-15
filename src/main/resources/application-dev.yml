@@ -23,6 +23,11 @@ spring:
 
 api.prefix: /api/v1
 
+admin:
+  init:
+    email1: ${admin1}
+    password1: ${password1}
+
 auth:
   token:
     jwt: ${JWT_SECRET}
