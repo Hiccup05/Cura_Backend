@@ -2,6 +2,7 @@ package com.hiccup.cura.security.oauth2;
 
 import com.hiccup.cura.dto.response.LoginResponseDto;
 import com.hiccup.cura.security.AuthService;
+import com.hiccup.cura.security.AuthUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,7 +24,7 @@ import java.io.IOException;
 @Slf4j
 public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
 
-    private final AuthService authService;
+    private final AuthUtil authUtil;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -36,7 +37,7 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
         String registrationId =token.getAuthorizedClientRegistrationId();
 
         ResponseEntity<LoginResponseDto> loginResponseDtoResponseEntity =
-                authService.handleOauth2LoginRequest(oAuth2User, registrationId);
+                authUtil.handleOauth2LoginRequest(oAuth2User, registrationId);
 
         response.setStatus(loginResponseDtoResponseEntity.getStatusCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
