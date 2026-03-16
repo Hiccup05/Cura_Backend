@@ -14,6 +14,5 @@ public class MedicalServiceRequestDto {
     private BigDecimal price;
     private Integer durationMinutes;
     private String description;
-    private Boolean isActive;
     private Long specializationId;
 }

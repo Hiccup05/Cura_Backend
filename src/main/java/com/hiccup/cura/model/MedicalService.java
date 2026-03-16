@@ -1,6 +1,7 @@
 package com.hiccup.cura.model;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 @Entity
 @Getter
 @Setter
+@Builder
 public class MedicalService {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
