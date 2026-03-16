@@ -26,6 +26,11 @@ public class MedicalServiceService {
        return medicalServiceRepository.findAll().stream().map(this::mapToDto).toList();
    }
 
+   public MedicalServiceResponseDto getService(Long id){
+       MedicalService medicalService=medicalServiceRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Service isn't created with id " + id));
+       return mapToDto(medicalService);
+   }
+
    public List<MedicalServiceResponseDto> getActiveServices(){
        return medicalServiceRepository.findAllByIsActiveTrue().stream().map(
                this::mapToDto
