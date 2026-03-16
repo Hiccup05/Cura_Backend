@@ -23,4 +23,9 @@ public class ServiceController {
     public RequestEntity<List<MedicalServiceResponseDto>> getAllServices(){
         return ResponseEntity.ok(serviceService.getActiveServices());
     }
+
+    @GetMapping("/{specializationId}")
+    public ResponseEntity<List<MedicalServiceResponseDto>> getAllServices(@PathVariable Long specializationId){
+        return ResponseEntity.ok(serviceService.getActiveSpecializationServices(specializationId));
+    }
 }
