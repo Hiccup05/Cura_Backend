@@ -9,7 +9,7 @@ created specializations
 check doctor endpoints
 
 Things IN Progress:
-
+Service crud and service searching
 
 
 Things Next in list:
