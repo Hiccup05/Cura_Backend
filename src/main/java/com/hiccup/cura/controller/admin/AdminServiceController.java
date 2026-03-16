@@ -5,6 +5,7 @@ import com.hiccup.cura.service.medicalservice.MedicalServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,5 +20,10 @@ public class AdminServiceController {
     @GetMapping
     public ResponseEntity<List<MedicalServiceResponseDto>> getMedicalServices(){
         return ResponseEntity.ok(serviceService.getAll());
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<MedicalServiceResponseDto> getMedicalService(@PathVariable Long id){
+        return ResponseEntity.ok(serviceService.getService(id));
     }
 }
