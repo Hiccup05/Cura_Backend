@@ -1,7 +1,6 @@
 package com.hiccup.cura.controller;
 
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
-import com.hiccup.cura.repository.MedicalServiceRepository;
 import com.hiccup.cura.service.medicalservice.MedicalServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.RequestEntity;
@@ -20,7 +19,7 @@ public class ServiceController {
     private final MedicalServiceService serviceService;
 
     @GetMapping
-    public RequestEntity<List<MedicalServiceResponseDto>> getAllServices(){
+    public ResponseEntity<List<MedicalServiceResponseDto>> getAllServices(){
         return ResponseEntity.ok(serviceService.getActiveServices());
     }
 
