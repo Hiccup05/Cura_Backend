@@ -21,6 +21,13 @@ public class GlobalExceptionHandler {
                         ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
     }
 
+    @ExceptionHandler(DuplicateEntryException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicateEntry(DuplicateEntryException ex, HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(409, "Duplicate Entry", ex.getMessage(),
+                        request.getRequestURI(), LocalDateTime.now()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(
             Exception ex, HttpServletRequest request) {
