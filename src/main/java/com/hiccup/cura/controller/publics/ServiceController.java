@@ -1,4 +1,4 @@
-package com.hiccup.cura.controller;
+package com.hiccup.cura.controller.publics;
 
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.service.medicalservice.MedicalServiceService;
