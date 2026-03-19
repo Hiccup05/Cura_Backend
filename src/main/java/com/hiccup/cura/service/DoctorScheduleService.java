@@ -27,6 +27,7 @@ public class DoctorScheduleService {
         doctorSchedule.setEndTime(scheduleRequestDto.getEndTime());
         doctorSchedule.setDayOfWeek(scheduleRequestDto.getDayOfWeek());
         doctorSchedule.setMaxAppointments(scheduleRequestDto.getMaxAppointments());
+        doctorSchedule.setIsAvailable(true);
 
         return mapToDto(scheduleRepository.save(doctorSchedule));
     }
