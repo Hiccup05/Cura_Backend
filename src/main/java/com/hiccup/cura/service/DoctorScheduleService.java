@@ -10,6 +10,8 @@ import com.hiccup.cura.repository.DoctorScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DoctorScheduleService {
@@ -30,6 +32,15 @@ public class DoctorScheduleService {
         doctorSchedule.setIsAvailable(true);
 
         return mapToDto(scheduleRepository.save(doctorSchedule));
+    }
+
+    public List<ScheduleResponseDto> getSchedulesOfDoctor(Long doctorId){
+        if(!doctorRepository.existsByUserId(doctorId)){
+            throw new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId);
+        }
+        List<DoctorSchedule> byDoctorProfileId = scheduleRepository.findByDoctorProfile_id(doctorId);
+
+        return byDoctorProfileId.stream().map( this::mapToDto).toList();
     }
 
     public ScheduleResponseDto mapToDto(DoctorSchedule schedule){
