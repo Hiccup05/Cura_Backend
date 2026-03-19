@@ -16,6 +16,20 @@ public class DoctorScheduleService {
     private final DoctorScheduleRepository scheduleRepository;
     private final DoctorRepository doctorRepository;
 
+    public ScheduleResponseDto createSchedule(ScheduleResponseDto scheduleRequestDto, Long doctorId){
+        DoctorProfile doctor=doctorRepository.findById(doctorId).orElseThrow(()->new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId));
+        if(scheduleRepository.existsByDayOfWeek(scheduleRequestDto.getDayOfWeek())){
+            throw new DuplicateEntryException("Schedule in "+scheduleRequestDto.getDayOfWeek()+" already exists for the doctor with id "+doctorId);
+        }
+        DoctorSchedule doctorSchedule=scheduleRepository.save(new DoctorSchedule());
+        doctorSchedule.setDoctor(doctor);
+        doctorSchedule.setStartTime(scheduleRequestDto.getStartTime());
+        doctorSchedule.setEndTime(scheduleRequestDto.getEndTime());
+        doctorSchedule.setDayOfWeek(scheduleRequestDto.getDayOfWeek());
+        doctorSchedule.setMaxAppointments(scheduleRequestDto.getMaxAppointments());
+
+        return mapToDto(scheduleRepository.save(doctorSchedule));
+    }
 
     public ScheduleResponseDto mapToDto(DoctorSchedule schedule){
         return ScheduleResponseDto.builder()
