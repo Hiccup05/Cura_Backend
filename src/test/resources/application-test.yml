@@ -1,0 +1,34 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/Cura
+    username: postgres
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database:
+      platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        auto_index_ddl: true
+
+  security.oauth2.client:
+    registration:
+      google:
+        client-id: 838511677501-gj2nojfroisk336g61vgs77oboapukv8.apps.googleusercontent.com
+        client-secret: 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
+
+api.prefix: /api/v1
+
+#admin:
+#  init:
+#    email1: ${admin1}
+#    password1: ${password1}
+
+auth:
+  token:
+    jwt: G7K2Q9L1M5Z8X49832DNALDKJP0B3R7T9H2Y5N8D1V4S0F6J3W7U9A2
+
