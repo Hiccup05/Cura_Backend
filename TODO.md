@@ -10,6 +10,8 @@ check doctor endpoints
 
 Things IN Progress:
 Service crud and service searching
+check rbac bug
+test service endpoint
 
 
 Things Next in list:

@@ -21,7 +21,7 @@ public interface MedicalServiceRepository extends JpaRepository<MedicalService, 
 
     @EntityGraph(attributePaths = {"specialization"})
     List<MedicalService> findAllByIsActiveTrue();
-    @Query("SELECT new com.hiccup.cura.dto.response.MedicalServiceResponseDTO(" +
+    @Query("SELECT new com.hiccup.cura.dto.response.MedicalServiceResponseDto(" +
             "s.id, s.name, s.price, s.durationMinutes, s.description, s.isActive, " +
             "sp.id, sp.name) " +
             "FROM MedicalService s JOIN s.specialization sp " +

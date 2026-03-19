@@ -13,7 +13,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("${api.prefix}/admin/service")
+@RequestMapping("${api.prefix}/admin/services")
 @RequiredArgsConstructor
 public class AdminServiceController {
     private final MedicalServiceService serviceService;

@@ -54,7 +54,7 @@ public class DataInitializer implements ApplicationRunner {
         User user=new User();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
-        user.setRole(Set.of(roleRepository.findByName(RoleType.ADMIN)));
+        user.setRole(Set.of(roleRepository.findByName(RoleType.ADMIN), roleRepository.findByName(RoleType.PATIENT)));
         user.setAuthType(AuthType.LOCAL);
         userRepository.save(user);
     }

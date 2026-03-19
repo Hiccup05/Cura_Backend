@@ -7,6 +7,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public class CustomUser implements UserDetails {
     private User user;
@@ -20,7 +21,7 @@ public class CustomUser implements UserDetails {
 
         return user.getRole().stream().map(
                 role->new SimpleGrantedAuthority("ROLE_"+role.getName().name())
-        ).toList();
+        ).collect(Collectors.toSet());
     }
 
     @Override

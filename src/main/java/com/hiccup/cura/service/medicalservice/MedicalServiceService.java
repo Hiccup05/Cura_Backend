@@ -92,6 +92,6 @@ public class MedicalServiceService {
    private MedicalServiceResponseDto mapToDto(MedicalService service){
        return new MedicalServiceResponseDto(
                service.getId(), service.getName(), service.getPrice(), service.getDurationMinutes(),
-                       service.getDescription(), service.getIsActive(),service.getSpecialization().getName());
+                       service.getDescription(), service.getIsActive(),service.getSpecialization().getId(), service.getSpecialization().getName());
    }
 }

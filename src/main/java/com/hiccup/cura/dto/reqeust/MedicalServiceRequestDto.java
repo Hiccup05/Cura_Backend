@@ -15,4 +15,5 @@ public class MedicalServiceRequestDto {
     private Integer durationMinutes;
     private String description;
     private Long specializationId;
+
 }

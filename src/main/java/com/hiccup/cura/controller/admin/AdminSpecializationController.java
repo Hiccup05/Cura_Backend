@@ -11,12 +11,18 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/admin/specialization")
 @RequiredArgsConstructor
 public class AdminSpecializationController {
     private final SpecializationService service;
+
+    @GetMapping
+    public ResponseEntity<List<Specialization>> getAll(){
+        return ResponseEntity.ok(service.getAll());
+    }
 
     @PostMapping
     public ResponseEntity<Specialization> createSpecialization(@Valid @RequestBody  SpecializationRequestDto specializationRequestDto){
