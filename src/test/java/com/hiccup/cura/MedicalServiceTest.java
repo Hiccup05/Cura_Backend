@@ -25,4 +25,10 @@ public class MedicalServiceTest {
 
         log.info(all.get(0).toString());
     }
+
+    @Test
+    public void testActiveMedicalService(){
+        List<MedicalServiceResponseDto> all = service.getActiveServices();
+        log.info(all.get(0).toString());
+    }
 }

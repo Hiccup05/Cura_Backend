@@ -23,10 +23,10 @@ spring:
 
 api.prefix: /api/v1
 
-#admin:
-#  init:
-#    email1: ${admin1}
-#    password1: ${password1}
+admin:
+  init:
+    email1: admin2@gmail.com
+    password1: password2
 
 auth:
   token:
