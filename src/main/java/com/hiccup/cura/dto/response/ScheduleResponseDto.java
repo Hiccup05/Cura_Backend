@@ -1,9 +1,6 @@
 package com.hiccup.cura.dto.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
@@ -12,9 +9,9 @@ import java.time.LocalTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScheduleReponseDto {
+@Builder
+public class ScheduleResponseDto {
     private Long id;
-    private String doctorName;
     private Long doctorId;
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;

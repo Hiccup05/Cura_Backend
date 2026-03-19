@@ -13,7 +13,6 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ScheduleRequestDto {
-    private Long id;
     private DayOfWeek dayOfWeek;
     private LocalTime startTime;
     private LocalTime endTime;
