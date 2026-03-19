@@ -2,7 +2,6 @@ package com.hiccup.cura.exception;
 
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
-import com.sun.net.httpserver.HttpsServer;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

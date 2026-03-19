@@ -60,7 +60,14 @@ public class SecurityConfig {
                             response.setStatus(HttpStatus.FORBIDDEN.value());
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.getWriter().write(mapper.writeValueAsString("The URI trying to access is not accessible."));
-                        }))
+                        })
+                                .authenticationEntryPoint((request, response, ex)->{
+                                    log.error("Authentication error: ", ex);
+                                    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                                    response.getWriter().write(mapper.writeValueAsString("Opps! Token is invalid. Login Again"));
+                                })
+                )
                 .build();
     }
 }
