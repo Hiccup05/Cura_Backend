@@ -1,26 +1,20 @@
 package com.hiccup.cura.dto.reqeust;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ScheduleRequestDto {
-    @NotNull(message = "Day of week is required")
+public class ScheduleUpdateRequestDto {
     private DayOfWeek dayOfWeek;
 
-    @NotNull(message = "Start time is required")
     private LocalTime startTime;
 
-    @NotNull(message = "End time is required")
     private LocalTime endTime;
 
     private Integer maxAppointments;

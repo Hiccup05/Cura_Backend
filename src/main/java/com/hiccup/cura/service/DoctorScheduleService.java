@@ -44,6 +44,10 @@ public class DoctorScheduleService {
         return byDoctorProfileId.stream().map( this::mapToDto).toList();
     }
 
+    public ScheduleResponseDto updateScheduleOfDoctor(ScheduleRequestDto scheduleRequestDto){
+
+    }
+
     public ScheduleResponseDto mapToDto(DoctorSchedule schedule){
         return ScheduleResponseDto.builder()
                 .id(schedule.getId())
