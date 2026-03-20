@@ -64,13 +64,15 @@ public class DoctorScheduleService {
         }
         return mapToDto(scheduleRepository.save(validatedSchedule));
     }
-    
+
+    @Transactional
     public ScheduleResponseDto toggleScheduleOfDoctor(Long doctorId, Long scheduleId){
         DoctorSchedule validatedSchedule = getValidatedSchedule(doctorId, scheduleId);
         validatedSchedule.setIsAvailable(!validatedSchedule.getIsAvailable());
         return  mapToDto(scheduleRepository.save(validatedSchedule));
     }
 
+    @Transactional
     public void deleteDoctorSchedule(Long doctorId, Long scheduleId){
         getValidatedSchedule(doctorId, scheduleId);
         scheduleRepository.deleteById(scheduleId);
