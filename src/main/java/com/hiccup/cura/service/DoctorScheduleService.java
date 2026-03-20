@@ -1,6 +1,7 @@
 package com.hiccup.cura.service;
 
 import com.hiccup.cura.dto.reqeust.ScheduleRequestDto;
+import com.hiccup.cura.dto.reqeust.ScheduleUpdateRequestDto;
 import com.hiccup.cura.dto.response.ScheduleResponseDto;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
@@ -8,6 +9,7 @@ import com.hiccup.cura.model.DoctorProfile;
 import com.hiccup.cura.model.DoctorSchedule;
 import com.hiccup.cura.repository.DoctorRepository;
 import com.hiccup.cura.repository.DoctorScheduleRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -44,8 +46,29 @@ public class DoctorScheduleService {
         return byDoctorProfileId.stream().map( this::mapToDto).toList();
     }
 
-    public ScheduleResponseDto updateScheduleOfDoctor(ScheduleRequestDto scheduleRequestDto){
+    @Transactional
+    public ScheduleResponseDto updateScheduleOfDoctor(ScheduleUpdateRequestDto updateRequestDto, Long doctorId, Long scheduleId){
+        if(!doctorRepository.existsByUserId(doctorId)){
+            throw new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId);
+        }
+        DoctorSchedule doctorSchedule=scheduleRepository.findById(scheduleId).orElseThrow(()->new ResourceNotFoundException("Doctor cannot be found with id "+ scheduleId));
+        if(!doctorSchedule.getDoctor().getId().equals(doctorId)){
+            throw new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId);
+        }
 
+        if(updateRequestDto.getDayOfWeek()!=null){
+            doctorSchedule.setDayOfWeek(updateRequestDto.getDayOfWeek());
+        }
+        if(updateRequestDto.getStartTime()!=null){
+            doctorSchedule.setStartTime(updateRequestDto.getStartTime());
+        }
+        if(updateRequestDto.getEndTime()!=null){
+            doctorSchedule.setEndTime(updateRequestDto.getEndTime());
+        }
+        if(updateRequestDto.getMaxAppointments()!=null){
+            doctorSchedule.setMaxAppointments(updateRequestDto.getMaxAppointments());
+        }
+        return mapToDto(scheduleRepository.save(doctorSchedule));
     }
 
     public ScheduleResponseDto mapToDto(DoctorSchedule schedule){
