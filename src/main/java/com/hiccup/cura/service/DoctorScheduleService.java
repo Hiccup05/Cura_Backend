@@ -48,27 +48,39 @@ public class DoctorScheduleService {
 
     @Transactional
     public ScheduleResponseDto updateScheduleOfDoctor(ScheduleUpdateRequestDto updateRequestDto, Long doctorId, Long scheduleId){
-        if(!doctorRepository.existsByUserId(doctorId)){
-            throw new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId);
-        }
-        DoctorSchedule doctorSchedule=scheduleRepository.findById(scheduleId).orElseThrow(()->new ResourceNotFoundException("Doctor cannot be found with id "+ scheduleId));
-        if(!doctorSchedule.getDoctor().getId().equals(doctorId)){
-            throw new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId);
-        }
+        DoctorSchedule validatedSchedule = getValidatedSchedule(doctorId, scheduleId);
 
         if(updateRequestDto.getDayOfWeek()!=null){
-            doctorSchedule.setDayOfWeek(updateRequestDto.getDayOfWeek());
+            validatedSchedule.setDayOfWeek(updateRequestDto.getDayOfWeek());
         }
         if(updateRequestDto.getStartTime()!=null){
-            doctorSchedule.setStartTime(updateRequestDto.getStartTime());
+            validatedSchedule.setStartTime(updateRequestDto.getStartTime());
         }
         if(updateRequestDto.getEndTime()!=null){
-            doctorSchedule.setEndTime(updateRequestDto.getEndTime());
+            validatedSchedule.setEndTime(updateRequestDto.getEndTime());
         }
         if(updateRequestDto.getMaxAppointments()!=null){
-            doctorSchedule.setMaxAppointments(updateRequestDto.getMaxAppointments());
+            validatedSchedule.setMaxAppointments(updateRequestDto.getMaxAppointments());
         }
-        return mapToDto(scheduleRepository.save(doctorSchedule));
+        return mapToDto(scheduleRepository.save(validatedSchedule));
+    }
+    
+    public ScheduleResponseDto toggleScheduleOfDoctor(Long doctorId, Long scheduleId){
+        DoctorSchedule validatedSchedule = getValidatedSchedule(doctorId, scheduleId);
+        validatedSchedule.setIsAvailable(!validatedSchedule.getIsAvailable());
+        return  mapToDto(scheduleRepository.save(validatedSchedule));
+    }
+
+    private DoctorSchedule getValidatedSchedule(Long doctorId, Long scheduleId) {
+        if (!doctorRepository.existsByUserId(doctorId)) {
+            throw new ResourceNotFoundException("Doctor not found with id " + doctorId);
+        }
+        DoctorSchedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Schedule not found with id " + scheduleId));
+        if (!schedule.getDoctor().getId().equals(doctorId)) {
+            throw new ResourceNotFoundException("Schedule does not belong to doctor with id " + doctorId);
+        }
+        return schedule;
     }
 
     public ScheduleResponseDto mapToDto(DoctorSchedule schedule){
