@@ -71,6 +71,11 @@ public class DoctorScheduleService {
         return  mapToDto(scheduleRepository.save(validatedSchedule));
     }
 
+    public void deleteDoctorSchedule(Long doctorId, Long scheduleId){
+        getValidatedSchedule(doctorId, scheduleId);
+        scheduleRepository.deleteById(scheduleId);
+    }
+
     private DoctorSchedule getValidatedSchedule(Long doctorId, Long scheduleId) {
         if (!doctorRepository.existsByUserId(doctorId)) {
             throw new ResourceNotFoundException("Doctor not found with id " + doctorId);
