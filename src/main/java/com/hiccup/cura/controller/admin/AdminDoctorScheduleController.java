@@ -3,11 +3,10 @@ package com.hiccup.cura.controller.admin;
 import com.hiccup.cura.dto.response.ScheduleResponseDto;
 import com.hiccup.cura.service.DoctorScheduleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -15,5 +14,8 @@ import java.util.List;
 public class AdminDoctorScheduleController {
     private final DoctorScheduleService scheduleService;
 
+    @GetMapping("{doctorId}")
+    public List<ScheduleResponseDto> getDoctorScheduleByDoctorProfileId(@PathVariable @RequestParam Long doctorId) {
 
+    }
 }
