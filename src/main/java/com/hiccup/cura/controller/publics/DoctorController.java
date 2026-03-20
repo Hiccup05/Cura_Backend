@@ -17,4 +17,10 @@ public class DoctorController {
     private final DoctorService doctorService;
     private final DoctorScheduleService doctorScheduleService;
     private final SpecializationService specializationService;
+
+    @GetMapping("{doctorId}/schedule")
+    public ResponseEntity<List<ScheduleResponseDto>> getDoctorScheduleByDoctorProfileId(@PathVariable Long doctorId) {
+        return ResponseEntity.ok(doctorScheduleService.getSchedulesOfDoctor(doctorId));
+    }
+
 }
