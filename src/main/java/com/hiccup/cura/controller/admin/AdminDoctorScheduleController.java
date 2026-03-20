@@ -13,9 +13,4 @@ import java.util.List;
 @RequestMapping("${api.prefix}/admin/doctors/schedule")
 public class AdminDoctorScheduleController {
     private final DoctorScheduleService scheduleService;
-
-    @GetMapping("{doctorId}")
-    public List<ScheduleResponseDto> getDoctorScheduleByDoctorProfileId(@PathVariable @RequestParam Long doctorId) {
-
-    }
 }
