@@ -2,7 +2,6 @@ package com.hiccup.cura.service;
 
 import com.hiccup.cura.dto.reqeust.ScheduleRequestDto;
 import com.hiccup.cura.dto.reqeust.ScheduleUpdateRequestDto;
-import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.dto.response.ScheduleResponseDto;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
@@ -14,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -75,10 +73,9 @@ public class DoctorScheduleService {
     }
 
     @Transactional
-    public MessageResponseDto deleteDoctorSchedule(Long doctorId, Long scheduleId){
+    public void deleteDoctorSchedule(Long doctorId, Long scheduleId){
         getValidatedSchedule(doctorId, scheduleId);
         scheduleRepository.deleteById(scheduleId);
-        return new MessageResponseDto("Schedule is successfully deleted of id "+scheduleId, LocalDateTime.now());
     }
 
     private DoctorSchedule getValidatedSchedule(Long doctorId, Long scheduleId) {

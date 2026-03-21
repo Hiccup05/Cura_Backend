@@ -80,5 +80,9 @@ public class AdminDoctorController {
         return ResponseEntity.ok(scheduleService.toggleScheduleOfDoctor(id, scheduleId));
     }
 
+    @DeleteMapping("/{id}/schedules/{scheduleId}")
+    public ResponseEntity<MessageResponseDto> deleteSchedule(@PathVariable Long id,  @PathVariable Long scheduleId){
+        return ResponseEntity.ok(scheduleService.deleteDoctorSchedule(id, scheduleId));
+    }
 
 }
