@@ -3,10 +3,10 @@ package com.hiccup.cura.controller.admin;
 import com.hiccup.cura.dto.reqeust.ChangeStatusRequestDto;
 import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
 import com.hiccup.cura.dto.reqeust.ScheduleRequestDto;
+import com.hiccup.cura.dto.reqeust.ScheduleUpdateRequestDto;
 import com.hiccup.cura.dto.response.DoctorDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.dto.response.ScheduleResponseDto;
-import com.hiccup.cura.enums.DoctorStatus;
 import com.hiccup.cura.service.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
 import lombok.RequiredArgsConstructor;
@@ -59,13 +59,21 @@ public class AdminDoctorController {
         return ResponseEntity.ok(doctorService.changeStatus(id, changeStatusRequestDto));
     }
 
-    public ResponseEntity<ScheduleResponseDto> createSchedule(@PathVariable Long doctorId, @RequestBody ScheduleRequestDto scheduleRequestDto){
-        ScheduleResponseDto created = scheduleService.createSchedule(scheduleRequestDto, doctorId);
+    @PostMapping("/{id}/schedules")
+    public ResponseEntity<ScheduleResponseDto> createSchedule(@PathVariable Long id, @RequestBody ScheduleRequestDto scheduleRequestDto){
+        ScheduleResponseDto created = scheduleService.createSchedule(scheduleRequestDto, id);
         URI location=ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}/status")
+                .path("/{doctorId}/schedule")
                 .buildAndExpand(created.getId())
                 .toUri();
         return ResponseEntity.created(location).body(created);
     }
+
+    @PatchMapping("/{id}/schedules/{scheduleId}")
+    public ResponseEntity<ScheduleResponseDto> updateScheduleOfDoctor(@PathVariable Long id, @PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequestDto scheduleUpdateRequestDto){
+        return ResponseEntity.ok(scheduleService.updateScheduleOfDoctor(scheduleUpdateRequestDto, id, scheduleId));
+    }
+
+
 }
