@@ -2,9 +2,12 @@ package com.hiccup.cura.controller.admin;
 
 import com.hiccup.cura.dto.reqeust.ChangeStatusRequestDto;
 import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
+import com.hiccup.cura.dto.reqeust.ScheduleRequestDto;
 import com.hiccup.cura.dto.response.DoctorDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
+import com.hiccup.cura.dto.response.ScheduleResponseDto;
 import com.hiccup.cura.enums.DoctorStatus;
+import com.hiccup.cura.service.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminDoctorController {
     private final DoctorService doctorService;
+    private final DoctorScheduleService scheduleService;
 
     @GetMapping
     public ResponseEntity<List<DoctorDto>> getDoctors(){
@@ -53,5 +57,15 @@ public class AdminDoctorController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<DoctorDto> changeStatus(@PathVariable Long id, @RequestBody ChangeStatusRequestDto changeStatusRequestDto){
         return ResponseEntity.ok(doctorService.changeStatus(id, changeStatusRequestDto));
+    }
+
+    public ResponseEntity<ScheduleResponseDto> createSchedule(@PathVariable Long doctorId, @RequestBody ScheduleRequestDto scheduleRequestDto){
+        ScheduleResponseDto created = scheduleService.createSchedule(scheduleRequestDto, doctorId);
+        URI location=ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}/status")
+                .buildAndExpand(created.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(created);
     }
 }
