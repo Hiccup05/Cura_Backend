@@ -5,14 +5,18 @@ import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
 import com.hiccup.cura.dto.response.DoctorDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.enums.DoctorStatus;
+import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.model.DoctorProfile;
+import com.hiccup.cura.model.Role;
 import com.hiccup.cura.model.Specialization;
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.DoctorRepository;
+import com.hiccup.cura.repository.RoleRepository;
 import com.hiccup.cura.repository.SpecializationRepository;
 import com.hiccup.cura.repository.UserRepository;
+import com.hiccup.cura.service.doctor.specialization.SpecializationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,17 +33,19 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
     private final UserRepository userRepository;
     private final SpecializationRepository specializationRepository;
+    private final RoleRepository roleRepository;
+    private final SpecializationService specializationService;
 
     @Transactional
     public DoctorDto createDoctor (Long userId, DoctorRequestDto doctorRequestDto){
-       if(doctorRepository.existsByUserId(userId)){
+        if(doctorRepository.existsByUserId(userId)){
            throw new DuplicateEntryException("Doctor with id "+ userId+ "already exist");
-       }
+        }
         User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User doesn't exists with id "+ userId));
-       Set<Specialization> specializationSet=new HashSet<>(
-               specializationRepository.findAllById(doctorRequestDto.getSpecializationIds())
-       );
-       DoctorProfile doctorProfile=new DoctorProfile();
+        user.setRole(Set.of(roleRepository.findByName(RoleType.DOCTOR)));
+        Set<Specialization> specializationSet=doctorRequestDto.getSpecializationIds().stream()
+               .map(specializationService::getById).collect(Collectors.toSet());
+        DoctorProfile doctorProfile=new DoctorProfile();
         doctorProfile.setUser(user);
         doctorProfile.setSpecialization(specializationSet);
         doctorProfile.setDoctorStatus(DoctorStatus.ACTIVE);
