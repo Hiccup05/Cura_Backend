@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("${api.prefix}/public/doctors")
 @RequiredArgsConstructor
-public class DoctorController {
+public class PublicDoctorController {
     private final DoctorService doctorService;
     private final DoctorScheduleService doctorScheduleService;
     private final SpecializationService specializationService;
@@ -22,5 +22,4 @@ public class DoctorController {
     public ResponseEntity<List<ScheduleResponseDto>> getDoctorScheduleByDoctorProfileId(@PathVariable Long doctorId) {
         return ResponseEntity.ok(doctorScheduleService.getSchedulesOfDoctor(doctorId));
     }
-
 }
