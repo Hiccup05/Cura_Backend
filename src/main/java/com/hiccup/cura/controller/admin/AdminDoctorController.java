@@ -75,5 +75,10 @@ public class AdminDoctorController {
         return ResponseEntity.ok(scheduleService.updateScheduleOfDoctor(scheduleUpdateRequestDto, id, scheduleId));
     }
 
+    @PatchMapping("/{id}/schedules/{scheduleId}/toggle")
+    public ResponseEntity<ScheduleResponseDto> toggleScheduleStatus(@PathVariable Long id, @PathVariable Long scheduleId){
+        return ResponseEntity.ok(scheduleService.toggleScheduleOfDoctor(id, scheduleId));
+    }
+
 
 }
