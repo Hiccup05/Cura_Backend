@@ -50,8 +50,9 @@ public class AdminDoctorController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<MessageResponseDto> deleteDoctor(@PathVariable Long id){
-        return ResponseEntity.ok(doctorService.deleteDoctor(id));
+    public ResponseEntity<Void> deleteDoctor(@PathVariable Long id){
+        doctorService.deleteDoctor(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/status")
@@ -81,8 +82,9 @@ public class AdminDoctorController {
     }
 
     @DeleteMapping("/{id}/schedules/{scheduleId}")
-    public ResponseEntity<MessageResponseDto> deleteSchedule(@PathVariable Long id,  @PathVariable Long scheduleId){
-        return ResponseEntity.ok(scheduleService.deleteDoctorSchedule(id, scheduleId));
+    public ResponseEntity<Void> deleteSchedule(@PathVariable Long id,  @PathVariable Long scheduleId){
+        scheduleService.deleteDoctorSchedule(id,  scheduleId);
+        return ResponseEntity.noContent().build();
     }
 
 }
