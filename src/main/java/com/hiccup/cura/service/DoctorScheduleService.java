@@ -27,7 +27,7 @@ public class DoctorScheduleService {
             throw new DuplicateEntryException("Schedule in "+scheduleRequestDto.getDayOfWeek()+" already exists for the doctor with id "+doctorId);
         }
         DoctorSchedule doctorSchedule=new DoctorSchedule();
-        doctorSchedule.setDoctor(doctor);
+        doctorSchedule.setDoctorProfile(doctor);
         doctorSchedule.setStartTime(scheduleRequestDto.getStartTime());
         doctorSchedule.setEndTime(scheduleRequestDto.getEndTime());
         doctorSchedule.setDayOfWeek(scheduleRequestDto.getDayOfWeek());
@@ -84,7 +84,7 @@ public class DoctorScheduleService {
         }
         DoctorSchedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Schedule not found with id " + scheduleId));
-        if (!schedule.getDoctor().getId().equals(doctorId)) {
+        if (!schedule.getDoctorProfile().getId().equals(doctorId)) {
             throw new ResourceNotFoundException("Schedule does not belong to doctor with id " + doctorId);
         }
         return schedule;
@@ -93,8 +93,8 @@ public class DoctorScheduleService {
     public ScheduleResponseDto mapToDto(DoctorSchedule schedule){
         return ScheduleResponseDto.builder()
                 .id(schedule.getId())
-                .doctorId(schedule.getDoctor().getId())
-                .doctorName(schedule.getDoctor().getUser().getUsername())
+                .doctorId(schedule.getDoctorProfile().getId())
+                .doctorName(schedule.getDoctorProfile().getUser().getUsername())
                 .maxAppointments(schedule.getMaxAppointments())
                 .endTime(schedule.getEndTime())
                 .startTime(schedule.getStartTime())

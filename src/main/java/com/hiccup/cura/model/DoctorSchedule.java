@@ -17,7 +17,7 @@ public class DoctorSchedule {
 
     @ManyToOne
     @JoinColumn(name = "doctor_id")
-    private DoctorProfile doctor;
+    private DoctorProfile doctorProfile;
 
     @Enumerated(EnumType.STRING)
     private DayOfWeek dayOfWeek;
