@@ -78,7 +78,7 @@ public class DoctorService {
         return mapToResponseDto(doctorRepository.save(doctor));
     }
 
-    public MessageResponseDto deleteDoctor(Long id){
+    public void deleteDoctor(Long id){
         DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
         DoctorProfile doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with id " + id));
@@ -87,7 +87,6 @@ public class DoctorService {
             throw new IllegalStateException("Cannot delete an active doctor. Deactivate first.");
         }
         doctorRepository.delete(doctorProfile);
-        return new MessageResponseDto("Doctor profile is deleted with id+ "+id, LocalDateTime.now());
     }
 
     @Transactional
