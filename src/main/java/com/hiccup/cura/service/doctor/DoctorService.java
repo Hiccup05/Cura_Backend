@@ -86,14 +86,13 @@ public class DoctorService {
     }
 
     public void deleteDoctor(Long id){
-        DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
-        DoctorProfile doctor = doctorRepository.findById(id)
+         DoctorProfile doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with id " + id));
 
         if (doctor.getDoctorStatus() == DoctorStatus.ACTIVE) {
             throw new IllegalStateException("Cannot delete an active doctor. Deactivate first.");
         }
-        doctorRepository.delete(doctorProfile);
+        doctorRepository.delete(doctor);
     }
 
     @Transactional
@@ -105,6 +104,7 @@ public class DoctorService {
 
     private DoctorDto mapToResponseDto(DoctorProfile doctorProfile){
         return DoctorDto.builder().doctorStatus(doctorProfile.getDoctorStatus())
+                .id(doctorProfile.getId())
                 .specialization(doctorProfile.getSpecialization())
                 .licenseNumber(doctorProfile.getLicenseNumber())
                 .yearsOfExperience(doctorProfile.getYearsOfExperience())
