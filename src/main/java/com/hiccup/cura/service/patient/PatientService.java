@@ -26,5 +26,21 @@ public class PatientService {
         return mapToDto(patientRepository.save(patientProfile));
     }
 
+    private PatientResponseDto mapToDto(PatientProfile profile){
+        return PatientResponseDto.builder()
+                .id(profile.getId())
+                .firstName(profile.getFirstName())
+                .lastName(profile.getLastName())
+                .dateOfBirth(profile.getDateOfBirth())
+                .gender(profile.getGender())
+                .phoneNumber(profile.getPhoneNumber())
+                .address(profile.getAddress())
+                .bloodGroup(profile.getBloodGroup())
+                .allergies(profile.getAllergies())
+                .chronicConditions(profile.getChronicConditions())
+                .emergencyContactName(profile.getEmergencyContactName())
+                .emergencyContactPhone(profile.getEmergencyContactPhone())
+                .build();
+    }
 
 }
