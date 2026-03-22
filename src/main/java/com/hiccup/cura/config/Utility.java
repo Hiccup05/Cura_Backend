@@ -14,10 +14,10 @@ public class Utility {
         return new ModelMapper();
     }
 
-//    @Bean
-//    public ObjectMapper objectMapper() {
-//        return JsonMapper.builder()
-//                .findAndAddModules()
-//                .build();
-//    }
+    @Bean
+    public ObjectMapper objectMapper() {
+        return JsonMapper.builder()
+                .findAndAddModules()
+                .build();
+    }
 }
