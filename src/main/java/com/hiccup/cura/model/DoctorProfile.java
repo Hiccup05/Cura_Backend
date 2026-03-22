@@ -17,7 +17,7 @@ public class DoctorProfile {
     private Long id;
 
     @MapsId
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private User user;
 
     @Enumerated(EnumType.STRING)
