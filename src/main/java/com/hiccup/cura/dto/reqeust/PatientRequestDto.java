@@ -16,19 +16,16 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class PatientRequestDto {
-    private Long id;
     private String firstName;
     private String lastName;
 
     private LocalDate dateOfBirth;
 
-    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     private String phoneNumber;
     private String address;
 
-    @Enumerated(EnumType.STRING)
     private BloodGroup bloodGroup;
 
     private String allergies;
