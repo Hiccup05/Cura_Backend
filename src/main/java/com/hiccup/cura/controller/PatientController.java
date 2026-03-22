@@ -16,4 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class PatientController {
     private final PatientService patientService;
 
+    public ResponseEntity<PatientResponseDto> getPatientService(@AuthenticationPrincipal UserDetails userDetails) {
+        CustomUser customUser = (CustomUser) userDetails;
+        return ResponseEntity.ok(patientService.getById(customUser.getId()));
+    }
 }
