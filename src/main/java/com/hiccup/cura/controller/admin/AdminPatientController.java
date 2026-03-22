@@ -13,5 +13,14 @@ import org.springframework.web.bind.annotation.*;
 public class AdminPatientController {
     private final PatientService patientService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<PatientResponseDto> getPatientById(@PathVariable Long id) {
+        return ResponseEntity.ok(patientService.getById(id));
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePatientById(@PathVariable Long id) {
+        patientService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
