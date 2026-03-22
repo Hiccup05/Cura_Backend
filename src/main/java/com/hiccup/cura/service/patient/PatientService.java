@@ -26,6 +26,13 @@ public class PatientService {
         return mapToDto(patientRepository.save(patientProfile));
     }
 
+    public PatientResponseDto getById(Long id){
+        PatientProfile patientProfile = patientRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Patient not found with id " + id));
+        return mapToDto(patientProfile);
+    }
+
+
+
     private PatientResponseDto mapToDto(PatientProfile profile){
         return PatientResponseDto.builder()
                 .id(profile.getId())
