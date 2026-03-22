@@ -22,13 +22,12 @@ public class PatientResponseDto {
 
     private LocalDate dateOfBirth;
 
-    @Enumerated(EnumType.STRING)
     private Gender gender;
 
     private String phoneNumber;
+
     private String address;
 
-    @Enumerated(EnumType.STRING)
     private BloodGroup bloodGroup;
 
     private String allergies;
