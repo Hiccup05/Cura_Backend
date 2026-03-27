@@ -49,11 +49,10 @@ public class LeaveService {
 
     public LeaveResponseDto updateLeave(Long doctorId, Long leaveId, LeaveRequestDto leaveRequestDto) {
         DoctorProfile doctorProfile = doctorRepository.findById(doctorId).orElseThrow(() -> new ResourceNotFoundException("Doctor cannot be found with id " + doctorId));
-        if(doctorLeaveRepository.existsOverlappingLeave(doctorId,leaveRequestDto.getStartDate(),leaveRequestDto.getEndDate())) {
+        if(doctorLeaveRepository.existsOverlappingLeaveExcludingCurrent(doctorId,leaveId, leaveRequestDto.getStartDate(),leaveRequestDto.getEndDate())) {
             throw new DuplicateEntryException("Doctor Leave is overlapped with the current start date and end date");
         }
         DoctorLeave doctorLeave = doctorLeaveRepository.findById(leaveId).orElseThrow(() -> new ResourceNotFoundException("Doctor Leave cannot be found with id " + leaveId));
-        doctorLeave.setDoctorProfile(doctorProfile);
         doctorLeave.setStartDate(leaveRequestDto.getStartDate());
         doctorLeave.setEndDate(leaveRequestDto.getEndDate());
         doctorLeave.setReason(leaveRequestDto.getReason());
