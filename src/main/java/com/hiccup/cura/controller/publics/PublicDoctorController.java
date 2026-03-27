@@ -18,8 +18,8 @@ public class PublicDoctorController {
     private final DoctorScheduleService doctorScheduleService;
     private final SpecializationService specializationService;
 
-    @GetMapping("{doctorId}/schedule")
-    public ResponseEntity<List<ScheduleResponseDto>> getDoctorScheduleByDoctorProfileId(@PathVariable Long doctorId) {
-        return ResponseEntity.ok(doctorScheduleService.getSchedulesOfDoctor(doctorId));
+    @GetMapping("/{id}/schedule")
+    public ResponseEntity<List<ScheduleResponseDto>> getDoctorScheduleByDoctorProfileId(@PathVariable Long id) {
+        return ResponseEntity.ok(doctorScheduleService.getSchedulesOfDoctor(id));
     }
 }
