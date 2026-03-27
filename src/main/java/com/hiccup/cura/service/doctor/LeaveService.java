@@ -62,4 +62,15 @@ public class LeaveService {
                 doctorLeave.getDoctorProfile().getId());
     }
 
+    public void deleteLeave(Long doctorId, Long leaveId) {
+        if(!doctorRepository.existsById(doctorId)){
+            throw new ResourceNotFoundException("Doctor cannot be found with id " + doctorId);
+        }
+        DoctorLeave doctorLeave = doctorLeaveRepository.findById(leaveId).orElseThrow(() -> new ResourceNotFoundException("Doctor Leave cannot be found with id " + leaveId));
+        if(Objects.equals(doctorLeave.getDoctorProfile().getId(), doctorId)){
+            doctorLeaveRepository.delete(doctorLeave);
+        }else{
+            throw new ResourceNotFoundException("Doctor with id "+doctorId+" doesnt match doctor id of leave with id "+ leaveId);
+        }
+    }
 }
