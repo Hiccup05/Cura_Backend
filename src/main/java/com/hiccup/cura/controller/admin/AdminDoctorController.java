@@ -99,6 +99,10 @@ public class AdminDoctorController {
         return ResponseEntity.created(location).body(created);
     }
 
-
+    @DeleteMapping("/{id}/leave/{leaveId}")
+    public ResponseEntity<Void>  deleteLeave(@PathVariable Long id, @PathVariable Long leaveId){
+        leaveService.deleteLeave(id, leaveId);
+        return ResponseEntity.noContent().build();
+    }
 
 }
