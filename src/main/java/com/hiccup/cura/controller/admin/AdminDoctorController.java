@@ -60,16 +60,7 @@ public class AdminDoctorController {
         return ResponseEntity.ok(doctorService.changeStatus(id, changeStatusRequestDto));
     }
 
-    @PostMapping("/{id}/schedules")
-    public ResponseEntity<ScheduleResponseDto> createSchedule(@PathVariable Long id, @RequestBody ScheduleRequestDto scheduleRequestDto){
-        ScheduleResponseDto created = scheduleService.createSchedule(scheduleRequestDto, id);
-        URI location=ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{doctorId}/schedule")
-                .buildAndExpand(created.getId())
-                .toUri();
-        return ResponseEntity.created(location).body(created);
-    }
+
 
     @PatchMapping("/{id}/schedules/{scheduleId}")
     public ResponseEntity<ScheduleResponseDto> updateScheduleOfDoctor(@PathVariable Long id, @PathVariable Long scheduleId, @RequestBody ScheduleUpdateRequestDto scheduleUpdateRequestDto){
@@ -87,13 +78,18 @@ public class AdminDoctorController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}/leave/{leaveId}")
+    public ResponseEntity<LeaveResponseDto> getLeaveById(@PathVariable Long id, @PathVariable Long leaveId){
+        return ResponseEntity.ok(leaveService.getLeave(id, leaveId));
+    }
+
 
     @PostMapping("/{id}/leave")
     public ResponseEntity<LeaveResponseDto> leaveDoctor(@PathVariable Long id, @RequestBody LeaveRequestDto leaveRequestDto){
         LeaveResponseDto created=leaveService.createLeave(id,leaveRequestDto);
         URI location=ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{leaveId}/leave")
+                .path("{leaveId}")
                 .buildAndExpand(created.getId())
                 .toUri();
         return ResponseEntity.created(location).body(created);
