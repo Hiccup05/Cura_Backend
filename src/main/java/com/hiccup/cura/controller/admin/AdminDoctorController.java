@@ -1,14 +1,13 @@
 package com.hiccup.cura.controller.admin;
 
-import com.hiccup.cura.dto.reqeust.ChangeStatusRequestDto;
-import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
-import com.hiccup.cura.dto.reqeust.ScheduleRequestDto;
-import com.hiccup.cura.dto.reqeust.ScheduleUpdateRequestDto;
+import com.hiccup.cura.dto.reqeust.*;
 import com.hiccup.cura.dto.response.DoctorDto;
+import com.hiccup.cura.dto.response.LeaveResponseDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.dto.response.ScheduleResponseDto;
 import com.hiccup.cura.service.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
+import com.hiccup.cura.service.doctor.LeaveService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +21,7 @@ import java.util.List;
 public class AdminDoctorController {
     private final DoctorService doctorService;
     private final DoctorScheduleService scheduleService;
+    private final LeaveService leaveService;
 
     @GetMapping
     public ResponseEntity<List<DoctorDto>> getDoctors(){
@@ -86,5 +86,19 @@ public class AdminDoctorController {
         scheduleService.deleteDoctorSchedule(id,  scheduleId);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PostMapping("/{id}/leave")
+    public ResponseEntity<LeaveResponseDto> leaveDoctor(@PathVariable Long id, @RequestBody LeaveRequestDto leaveRequestDto){
+        LeaveResponseDto created=leaveService.createLeave(id,leaveRequestDto);
+        URI location=ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{leaveId}/leave")
+                .buildAndExpand(created.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(created);
+    }
+
+
 
 }
