@@ -11,11 +11,26 @@ import com.hiccup.cura.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class LeaveService {
     private final DoctorLeaveRepository doctorLeaveRepository;
     private final DoctorRepository doctorRepository;
+
+    public LeaveResponseDto getLeave(Long doctorId, Long leaveId){
+        if(!doctorRepository.existsById(doctorId)){
+            throw new ResourceNotFoundException("Doctor cannot be found with id " + doctorId);
+        }
+        DoctorLeave doctorLeave = doctorLeaveRepository.findById(leaveId).orElseThrow(() -> new ResourceNotFoundException("Doctor Leave cannot be found with id " + leaveId));
+        if(!Objects.equals(doctorLeave.getDoctorProfile().getId(), doctorId)){
+            throw new ResourceNotFoundException("Doctor with id "+doctorId+" doesnt match doctor id of leave with id "+ leaveId);
+        }
+        return new LeaveResponseDto(doctorLeave.getId(), doctorLeave.getStartDate(), doctorLeave.getEndDate(), doctorLeave.getReason(),
+                doctorLeave.getDoctorProfile().getId());
+    }
 
     public LeaveResponseDto createLeave(Long doctorId,LeaveRequestDto leaveRequestDto) {
         DoctorProfile doctorProfile = doctorRepository.findById(doctorId).orElseThrow(() -> new ResourceNotFoundException("Doctor cannot be found with id " + doctorId));
