@@ -2,6 +2,7 @@ package com.hiccup.cura.service;
 
 import com.hiccup.cura.dto.reqeust.ScheduleRequestDto;
 import com.hiccup.cura.dto.reqeust.ScheduleUpdateRequestDto;
+import com.hiccup.cura.dto.response.PublicScheduleResponseDto;
 import com.hiccup.cura.dto.response.ScheduleResponseDto;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
@@ -44,6 +45,23 @@ public class DoctorScheduleService {
         List<DoctorSchedule> byDoctorProfileId = scheduleRepository.findByDoctorProfile_id(doctorId);
 
         return byDoctorProfileId.stream().map( this::mapToDto).toList();
+    }
+
+    public List<PublicScheduleResponseDto> getPublicSchedulesOfDoctor(Long doctorId){
+        if(!doctorRepository.existsByUserId(doctorId)){
+            throw new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId);
+        }
+        List<DoctorSchedule> byDoctorProfileId = scheduleRepository.findByDoctorProfile_id(doctorId);
+
+        return byDoctorProfileId.stream().map(schedule-> {
+                    return PublicScheduleResponseDto.builder().doctorId(schedule.getDoctorProfile().getId())
+                            .doctorName(schedule.getDoctorProfile().getUser().getUsername())
+                            .id(schedule.getId())
+                            .startTime(schedule.getStartTime())
+                            .endTime(schedule.getEndTime())
+                            .dayOfWeek(schedule.getDayOfWeek())
+                            .build();
+                }).toList();
     }
 
     @Transactional
