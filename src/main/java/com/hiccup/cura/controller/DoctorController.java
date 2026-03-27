@@ -26,4 +26,8 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getDoctor(customUser.getId()));
     }
 
+    @PatchMapping
+    public ResponseEntity<DoctorDto> updateDoctor(@AuthenticationPrincipal CustomUser customUser, @RequestBody DoctorRequestDto doctorDto) {
+        return ResponseEntity.ok(doctorService.updateDoctor(customUser.getId(), doctorDto));
+    }
 }
