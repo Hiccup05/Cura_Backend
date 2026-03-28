@@ -49,5 +49,9 @@ public class AdminReceptionistController {
         return ResponseEntity.ok(receptionistService.changeStatus(id, changeReceptionistRequestDto));
     }
 
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReceptionist(@PathVariable Long id) {
+        receptionistService.deleteReceptionist(id);
+        return ResponseEntity.noContent().build();
+    }
 }
