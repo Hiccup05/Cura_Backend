@@ -1,9 +1,7 @@
 package com.hiccup.cura.dto.reqeust;
 
 import com.hiccup.cura.enums.BloodGroup;
-import com.hiccup.cura.model.User;
-import com.nimbusds.openid.connect.sdk.claims.Gender;
-import jakarta.persistence.*;
+import com.hiccup.cura.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

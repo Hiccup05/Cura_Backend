@@ -1,7 +1,7 @@
 package com.hiccup.cura.model;
 
 import com.hiccup.cura.enums.BloodGroup;
-import com.nimbusds.openid.connect.sdk.claims.Gender;
+import com.hiccup.cura.enums.Gender;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

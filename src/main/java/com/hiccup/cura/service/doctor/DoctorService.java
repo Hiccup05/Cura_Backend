@@ -38,7 +38,7 @@ public class DoctorService {
 
     @Transactional
     public DoctorDto createDoctor (Long userId, DoctorRequestDto doctorRequestDto){
-        if(doctorRepository.existsByUserId(userId)){
+        if(doctorRepository.existsById(userId)){
            throw new DuplicateEntryException("Doctor with id "+ userId+ "already exist");
         }
         User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User doesn't exists with id "+ userId));
