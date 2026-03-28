@@ -43,6 +43,17 @@ public class ReceptionistService {
         return mapToDto(receptionistRepository.save(receptionistProfile));
     }
 
+    public List<ReceptionistResponseDto> getReceptionists() {
+        return receptionistRepository.findAll().stream()
+                .map(this::mapToDto).toList();
+    }
+
+    public ReceptionistResponseDto getReceptionist(Long id) {
+        ReceptionistProfile profile = receptionistRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + id));
+        return mapToDto(profile);
+    }
+
 
 
     private ReceptionistResponseDto mapToDto(ReceptionistProfile profile) {
