@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class DoctorController {
     private final DoctorService doctorService;
-    private final DoctorScheduleService doctorScheduleService;
+    private final DoctorScheduleService scheduleService;
     private final SpecializationService specializationService;
 
     @GetMapping
@@ -29,5 +29,10 @@ public class DoctorController {
     @PatchMapping
     public ResponseEntity<DoctorDto> updateDoctor(@AuthenticationPrincipal CustomUser customUser, @RequestBody DoctorRequestDto doctorDto) {
         return ResponseEntity.ok(doctorService.updateDoctor(customUser.getId(), doctorDto));
+    }
+
+    @GetMapping("/schedule/{scheduleId}")
+    public ResponseEntity<ScheduleResponseDto> getDoctorSchedule(@AuthenticationPrincipal CustomUser customUser, @PathVariable Long scheduleId) {
+        return ResponseEntity.ok(scheduleService.getScheduleOfDoctor(customUser.getId(), scheduleId));
     }
 }
