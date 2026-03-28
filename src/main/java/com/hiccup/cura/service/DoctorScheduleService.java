@@ -120,4 +120,10 @@ public class DoctorScheduleService {
                 .isAvailable(schedule.getIsAvailable())
                 .build();
     }
+
+    public ScheduleResponseDto getScheduleOfDoctor(Long id, Long scheduleId) {
+        DoctorSchedule validatedSchedule = getValidatedSchedule(id, scheduleId);
+        return mapToDto(validatedSchedule);
+
+    }
 }
