@@ -24,6 +24,26 @@ public class ReceptionistService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
 
+    @Transactional
+    public ReceptionistResponseDto createReceptionist(Long userId, ReceptionistRequestDto requestDto) {
+        if (receptionistRepository.existsById(userId)) {
+            throw new DuplicateEntryException("Receptionist with id " + userId + " already exists");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User doesn't exist with id " + userId));
+
+        user.setRole(Set.of(roleRepository.findByName(RoleType.RECEPTIONIST)));
+
+        ReceptionistProfile receptionistProfile = new ReceptionistProfile();
+        receptionistProfile.setUser(user);
+        receptionistProfile.setFirstName(requestDto.getFirstName());
+        receptionistProfile.setLastName(requestDto.getLastName());
+        receptionistProfile.setPhoneNumber(requestDto.getPhoneNumber());
+
+        return mapToDto(receptionistRepository.save(receptionistProfile));
+    }
+
+
 
     private ReceptionistResponseDto mapToDto(ReceptionistProfile profile) {
         return ReceptionistResponseDto.builder()
