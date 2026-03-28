@@ -44,5 +44,10 @@ public class AdminReceptionistController {
         return ResponseEntity.ok(receptionistService.updateReceptionist(id, requestDto));
     }
 
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ReceptionistResponseDto> changeStatus(@PathVariable Long id, @RequestBody ChangeReceptionistRequestDto changeReceptionistRequestDto) {
+        return ResponseEntity.ok(receptionistService.changeStatus(id, changeReceptionistRequestDto));
+    }
+
 
 }
