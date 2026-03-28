@@ -1,7 +1,9 @@
 package com.hiccup.cura.service;
 
+import com.hiccup.cura.dto.reqeust.ChangeReceptionistRequestDto;
 import com.hiccup.cura.dto.reqeust.ReceptionistRequestDto;
 import com.hiccup.cura.dto.response.ReceptionistResponseDto;
+import com.hiccup.cura.enums.ReceptionistStatus;
 import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
@@ -75,10 +77,10 @@ public class ReceptionistService {
         receptionistRepository.delete(profile);
     }
 
-    public ReceptionistResponseDto changeStatus(Long id, ReceptionistStatus status) {
+    public ReceptionistResponseDto changeStatus(Long id, ChangeReceptionistRequestDto dto) {
         ReceptionistProfile profile = receptionistRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + id));
-        profile.setStatus(status);
+        profile.setStatus(dto.getStatus());
         return mapToDto(receptionistRepository.save(profile));
     }
 
