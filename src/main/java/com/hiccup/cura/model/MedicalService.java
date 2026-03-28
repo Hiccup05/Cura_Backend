@@ -21,6 +21,7 @@ public class MedicalService {
     private Integer durationMinutes;
     private String description;
     private Boolean isActive;
+    private String preInstructions;
 
     @ManyToOne
     @JoinColumn(name = "specialization_id")
