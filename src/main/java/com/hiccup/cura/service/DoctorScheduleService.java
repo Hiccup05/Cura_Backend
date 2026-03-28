@@ -39,7 +39,7 @@ public class DoctorScheduleService {
     }
 
     public List<ScheduleResponseDto> getSchedulesOfDoctor(Long doctorId){
-        if(!doctorRepository.existsByUserId(doctorId)){
+        if(!doctorRepository.existsById(doctorId)){
             throw new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId);
         }
         List<DoctorSchedule> byDoctorProfileId = scheduleRepository.findByDoctorProfile_id(doctorId);
@@ -48,20 +48,21 @@ public class DoctorScheduleService {
     }
 
     public List<PublicScheduleResponseDto> getPublicSchedulesOfDoctor(Long doctorId){
-        if(!doctorRepository.existsByUserId(doctorId)){
+        if(!doctorRepository.existsById(doctorId)){
             throw new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId);
         }
         List<DoctorSchedule> byDoctorProfileId = scheduleRepository.findByDoctorProfile_id(doctorId);
 
-        return byDoctorProfileId.stream().map(schedule-> {
-                    return PublicScheduleResponseDto.builder().doctorId(schedule.getDoctorProfile().getId())
+        return byDoctorProfileId.stream()
+                .filter(DoctorSchedule::getIsAvailable)
+                .map(schedule->
+                    PublicScheduleResponseDto.builder().doctorId(schedule.getDoctorProfile().getId())
                             .doctorName(schedule.getDoctorProfile().getUser().getUsername())
                             .id(schedule.getId())
                             .startTime(schedule.getStartTime())
                             .endTime(schedule.getEndTime())
                             .dayOfWeek(schedule.getDayOfWeek())
-                            .build();
-                }).toList();
+                            .build()).toList();
     }
 
     @Transactional
@@ -97,7 +98,7 @@ public class DoctorScheduleService {
     }
 
     private DoctorSchedule getValidatedSchedule(Long doctorId, Long scheduleId) {
-        if (!doctorRepository.existsByUserId(doctorId)) {
+        if (!doctorRepository.existsById(doctorId)) {
             throw new ResourceNotFoundException("Doctor not found with id " + doctorId);
         }
         DoctorSchedule schedule = scheduleRepository.findById(scheduleId)
