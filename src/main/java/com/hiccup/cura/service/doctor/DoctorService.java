@@ -1,15 +1,13 @@
 package com.hiccup.cura.service.doctor;
 
-import com.hiccup.cura.dto.reqeust.ChangeStatusRequestDto;
+import com.hiccup.cura.dto.reqeust.ChangeDoctorStatusRequestDto;
 import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
 import com.hiccup.cura.dto.response.DoctorDto;
-import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.enums.DoctorStatus;
 import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.model.DoctorProfile;
-import com.hiccup.cura.model.Role;
 import com.hiccup.cura.model.Specialization;
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.DoctorRepository;
@@ -21,7 +19,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -96,9 +93,9 @@ public class DoctorService {
     }
 
     @Transactional
-    public DoctorDto changeStatus(Long id, ChangeStatusRequestDto changeStatusRequestDto){
+    public DoctorDto changeStatus(Long id, ChangeDoctorStatusRequestDto changeDoctorStatusRequestDto){
         DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
-        doctorProfile.setDoctorStatus(changeStatusRequestDto.getDoctorStatus());
+        doctorProfile.setDoctorStatus(changeDoctorStatusRequestDto.getDoctorStatus());
         return mapToResponseDto(doctorRepository.save(doctorProfile));
     }
 

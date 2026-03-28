@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChangeStatusRequestDto {
+public class ChangeDoctorStatusRequestDto {
     private DoctorStatus doctorStatus;
 }
