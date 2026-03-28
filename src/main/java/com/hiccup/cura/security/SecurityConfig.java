@@ -35,7 +35,7 @@ public class SecurityConfig {
     private static final String G_URL="/api/v1/auth/**";
     private static final String A_URL="/api/v1/admin/**";
     private static final String D_URL="/api/v1/doctor/**";
-    private static final String P_URL="/api/v1/patient/**";
+    private static final String P_URL="/api/v1/public/**";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http){
