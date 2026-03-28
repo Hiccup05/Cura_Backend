@@ -1,4 +1,5 @@
 package com.hiccup.cura.enums;
 
-public class Gender {
+public enum Gender {
+    MALE, FEMALE
 }
