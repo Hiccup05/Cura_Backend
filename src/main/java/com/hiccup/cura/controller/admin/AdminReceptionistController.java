@@ -28,5 +28,16 @@ public class AdminReceptionistController {
         return ResponseEntity.ok(receptionistService.getReceptionist(id));
     }
 
+    @PostMapping("/{id}")
+    public ResponseEntity<ReceptionistResponseDto> createReceptionist(@PathVariable Long id, @RequestBody ReceptionistRequestDto requestDto) {
+        ReceptionistResponseDto created = receptionistService.createReceptionist(id, requestDto);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(created.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(created);
+    }
+
 
 }
