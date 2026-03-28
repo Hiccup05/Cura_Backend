@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import java.time.DayOfWeek;
+import java.util.Optional;
 
 @Repository
 public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, Long> {
@@ -15,4 +16,6 @@ public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, 
 
     @EntityGraph(attributePaths = {"doctorProfile", "doctorProfile.user"})
     List<DoctorSchedule> findByDoctorProfile_id(Long doctorId);
+
+    Optional<DoctorSchedule> findByIdAndDoctorProfile(Long id, DoctorProfile doctorProfile);
 }
