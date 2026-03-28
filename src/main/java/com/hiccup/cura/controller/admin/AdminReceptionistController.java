@@ -39,5 +39,10 @@ public class AdminReceptionistController {
         return ResponseEntity.created(location).body(created);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReceptionistResponseDto> updateReceptionist(@PathVariable Long id, @RequestBody ReceptionistRequestDto requestDto) {
+        return ResponseEntity.ok(receptionistService.updateReceptionist(id, requestDto));
+    }
+
 
 }
