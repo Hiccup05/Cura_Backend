@@ -75,6 +75,13 @@ public class ReceptionistService {
         receptionistRepository.delete(profile);
     }
 
+    public ReceptionistResponseDto changeStatus(Long id, ReceptionistStatus status) {
+        ReceptionistProfile profile = receptionistRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + id));
+        profile.setStatus(status);
+        return mapToDto(receptionistRepository.save(profile));
+    }
+
     private ReceptionistResponseDto mapToDto(ReceptionistProfile profile) {
         return ReceptionistResponseDto.builder()
                 .id(profile.getId())
