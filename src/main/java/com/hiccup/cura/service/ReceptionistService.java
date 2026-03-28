@@ -54,7 +54,20 @@ public class ReceptionistService {
         return mapToDto(profile);
     }
 
-
+    public ReceptionistResponseDto updateReceptionist(Long id, ReceptionistRequestDto requestDto) {
+        ReceptionistProfile profile = receptionistRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + id));
+        if (requestDto.getFirstName() != null) {
+            profile.setFirstName(requestDto.getFirstName());
+        }
+        if (requestDto.getLastName() != null) {
+            profile.setLastName(requestDto.getLastName());
+        }
+        if (requestDto.getPhoneNumber() != null) {
+            profile.setPhoneNumber(requestDto.getPhoneNumber());
+        }
+        return mapToDto(receptionistRepository.save(profile));
+    }
 
     private ReceptionistResponseDto mapToDto(ReceptionistProfile profile) {
         return ReceptionistResponseDto.builder()
