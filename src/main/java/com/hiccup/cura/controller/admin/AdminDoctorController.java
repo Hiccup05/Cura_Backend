@@ -53,8 +53,8 @@ public class AdminDoctorController {
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<DoctorDto> changeStatus(@PathVariable Long id, @RequestBody ChangeStatusRequestDto changeStatusRequestDto){
-        return ResponseEntity.ok(doctorService.changeStatus(id, changeStatusRequestDto));
+    public ResponseEntity<DoctorDto> changeStatus(@PathVariable Long id, @RequestBody ChangeDoctorStatusRequestDto changeDoctorStatusRequestDto){
+        return ResponseEntity.ok(doctorService.changeStatus(id, changeDoctorStatusRequestDto));
     }
 
     @GetMapping("/{id}/schedule")
