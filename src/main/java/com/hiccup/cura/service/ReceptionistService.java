@@ -41,6 +41,7 @@ public class ReceptionistService {
         receptionistProfile.setFirstName(requestDto.getFirstName());
         receptionistProfile.setLastName(requestDto.getLastName());
         receptionistProfile.setPhoneNumber(requestDto.getPhoneNumber());
+        receptionistProfile.setStatus(ReceptionistStatus.ACTIVE);
 
         return mapToDto(receptionistRepository.save(receptionistProfile));
     }
@@ -90,6 +91,7 @@ public class ReceptionistService {
                 .firstName(profile.getFirstName())
                 .lastName(profile.getLastName())
                 .phoneNumber(profile.getPhoneNumber())
+                .status(profile.getStatus())
                 .build();
     }
 }

@@ -36,17 +36,19 @@ public class SecurityConfig {
     private static final String A_URL="/api/v1/admin/**";
     private static final String D_URL="/api/v1/doctor/**";
     private static final String P_URL="/api/v1/public/**";
+    private static final String PA_URL="/api/v1/patients/**";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http){
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers(G_URL).permitAll()
+                                .requestMatchers(P_URL).permitAll()
                                 .requestMatchers(A_URL).hasRole(RoleType.ADMIN.name())
                                 .requestMatchers(D_URL).hasRole(RoleType.DOCTOR.name())
-                                .requestMatchers(P_URL).hasRole(RoleType.PATIENT.name())
+                                .requestMatchers(PA_URL).hasRole(RoleType.PATIENT.name())
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oAuth2-> oAuth2.failureHandler(
