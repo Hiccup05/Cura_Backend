@@ -23,6 +23,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import tools.jackson.databind.ObjectMapper;
 
+import java.util.Set;
+
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Configuration
@@ -37,6 +39,7 @@ public class SecurityConfig {
     private static final String D_URL="/api/v1/doctor/**";
     private static final String P_URL="/api/v1/public/**";
     private static final String PA_URL="/api/v1/patients/**";
+    private static final String APPOINTMENT_URL= "/api/v1/appointment/**";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http){
@@ -49,7 +52,7 @@ public class SecurityConfig {
                                 .requestMatchers(A_URL).hasRole(RoleType.ADMIN.name())
                                 .requestMatchers(D_URL).hasRole(RoleType.DOCTOR.name())
                                 .requestMatchers(PA_URL).hasRole(RoleType.PATIENT.name())
-                                .anyRequest().authenticated()
+                                .requestMatchers(APPOINTMENT_URL).hasAnyRole(RoleType.PATIENT.name(), RoleType.RECEPTIONIST.name())
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oAuth2-> oAuth2.failureHandler(
