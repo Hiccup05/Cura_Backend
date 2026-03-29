@@ -10,5 +10,5 @@ import java.time.LocalTime;
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
     boolean existsByDoctorAndAppointmentDateAndAppointmentTime(DoctorProfile doctor, LocalDate appointmentDate, LocalTime appointmentTime);
 
-
+    int countByDoctorAndAppointmentDate(DoctorProfile doctor, LocalDate appointmentDate);
 }
