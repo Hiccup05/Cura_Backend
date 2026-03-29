@@ -34,8 +34,6 @@ public class AppointmentRequestDto {
 
     private String reason;
 
-    private String doctorNotes;
-
     private String walkInPatientName;
 
     private String walkInPatientPhone;
