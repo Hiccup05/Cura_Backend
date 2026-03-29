@@ -22,39 +22,39 @@ public class Appointment {
 
     @ManyToOne
     @JoinColumn(name = "patient_id")
-    private PatientProfile patient; //done
+    private PatientProfile patient;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id")
-    private DoctorProfile doctor;  //dpmne
+    private DoctorProfile doctor;
 
     @ManyToOne
     @JoinColumn(name = "receptionist_id")
-    private ReceptionistProfile receptionist;  //done
+    private ReceptionistProfile receptionist;
 
     @ManyToOne
     @JoinColumn(name = "service_id")
-    private MedicalService medicalService;  //done
+    private MedicalService medicalService;
 
-    private LocalDate appointmentDate;  //done
-    private LocalTime appointmentTime;  //done
-
-    @Enumerated(EnumType.STRING)
-    private AppointmentStatus status;  //done
+    private LocalDate appointmentDate;
+    private LocalTime appointmentTime;
 
     @Enumerated(EnumType.STRING)
-    private AppointmentType type;  //done
-
-    private String reason;     //
-    private String doctorNotes;  // done
-
-    private String walkInPatientName;  //done
-    private String walkInPatientPhone;  //done
-
-    private Boolean isPaid;  //done
+    private AppointmentStatus status;
 
     @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod; //done
+    private AppointmentType type;
 
-    private LocalDateTime bookedAt;  //done
+    private String reason;
+    private String doctorNotes;
+
+    private String walkInPatientName;
+    private String walkInPatientPhone;
+
+    private Boolean isPaid;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
+
+    private LocalDateTime bookedAt;
 }
