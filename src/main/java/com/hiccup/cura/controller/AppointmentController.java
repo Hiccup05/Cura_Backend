@@ -2,7 +2,6 @@ package com.hiccup.cura.controller;
 
 import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
-import com.hiccup.cura.model.User;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +30,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AppointmentResponseDto> getAppointment(@PathVariable Long id, @AuthenticationPrincipal User user){
-        return null;
+    public ResponseEntity<AppointmentResponseDto> getAppointment(@PathVariable Long id, @AuthenticationPrincipal CustomUser user){
+        return ResponseEntity.ok(appointmentService.getAppointment(user.getId(), id));
     }
 }

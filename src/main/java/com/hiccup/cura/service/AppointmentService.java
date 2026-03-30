@@ -7,6 +7,7 @@ import com.hiccup.cura.enums.AppointmentType;
 import com.hiccup.cura.enums.PaymentMethod;
 import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
+import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
 import com.hiccup.cura.model.*;
 import com.hiccup.cura.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +77,17 @@ public class AppointmentService {
         appointment.setMedicalService(medicalService);
         appointment.setReason(appointmentRequestDto.getReason());
         return mapToDto(appointmentRepository.save(appointment));
+    }
+
+    public AppointmentResponseDto getAppointment(Long userId, Long appointmentId){
+        User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
+        if(user.getRole().stream().anyMatch(role -> role.getName().equals(RoleType.ADMIN)
+                ||  role.getName().equals(RoleType.DOCTOR)
+        )){
+            throw new UnauthorizedUserAccessException("You are not allowed to access appointments");
+        }
+        Appointment appointment = appointmentRepository.getAppointmentByIdAndUserId(appointmentId, userId).orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
+        return mapToDto(appointment);
     }
 
     private AppointmentResponseDto mapToDto(Appointment appointment) {
