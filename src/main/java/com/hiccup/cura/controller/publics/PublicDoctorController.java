@@ -25,7 +25,10 @@ public class PublicDoctorController {
         return  ResponseEntity.ok(doctorService.getPublicDoctors());
     }
 
-
+    @GetMapping("/{id}")
+    public ResponseEntity<PublicDoctorResponseDto> getPublicDoctor(@PathVariable Long id){
+        return ResponseEntity.ok(doctorService.getPublicDoctor(id));
+    }
 
     @GetMapping("/{id}/schedule")
     public ResponseEntity<List<PublicScheduleResponseDto>> getDoctorScheduleByDoctorProfileId(@PathVariable Long id) {
