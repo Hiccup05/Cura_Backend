@@ -1,4 +1,4 @@
-package com.hiccup.cura.controller.publics;
+package com.hiccup.cura.controller;
 
 import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
