@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface DoctorRepository extends JpaRepository<DoctorProfile, Long> {
@@ -16,4 +17,7 @@ public interface DoctorRepository extends JpaRepository<DoctorProfile, Long> {
 
     @Query("SELECT d FROM DoctorProfile d where d.doctorStatus IN :status")
     List<DoctorProfile> getPublicDoctors(@Param("status") List<DoctorStatus> status);
+
+    @Query("SELECT d FROM DoctorProfile d where d.id=:id AND d.doctorStatus IN :status")
+    Optional<DoctorProfile> getPublicDoctor(@Param("id") Long id, @Param("status") List<DoctorStatus> status);
 }
