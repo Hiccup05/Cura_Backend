@@ -3,6 +3,7 @@ package com.hiccup.cura.service.doctor;
 import com.hiccup.cura.dto.reqeust.ChangeDoctorStatusRequestDto;
 import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
 import com.hiccup.cura.dto.response.DoctorDto;
+import com.hiccup.cura.dto.response.PublicDoctorResponseDto;
 import com.hiccup.cura.enums.DoctorStatus;
 import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
@@ -59,6 +60,8 @@ public class DoctorService {
                 .map(this::mapToResponseDto).toList();
     }
 
+
+
     public DoctorDto getDoctor(Long id){
         DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
         return mapToResponseDto(doctorProfile);
@@ -105,6 +108,18 @@ public class DoctorService {
                 .specialization(doctorProfile.getSpecialization())
                 .licenseNumber(doctorProfile.getLicenseNumber())
                 .yearsOfExperience(doctorProfile.getYearsOfExperience())
+                .build();
+    }
+
+    private PublicDoctorResponseDto mapToDto(DoctorProfile doctor) {
+        return PublicDoctorResponseDto.builder()
+                .id(doctor.getId())
+                .firstName(null)
+                .lastName(null)
+                .specialization(doctor.getSpecialization())
+                .yearsOfExperience(doctor.getYearsOfExperience())
+                .licenseNumber(doctor.getLicenseNumber())
+                .doctorStatus(doctor.getDoctorStatus())
                 .build();
     }
 }
