@@ -53,6 +53,7 @@ public class SecurityConfig {
                                 .requestMatchers(D_URL).hasRole(RoleType.DOCTOR.name())
                                 .requestMatchers(PA_URL).hasRole(RoleType.PATIENT.name())
                                 .requestMatchers(APPOINTMENT_URL).hasAnyRole(RoleType.PATIENT.name(), RoleType.RECEPTIONIST.name())
+                                .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oAuth2-> oAuth2.failureHandler(

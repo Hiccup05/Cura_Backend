@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UnauthorizedUserAccessException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedUserAccessException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse(403, "Unauthorized User Access", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
     }
 
