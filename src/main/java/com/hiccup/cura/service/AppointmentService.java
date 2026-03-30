@@ -6,6 +6,7 @@ import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.enums.AppointmentType;
 import com.hiccup.cura.enums.PaymentMethod;
 import com.hiccup.cura.enums.RoleType;
+import com.hiccup.cura.exception.custom.CancellationNotAllowedException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
 import com.hiccup.cura.model.*;
@@ -58,7 +59,7 @@ public class AppointmentService {
 
         validateSlot(doctorSchedule, medicalService, appointmentRequestDto.getAppointmentTime());
 
-        if(appointmentRepository.existsByDoctorAndAppointmentDateAndAppointmentTime( doctor, appointmentRequestDto.getAppointmentDate(), appointmentRequestDto.getAppointmentTime())){
+        if(appointmentRepository.existsByDoctorAndAppointmentDateAndAppointmentTime( doctor, appointmentRequestDto.getAppointmentDate(), appointmentRequestDto.getAppointmentTime(), AppointmentStatus.CANCELLED)){
             throw new IllegalStateException("This appointment slot is already booked.");
         }
 
@@ -88,6 +89,37 @@ public class AppointmentService {
         }
         Appointment appointment = appointmentRepository.getAppointmentByIdAndUserId(appointmentId, userId).orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
         return mapToDto(appointment);
+    }
+
+    public AppointmentResponseDto cancelAppointment(Long userId, Long appointmentId){
+        User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
+        if(user.getRole().stream().anyMatch(role -> role.getName().equals(RoleType.ADMIN)
+                ||  role.getName().equals(RoleType.DOCTOR)
+        )){
+            throw new UnauthorizedUserAccessException("You are not allowed to access appointments");
+        }
+        Appointment appointment = appointmentRepository.getAppointmentByIdAndUserId(appointmentId, userId).orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
+
+        LocalDateTime appointmentTime=LocalDateTime.of(appointment.getAppointmentDate(), appointment.getAppointmentTime());
+
+        LocalDateTime cancelTime=LocalDateTime.now();
+
+        if(ChronoUnit.HOURS.between(appointment.getBookedAt(),appointmentTime)<=5 ){
+            if(cancelTime.isBefore(appointmentTime)){
+                appointment.setStatus(AppointmentStatus.CANCELLED);
+            }
+            else{
+                throw new CancellationNotAllowedException("Cannot cancel appointment as the cancel time exceeds appointment time");
+            }
+        }
+        else{
+            if(ChronoUnit.HOURS.between(appointment.getBookedAt(),cancelTime)<=5){
+                appointment.setStatus(AppointmentStatus.CANCELLED);
+            }else{
+                throw new CancellationNotAllowedException("Cannot cancel appointment as booked appointment exceeds 5 hours mark");
+            }
+        }
+        return mapToDto(appointmentRepository.save(appointment));
     }
 
     private AppointmentResponseDto mapToDto(Appointment appointment) {
