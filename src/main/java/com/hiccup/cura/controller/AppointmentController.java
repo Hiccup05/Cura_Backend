@@ -33,4 +33,9 @@ public class AppointmentController {
     public ResponseEntity<AppointmentResponseDto> getAppointment(@PathVariable Long id, @AuthenticationPrincipal CustomUser user){
         return ResponseEntity.ok(appointmentService.getAppointment(user.getId(), id));
     }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<AppointmentResponseDto> cancelAppointment(@PathVariable Long id, @AuthenticationPrincipal CustomUser user){
+        return ResponseEntity.ok(appointmentService.cancelAppointment(user.getId(), id));
+    }
 }
