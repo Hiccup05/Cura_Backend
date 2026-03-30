@@ -1,5 +1,6 @@
 package com.hiccup.cura.controller.publics;
 
+import com.hiccup.cura.dto.response.PublicDoctorResponseDto;
 import com.hiccup.cura.dto.response.PublicScheduleResponseDto;
 import com.hiccup.cura.dto.response.ScheduleResponseDto;
 import com.hiccup.cura.service.DoctorScheduleService;
@@ -18,6 +19,13 @@ public class PublicDoctorController {
     private final DoctorService doctorService;
     private final DoctorScheduleService doctorScheduleService;
     private final SpecializationService specializationService;
+
+    @GetMapping
+    public ResponseEntity<List<PublicDoctorResponseDto>> getPublicDoctors(){
+        return  ResponseEntity.ok(doctorService.getPublicDoctors());
+    }
+
+
 
     @GetMapping("/{id}/schedule")
     public ResponseEntity<List<PublicScheduleResponseDto>> getDoctorScheduleByDoctorProfileId(@PathVariable Long id) {
