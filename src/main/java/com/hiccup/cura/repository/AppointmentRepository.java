@@ -12,7 +12,7 @@ import java.time.LocalTime;
 import java.util.Optional;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    @Query("SELECT COUNT(A) FROM Appointment  A " +
+    @Query("SELECT COUNT(A) > 0 FROM Appointment  A " +
     " WHERE A.doctor=:doctor AND A.appointmentDate=:appointmentDate AND A.appointmentTime=:appointmentTime AND A.status<> :status ")
     boolean existsByDoctorAndAppointmentDateAndAppointmentTime(@Param("doctor") DoctorProfile doctor, @Param("appointmentDate") LocalDate appointmentDate, @Param("appointmentTime") LocalTime appointmentTime
     , @Param("status") AppointmentStatus status);
