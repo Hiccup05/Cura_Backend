@@ -1,5 +1,6 @@
 package com.hiccup.cura.exception;
 
+import com.hiccup.cura.exception.custom.CancellationNotAllowedException;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
@@ -13,6 +14,12 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(CancellationNotAllowedException.class)
+    public ResponseEntity<ErrorResponse> handleCancellationNotAllowedException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "Cancellation Not Allowed", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
+    }
 
     @ExceptionHandler(UnauthorizedUserAccessException.class)
     public ResponseEntity<ErrorResponse> handleUnauthorizedUserAccessException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
