@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("${api.prefix}/service")
+@RequestMapping("${api.prefix}/public/service")
 @RequiredArgsConstructor
 public class ServiceController {
     private final MedicalServiceService serviceService;
