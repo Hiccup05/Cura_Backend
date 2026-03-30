@@ -2,6 +2,7 @@ package com.hiccup.cura.service;
 
 import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
+import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.enums.AppointmentType;
 import com.hiccup.cura.enums.PaymentMethod;
@@ -18,6 +19,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -89,6 +91,11 @@ public class AppointmentService {
         }
         Appointment appointment = appointmentRepository.getAppointmentByIdAndUserId(appointmentId, userId).orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
         return mapToDto(appointment);
+    }
+
+    public List<AppointmentSummaryDto> getMyAppointments(Long userId){
+        List<Appointment> appointmentOfUser = appointmentRepository.getAppointmentOfUser(userId);
+        return appointmentOfUser.stream().map(this::mapToSummaryDto).toList();
     }
 
     public AppointmentResponseDto cancelAppointment(Long userId, Long appointmentId){
@@ -201,5 +208,17 @@ public class AppointmentService {
         appointment.setWalkInPatientName(dto.getWalkInPatientName());
         appointment.setWalkInPatientPhone(dto.getWalkInPatientPhone());
         appointment.setIsPaid(true);
+    }
+
+    private AppointmentSummaryDto mapToSummaryDto(Appointment appointment) {
+        return AppointmentSummaryDto.builder()
+                .appointmentId(appointment.getId())
+                .appointmentDate(appointment.getAppointmentDate())
+                .appointmentTime(appointment.getAppointmentTime())
+                .appointmentStatus(appointment.getStatus())
+                .doctorId(appointment.getDoctor().getId())
+                .medicalServiceName(appointment.getMedicalService().getName())
+                .isPaid(appointment.getIsPaid())
+                .build();
     }
 }
