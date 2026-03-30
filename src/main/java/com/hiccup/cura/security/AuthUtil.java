@@ -5,7 +5,9 @@ import com.hiccup.cura.dto.response.LoginResponseDto;
 import com.hiccup.cura.dto.response.SignupResponseDto;
 import com.hiccup.cura.enums.AuthType;
 import com.hiccup.cura.enums.RoleType;
+import com.hiccup.cura.model.PatientProfile;
 import com.hiccup.cura.model.User;
+import com.hiccup.cura.repository.PatientRepository;
 import com.hiccup.cura.repository.RoleRepository;
 import com.hiccup.cura.repository.UserRepository;
 import io.jsonwebtoken.JwtException;
@@ -17,9 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
@@ -30,6 +30,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthUtil {
+    private final PatientRepository patientRepository;
     @Value("${auth.token.jwt}")
     private String jwtSecret;
 
@@ -112,6 +113,9 @@ public class AuthUtil {
         user.setRole(Set.of(repository.findByName(RoleType.PATIENT)));
         user.setActive(true);
         user.setUsername(signRequestDto.getName());
+        PatientProfile patientProfile = new PatientProfile();
+        patientProfile.setUser(user);
+        patientRepository.save(patientProfile);
         return userRepository.save(user);
     }
 
@@ -123,7 +127,7 @@ public class AuthUtil {
     @Transactional
     public ResponseEntity<LoginResponseDto> handleOauth2LoginRequest(OAuth2User oAuth2User, String registrationId) {
         // providerType and ProviderId
-        // save the providertype and provider id info with user
+        // save the provider type and provider id info with user
         // if the user has an account: directly login
         // if not sign in and then login
 
