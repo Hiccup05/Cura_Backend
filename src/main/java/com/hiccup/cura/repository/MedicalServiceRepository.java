@@ -28,7 +28,7 @@ public interface MedicalServiceRepository extends JpaRepository<MedicalService, 
             "WHERE s.specialization.id = :specializationId AND s.isActive = true")
     List<MedicalServiceResponseDto> findAllActiveServicesWithSpecialization(@Param("specializationId") Long specializationId);
 
-    @Query("SELECT m FROM MedicalService m where m.id=:medicalServiceId AND m.isActive=true")
+    @Query("SELECT m FROM MedicalService m where m.id=:id AND m.isActive=true")
     Optional<MedicalService> findActiveMedicalServiceById(@Param("id") Long id);
 
     boolean existsByNameAndSpecialization_id(String name, Long specializationId);
