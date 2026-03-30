@@ -60,7 +60,9 @@ public class DoctorService {
                 .map(this::mapToResponseDto).toList();
     }
 
-
+    public List<PublicDoctorResponseDto> getPublicDoctors(){
+        return doctorRepository.getPublicDoctors(List.of(DoctorStatus.ACTIVE, DoctorStatus.ON_LEAVE)).stream().map(this::mapToPublicResponseDto).toList();
+    }
 
     public DoctorDto getDoctor(Long id){
         DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
@@ -111,7 +113,7 @@ public class DoctorService {
                 .build();
     }
 
-    private PublicDoctorResponseDto mapToDto(DoctorProfile doctor) {
+    private PublicDoctorResponseDto mapToPublicResponseDto(DoctorProfile doctor) {
         return PublicDoctorResponseDto.builder()
                 .id(doctor.getId())
                 .firstName(null)
