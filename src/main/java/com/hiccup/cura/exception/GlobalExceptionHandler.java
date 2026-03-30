@@ -2,6 +2,7 @@ package com.hiccup.cura.exception;
 
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
+import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,12 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(UnauthorizedUserAccessException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedUserAccessException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorResponse(403, "Unauthorized User Access", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
+    }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest request){
