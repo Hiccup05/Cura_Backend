@@ -29,6 +29,6 @@ public interface DoctorLeaveRepository extends JpaRepository<DoctorLeave, Long> 
     List<DoctorLeave> findByDoctorProfile_id(Long doctorProfileId);
 
     @Query("SELECT COUNT(l)>0 FROM DoctorLeave l WHERE l.doctorProfile.id=:doctorId"+
-        " AND l.startDate<=:date AND l.endDate>=:startDate")
+        " AND l.startDate<=:date AND l.endDate>=:date")
     boolean isOnLeave(@Param("doctorId")Long doctorId,@Param("date") LocalDate date);
 }
