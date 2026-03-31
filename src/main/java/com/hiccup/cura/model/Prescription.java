@@ -14,7 +14,7 @@ public class Prescription {
     private Long id;
 
     @MapsId
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne
     private Appointment appointment;
 
     private String description;
