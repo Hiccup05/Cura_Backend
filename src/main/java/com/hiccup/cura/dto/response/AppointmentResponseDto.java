@@ -1,8 +1,10 @@
 package com.hiccup.cura.dto.response;
 
+import com.hiccup.cura.dto.reqeust.PrescriptionRequestDto;
 import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.enums.AppointmentType;
 import com.hiccup.cura.enums.PaymentMethod;
+import com.hiccup.cura.model.Prescription;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,6 +35,7 @@ public class AppointmentResponseDto {
     private Boolean isPaid;
     private PaymentMethod paymentMethod;
     private LocalDateTime bookedAt;
+    private PrescriptionResponseDto prescriptionResponseDto;
 
     // Patient booked fields — null for receptionist
     private Long patientId;
