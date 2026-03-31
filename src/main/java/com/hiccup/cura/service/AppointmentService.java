@@ -3,6 +3,7 @@ package com.hiccup.cura.service;
 import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
+import com.hiccup.cura.dto.response.PrescriptionResponseDto;
 import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.enums.AppointmentType;
 import com.hiccup.cura.enums.PaymentMethod;
@@ -162,6 +163,7 @@ public class AppointmentService {
                         appointment.getReceptionist().getFirstName() + " " + appointment.getReceptionist().getLastName() : null)
                 .walkInPatientName(appointment.getWalkInPatientName())
                 .walkInPatientPhone(appointment.getWalkInPatientPhone())
+                .prescriptionResponseDto(appointment.getPrescription()!=null? mapToPrescriptionDto(appointment.getPrescription()):null)
                 .build();
     }
     private void validateSlot(DoctorSchedule schedule, MedicalService service, LocalTime requestTime) {
@@ -229,5 +231,9 @@ public class AppointmentService {
                 .medicalServiceName(appointment.getMedicalService().getName())
                 .isPaid(appointment.getIsPaid())
                 .build();
+    }
+
+    private PrescriptionResponseDto mapToPrescriptionDto(Prescription prescription){
+        return new  PrescriptionResponseDto(prescription.getId(), prescription.getDescription());
     }
 }
