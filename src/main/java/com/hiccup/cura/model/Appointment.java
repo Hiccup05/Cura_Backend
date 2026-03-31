@@ -58,4 +58,7 @@ public class Appointment {
     private PaymentMethod paymentMethod;
 
     private LocalDateTime bookedAt;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "appointment")
+    private Prescription prescription;
 }
