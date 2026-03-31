@@ -46,6 +46,7 @@ public class Appointment {
     private AppointmentType type;
 
     private String reason;
+
     private String doctorNotes;
 
     private String walkInPatientName;

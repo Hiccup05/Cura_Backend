@@ -2,7 +2,6 @@ package com.hiccup.cura.controller.publics;
 
 import com.hiccup.cura.dto.response.PublicDoctorResponseDto;
 import com.hiccup.cura.dto.response.PublicScheduleResponseDto;
-import com.hiccup.cura.dto.response.ScheduleResponseDto;
 import com.hiccup.cura.service.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
 import com.hiccup.cura.service.doctor.specialization.SpecializationService;
