@@ -29,7 +29,7 @@ public class PrescriptionService {
         return  mapToDto(prescriptionRepository.save(saved));
     }
 
-    public PrescriptionResponseDto mapToDto(Prescription prescription){
+    private PrescriptionResponseDto mapToDto(Prescription prescription){
         return new  PrescriptionResponseDto(prescription.getId(), prescription.getDescription());
     }
 }
