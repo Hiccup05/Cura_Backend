@@ -134,7 +134,7 @@ public class AppointmentService {
                 throw new CancellationNotAllowedException("Cannot cancel appointment as booked appointment exceeds 5 hours mark");
             }
         }
-
+        prescriptionRepository.findById(appointmentId).ifPresent(prescriptionRepository::delete);
         return mapToDto(appointmentRepository.save(appointment));
     }
 
