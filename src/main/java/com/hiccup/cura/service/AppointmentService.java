@@ -12,6 +12,7 @@ import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
 import com.hiccup.cura.model.*;
 import com.hiccup.cura.repository.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,9 @@ public class AppointmentService {
     private final MedicalServiceRepository medicalServiceRepository;
     private final DoctorLeaveRepository doctorLeaveRepository;
     private final DoctorScheduleRepository doctorScheduleRepository;
+    private final PrescriptionRepository prescriptionRepository;
 
+    @Transactional
     public AppointmentResponseDto createAppointment(AppointmentRequestDto appointmentRequestDto, Long userId) {
         Appointment appointment=new Appointment();
         DoctorProfile doctor = doctorRepository.findById(appointmentRequestDto.getDoctorId()).orElseThrow(() ->
@@ -79,7 +82,11 @@ public class AppointmentService {
         appointment.setBookedAt(LocalDateTime.now());
         appointment.setMedicalService(medicalService);
         appointment.setReason(appointmentRequestDto.getReason());
-        return mapToDto(appointmentRepository.save(appointment));
+        Appointment save = appointmentRepository.save(appointment);
+        Prescription prescription=new Prescription();
+        prescription.setAppointment(appointment);
+        prescriptionRepository.save(prescription);
+        return mapToDto(save);
     }
 
     public AppointmentResponseDto getAppointment(Long userId, Long appointmentId){
@@ -98,6 +105,7 @@ public class AppointmentService {
         return appointmentOfUser.stream().map(this::mapToSummaryDto).toList();
     }
 
+    @Transactional
     public AppointmentResponseDto cancelAppointment(Long userId, Long appointmentId){
         User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
         if(user.getRole().stream().anyMatch(role -> role.getName().equals(RoleType.ADMIN)
@@ -126,6 +134,7 @@ public class AppointmentService {
                 throw new CancellationNotAllowedException("Cannot cancel appointment as booked appointment exceeds 5 hours mark");
             }
         }
+
         return mapToDto(appointmentRepository.save(appointment));
     }
 
