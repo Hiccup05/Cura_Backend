@@ -61,4 +61,7 @@ public class Appointment {
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "appointment")
     private Prescription prescription;
+
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "appointment")
+    private Payment payment;
 }
