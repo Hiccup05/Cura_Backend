@@ -1,4 +1,6 @@
 package com.hiccup.cura.enums;
 
-public class PaymentType {
+public enum PaymentType {
+    KHALTI,
+    ESEWA
 }
