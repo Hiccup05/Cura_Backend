@@ -13,10 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    @Query("SELECT COUNT(A) > 0 FROM Appointment  A " +
-    " WHERE A.doctor=:doctor AND A.appointmentDate=:appointmentDate AND A.appointmentTime=:appointmentTime AND A.status<> :status ")
-    boolean existsByDoctorAndAppointmentDateAndAppointmentTime(@Param("doctor") DoctorProfile doctor, @Param("appointmentDate") LocalDate appointmentDate, @Param("appointmentTime") LocalTime appointmentTime
-    , @Param("status") AppointmentStatus status);
+    boolean existsByDoctorAndAppointmentDateAndAppointmentTimeAndStatusNot(
+            DoctorProfile doctor,
+            LocalDate appointmentDate,
+            LocalTime appointmentTime,
+            AppointmentStatus status
+    );
 
     int countByDoctorAndAppointmentDate(DoctorProfile doctor, LocalDate appointmentDate);
 
