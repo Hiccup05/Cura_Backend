@@ -1,9 +1,6 @@
 package com.hiccup.cura.exception;
 
-import com.hiccup.cura.exception.custom.CancellationNotAllowedException;
-import com.hiccup.cura.exception.custom.DuplicateEntryException;
-import com.hiccup.cura.exception.custom.ResourceNotFoundException;
-import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
+import com.hiccup.cura.exception.custom.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +11,12 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(InvalidBookingTimeException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidBookingTimeException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "InvalidBookingTimeException", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
+    }
 
     @ExceptionHandler(CancellationNotAllowedException.class)
     public ResponseEntity<ErrorResponse> handleCancellationNotAllowedException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
