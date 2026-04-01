@@ -9,6 +9,7 @@ import com.hiccup.cura.enums.AppointmentType;
 import com.hiccup.cura.enums.PaymentMethod;
 import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.CancellationNotAllowedException;
+import com.hiccup.cura.exception.custom.InvalidBookingTimeException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
 import com.hiccup.cura.model.*;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -63,9 +65,11 @@ public class AppointmentService {
             throw new IllegalStateException("Doctor is on the leave on "+appointmentRequestDto.getAppointmentDate());
         }
 
+        validateAppointmentTime(appointmentRequestDto.getAppointmentDate(), appointmentRequestDto.getAppointmentTime());
+
         validateSlot(doctorSchedule, medicalService, appointmentRequestDto.getAppointmentTime());
 
-        if(appointmentRepository.existsByDoctorAndAppointmentDateAndAppointmentTime( doctor, appointmentRequestDto.getAppointmentDate(), appointmentRequestDto.getAppointmentTime(), AppointmentStatus.CANCELLED)){
+        if(appointmentRepository.existsByDoctorAndAppointmentDateAndAppointmentTimeAndStatusNot( doctor, appointmentRequestDto.getAppointmentDate(), appointmentRequestDto.getAppointmentTime(), AppointmentStatus.CANCELLED)){
             throw new IllegalStateException("This appointment slot is already booked.");
         }
 
@@ -83,10 +87,11 @@ public class AppointmentService {
         appointment.setBookedAt(LocalDateTime.now());
         appointment.setMedicalService(medicalService);
         appointment.setReason(appointmentRequestDto.getReason());
-        Appointment save = appointmentRepository.save(appointment);
         Prescription prescription=new Prescription();
         prescription.setAppointment(appointment);
-        prescriptionRepository.save(prescription);
+        prescription=prescriptionRepository.save(prescription);
+        appointment.setPrescription(prescription);
+        Appointment save = appointmentRepository.save(appointment);
         return mapToDto(save);
     }
 
@@ -129,13 +134,16 @@ public class AppointmentService {
             }
         }
         else{
-            if(ChronoUnit.HOURS.between(appointment.getBookedAt(),cancelTime)<=5){
+            long between = ChronoUnit.HOURS.between(appointment.getBookedAt(), cancelTime);
+
+            if(ChronoUnit.HOURS.between(appointment.getBookedAt(), cancelTime)<=5){
                 appointment.setStatus(AppointmentStatus.CANCELLED);
             }else{
                 throw new CancellationNotAllowedException("Cannot cancel appointment as booked appointment exceeds 5 hours mark");
             }
         }
-        prescriptionRepository.findById(appointmentId).ifPresent(prescriptionRepository::delete);
+        prescriptionRepository.findById(appointment.getPrescription().getId()).ifPresent(prescriptionRepository::delete);
+        appointment.setPrescription(null);
         return mapToDto(appointmentRepository.save(appointment));
     }
 
@@ -165,6 +173,13 @@ public class AppointmentService {
                 .walkInPatientPhone(appointment.getWalkInPatientPhone())
                 .prescriptionResponseDto(appointment.getPrescription()!=null? mapToPrescriptionDto(appointment.getPrescription()):null)
                 .build();
+    }
+    private void validateAppointmentTime(LocalDate appointmentDate, LocalTime appointmentTime){
+        LocalDateTime appointment=LocalDateTime.of(appointmentDate, appointmentTime);
+        if(LocalDateTime.now().isAfter(appointment)){
+            throw new InvalidBookingTimeException("Appointment time is before booking time");
+        }
+
     }
     private void validateSlot(DoctorSchedule schedule, MedicalService service, LocalTime requestTime) {
         LocalTime startTime = schedule.getStartTime();
