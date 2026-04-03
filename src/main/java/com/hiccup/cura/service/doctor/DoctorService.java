@@ -15,6 +15,7 @@ import com.hiccup.cura.repository.DoctorRepository;
 import com.hiccup.cura.repository.RoleRepository;
 import com.hiccup.cura.repository.SpecializationRepository;
 import com.hiccup.cura.repository.UserRepository;
+import com.hiccup.cura.service.EmailService;
 import com.hiccup.cura.service.doctor.specialization.SpecializationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class DoctorService {
     private final SpecializationRepository specializationRepository;
     private final RoleRepository roleRepository;
     private final SpecializationService specializationService;
+    private final EmailService emailService;
 
     @Transactional
     public DoctorDto createDoctor (Long userId, DoctorRequestDto doctorRequestDto){
@@ -51,7 +53,7 @@ public class DoctorService {
         doctorProfile.setYearsOfExperience(doctorRequestDto.getYearsOfExperience());
 
         DoctorProfile saveDoctor = doctorRepository.save(doctorProfile);
-
+        emailService.sendDoctorPromotionEmail(doctorProfile.getUser().getEmail(), doctorProfile.getUser().getUsername());
         return mapToResponseDto(saveDoctor);
     }
 
