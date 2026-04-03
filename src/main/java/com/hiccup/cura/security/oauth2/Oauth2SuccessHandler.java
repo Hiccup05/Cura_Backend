@@ -7,7 +7,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -37,6 +39,18 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
 
         ResponseEntity<LoginResponseDto> loginResponseDtoResponseEntity =
                 authUtil.handleOauth2LoginRequest(oAuth2User, registrationId);
+
+        String jwtToken = loginResponseDtoResponseEntity.getBody().getJwtToken();
+
+        ResponseCookie cookie = ResponseCookie.from("token", jwtToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(60*60)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.sendRedirect("http://localhost:3000/oauth2/callback");
 
         response.setStatus(loginResponseDtoResponseEntity.getStatusCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
