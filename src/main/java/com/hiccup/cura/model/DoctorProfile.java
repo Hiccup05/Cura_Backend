@@ -1,11 +1,14 @@
 package com.hiccup.cura.model;
 
+import com.hiccup.cura.enums.BloodGroup;
 import com.hiccup.cura.enums.DoctorStatus;
+import com.hiccup.cura.enums.Gender;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 @Entity
@@ -15,6 +18,17 @@ import java.util.Set;
 public class DoctorProfile {
     @Id
     private Long id;
+
+    private String firstName;
+    private String lastName;
+
+    private LocalDate dateOfBirth;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    private String phoneNumber;
+    private String address;
 
     @MapsId
     @OneToOne(cascade = CascadeType.ALL)
