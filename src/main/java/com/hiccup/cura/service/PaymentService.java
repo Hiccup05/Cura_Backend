@@ -34,6 +34,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final WebClient webClient;
+    private final EmailService emailService;
 
     @Transactional
     public String initiatePaymentService(Long appointmentId, Long userId) {
@@ -89,6 +90,7 @@ public class PaymentService {
             appointment.setIsPaid(true);
             appointmentRepository.save(appointment);
             paymentRepository.save(payment);
+            emailService.sendPaymentSuccessEmail(appointment.getPatient().getUser().getEmail(), appointment);
             return mapToDto(payment);
         }else{
             throw new KhaltiGatewayFailException("Cannot complete payment");
