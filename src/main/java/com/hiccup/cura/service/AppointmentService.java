@@ -37,6 +37,7 @@ public class AppointmentService {
     private final DoctorLeaveRepository doctorLeaveRepository;
     private final DoctorScheduleRepository doctorScheduleRepository;
     private final PrescriptionRepository prescriptionRepository;
+    private final EmailService emailService;
 
     @Transactional
     public AppointmentResponseDto createAppointment(AppointmentRequestDto appointmentRequestDto, Long userId) {
@@ -92,6 +93,7 @@ public class AppointmentService {
         prescription=prescriptionRepository.save(prescription);
         appointment.setPrescription(prescription);
         Appointment save = appointmentRepository.save(appointment);
+        emailService.sendAppointmentEmail(user.getEmail(), save);
         return mapToDto(save);
     }
 
