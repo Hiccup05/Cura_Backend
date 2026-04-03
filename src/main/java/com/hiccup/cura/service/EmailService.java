@@ -27,6 +27,56 @@ public class EmailService {
 
         mailSender.send(message);
     }
+    public void sendWelcomeEmail(String to, String name) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject("Welcome to Cura Healthcare 🎉");
+
+            String content = buildWelcomeTemplate(name);
+
+            helper.setText(content, true);
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // log only
+        }
+    }
+
+    private String buildWelcomeTemplate(String name) {
+        return """
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #3498db;">Welcome to Cura Healthcare 🎉</h2>
+
+            <p>Hello %s,</p>
+
+            <p>
+                Your account has been successfully created. We're glad to have you with us!
+            </p>
+
+            <p>
+                You can now:
+            </p>
+
+            <ul>
+                <li>Book appointments with doctors</li>
+                <li>View your appointment history</li>
+                <li>Manage your profile</li>
+            </ul>
+
+            <p style="margin-top: 20px;">
+                Start by booking your first appointment anytime.
+            </p>
+
+            <br/>
+
+            <p>Thank you,<br/>Cura Healthcare Team</p>
+        </div>
+        """.formatted(name);
+    }
 
     public void sendAppointmentEmail(String to, Appointment appointment) {
         try {
