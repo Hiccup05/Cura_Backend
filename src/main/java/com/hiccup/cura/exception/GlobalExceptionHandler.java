@@ -12,6 +12,12 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(KhaltiGatewayFailException.class)
+    public ResponseEntity<ErrorResponse> handleKhaltiGatewayFailException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(502, "KhaliGatewayFailException", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
+    }
+
     @ExceptionHandler(InvalidBookingTimeException.class)
     public ResponseEntity<ErrorResponse> handleInvalidBookingTimeException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
