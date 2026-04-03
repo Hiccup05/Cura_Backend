@@ -25,6 +25,7 @@ public class ReceptionistService {
     private final ReceptionistRepository receptionistRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final EmailService emailService;
 
     @Transactional
     public ReceptionistResponseDto createReceptionist(Long userId, ReceptionistRequestDto requestDto) {
@@ -43,7 +44,9 @@ public class ReceptionistService {
         receptionistProfile.setPhoneNumber(requestDto.getPhoneNumber());
         receptionistProfile.setStatus(ReceptionistStatus.ACTIVE);
 
-        return mapToDto(receptionistRepository.save(receptionistProfile));
+        ReceptionistProfile save = receptionistRepository.save(receptionistProfile);
+        emailService.sendReceptionistPromotionEmail(user.getEmail(), receptionistProfile.getFirstName());
+        return mapToDto(save);
     }
 
     public List<ReceptionistResponseDto> getReceptionists() {
