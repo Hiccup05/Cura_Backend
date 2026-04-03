@@ -120,6 +120,47 @@ public class EmailService {
         }
     }
 
+    public void sendDoctorPromotionEmail(String to, String name) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject("You are now a Receptionist on Cura 👨‍⚕️");
+
+            String content = """
+            <div style="font-family: Arial, sans-serif; padding: 20px;">
+                <h2 style="color: #2ecc71;">Congratulations 🎉</h2>
+
+                <p>Hello %s,</p>
+
+                <p>
+                    You have been successfully promoted to a <b>Receptionist</b> role in Cura Healthcare.
+                </p>
+
+                <p>
+                    You can now:
+                </p>
+
+                <ul>
+                    <li>Manage your appointments</li>
+                    <li>Create patient appointments</li>
+                </ul>
+
+                <br/>
+
+                <p>Thank you,<br/>Cura Healthcare Team</p>
+            </div>
+        """.formatted(name);
+
+            helper.setText(content, true);
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void sendAppointmentEmail(String to, Appointment appointment) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
