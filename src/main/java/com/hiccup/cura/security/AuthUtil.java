@@ -10,6 +10,7 @@ import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.PatientRepository;
 import com.hiccup.cura.repository.RoleRepository;
 import com.hiccup.cura.repository.UserRepository;
+import com.hiccup.cura.service.EmailService;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -36,6 +37,7 @@ public class AuthUtil {
 
     private final UserRepository userRepository;
     private final RoleRepository repository;
+    private final EmailService emailService;
 
     public String getUserNameFromToken(String token){
         return Jwts.parser()
@@ -154,6 +156,7 @@ public class AuthUtil {
         } else{
             throw new BadCredentialsException("This email is already registered with provider "+ emailUser.getProviderId());
         }
+        emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
         return ResponseEntity.ok(new LoginResponseDto(generateTokenFromUser(new CustomUser(user)), user.getId()));
     }
 }
