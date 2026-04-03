@@ -160,4 +160,79 @@ public class EmailService {
                 appointment.getAppointmentTime()
         );
     }
+
+    public void sendPaymentSuccessEmail(String to, Appointment appointment) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject("Payment Successful - Appointment Confirmed");
+
+            String content = buildPaymentSuccessTemplate(appointment);
+
+            helper.setText(content, true);
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // log only
+        }
+    }
+
+    private String buildPaymentSuccessTemplate(Appointment appointment) {
+        return """
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #27ae60;">Payment Successful 💳</h2>
+
+            <p>Hello,</p>
+
+            <p>Your payment has been <b>successfully processed</b>. Your appointment is now confirmed.</p>
+
+            <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Doctor:</td>
+                    <td style="padding: 8px;">Dr. %s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Service:</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Date:</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Time:</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Amount Paid:</td>
+                    <td style="padding: 8px;">Rs. %s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Payment Method:</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+            </table>
+
+            <p style="margin-top: 20px;">
+                Please keep this email as your payment confirmation.
+            </p>
+
+            <p>We look forward to serving you. Please arrive at least <b>10 minutes early</b>.</p>
+
+            <br/>
+
+            <p>Thank you,<br/>Cura Healthcare Team</p>
+        </div>
+        """.formatted(
+                appointment.getDoctor().getFirstName() + " " + appointment.getDoctor().getLastName(),
+                appointment.getMedicalService().getName(),
+                appointment.getAppointmentDate(),
+                appointment.getAppointmentTime(),
+                appointment.getMedicalService().getPrice(),
+                appointment.getPaymentMethod()
+        );
+    }
 }
