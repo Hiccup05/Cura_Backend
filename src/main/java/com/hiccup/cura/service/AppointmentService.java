@@ -146,6 +146,7 @@ public class AppointmentService {
         }
         prescriptionRepository.findById(appointment.getPrescription().getId()).ifPresent(prescriptionRepository::delete);
         appointment.setPrescription(null);
+        emailService.sendCancellationEmail(user.getEmail(), appointment);
         return mapToDto(appointmentRepository.save(appointment));
     }
 
