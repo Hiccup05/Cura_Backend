@@ -97,4 +97,67 @@ public class EmailService {
                 appointment.getStatus()
         );
     }
+
+    public void sendCancellationEmail(String to, Appointment appointment) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject("Appointment Cancelled");
+
+            String content = buildCancellationTemplate(appointment);
+
+            helper.setText(content, true);
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // log only
+        }
+    }
+
+    private String buildCancellationTemplate(Appointment appointment) {
+        return """
+        <div style="font-family: Arial, sans-serif; padding: 20px;">
+            <h2 style="color: #e74c3c;">Appointment Cancelled ❌</h2>
+
+            <p>Hello,</p>
+
+            <p>Your appointment has been <b>successfully cancelled</b>. Below were the details:</p>
+
+            <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Doctor:</td>
+                    <td style="padding: 8px;">Dr. %s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Service:</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Date:</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px; font-weight: bold;">Time:</td>
+                    <td style="padding: 8px;">%s</td>
+                </tr>
+            </table>
+
+            <p style="margin-top: 20px;">
+                If this was a mistake, you can book a new appointment anytime.
+            </p>
+
+            <br/>
+
+            <p>Thank you,<br/>Cura Healthcare Team</p>
+        </div>
+        """.formatted(
+                appointment.getDoctor().getFirstName() + " " + appointment.getDoctor().getLastName(),
+                appointment.getMedicalService().getName(),
+                appointment.getAppointmentDate(),
+                appointment.getAppointmentTime()
+        );
+    }
 }
