@@ -1,17 +1,17 @@
 package com.hiccup.cura.service.admin;
 
 import com.hiccup.cura.dto.response.AdminProfileDto;
+import com.hiccup.cura.dto.response.AdminStatsResponseDto;
 import com.hiccup.cura.dto.response.DoctorDto;
 import com.hiccup.cura.dto.response.ReceptionistResponseDto;
+import com.hiccup.cura.enums.DoctorStatus;
+import com.hiccup.cura.enums.PaymentStatus;
 import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.model.DoctorProfile;
 import com.hiccup.cura.model.ReceptionistProfile;
 import com.hiccup.cura.model.User;
-import com.hiccup.cura.repository.AppointmentRepository;
-import com.hiccup.cura.repository.DoctorRepository;
-import com.hiccup.cura.repository.ReceptionistRepository;
-import com.hiccup.cura.repository.UserRepository;
+import com.hiccup.cura.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +24,8 @@ public class AdminService {
     private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
     private final ReceptionistRepository receptionistRepository;
+    private final PaymentRepository paymentRepository;
+    private final PatientRepository patientRepository;
 
     public AdminProfileDto getAdminProfile(Long userId) {
         User user = userRepository.findById(userId)
@@ -43,6 +45,15 @@ public class AdminService {
     public List<ReceptionistResponseDto> getAllReceptionists() {
         return receptionistRepository.findAll().stream()
                 .map(this::mapToReceptionistDto).toList();
+    }
+
+    public AdminStatsResponseDto getStats() {
+        return AdminStatsResponseDto.builder()
+                .totalDoctors(doctorRepository.countByDoctorStatusNot(DoctorStatus.INACTIVE))
+                .totalPatients(patientRepository.count())
+                .totalAppointments(appointmentRepository.count())
+                .totalRevenue(paymentRepository.sumAmountByPaymentStatus(PaymentStatus.COMPLETE))
+                .build();
     }
 
 
