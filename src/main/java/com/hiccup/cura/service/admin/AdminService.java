@@ -37,45 +37,13 @@ public class AdminService {
                 .build();
     }
 
-    public List<DoctorDto> getAllDoctors() {
-        return doctorRepository.findAll().stream()
-                .map(this::mapToDoctorDto).toList();
-    }
-
-    public List<ReceptionistResponseDto> getAllReceptionists() {
-        return receptionistRepository.findAll().stream()
-                .map(this::mapToReceptionistDto).toList();
-    }
-
     public AdminStatsResponseDto getStats() {
         return AdminStatsResponseDto.builder()
                 .totalDoctors(doctorRepository.countByDoctorStatusNot(DoctorStatus.INACTIVE))
                 .totalPatients(patientRepository.count())
                 .totalAppointments(appointmentRepository.count())
                 .totalRevenue(paymentRepository.sumAmountByPaymentStatus(PaymentStatus.COMPLETE))
-                .build();
-    }
-
-
-    private DoctorDto mapToDoctorDto(DoctorProfile doctor) {
-        return DoctorDto.builder()
-                .id(doctor.getId())
-                .firstName(doctor.getFirstName())
-                .lastName(doctor.getLastName())
-                .licenseNumber(doctor.getLicenseNumber())
-                .yearsOfExperience(doctor.getYearsOfExperience())
-                .specialization(doctor.getSpecialization())
-                .doctorStatus(doctor.getDoctorStatus())
-                .build();
-    }
-
-    private ReceptionistResponseDto mapToReceptionistDto(ReceptionistProfile receptionist) {
-        return ReceptionistResponseDto.builder()
-                .id(receptionist.getId())
-                .firstName(receptionist.getFirstName())
-                .lastName(receptionist.getLastName())
-                .phoneNumber(receptionist.getPhoneNumber())
-                .status(receptionist.getStatus())
+                .totalReceptionist(receptionistRepository.count())
                 .build();
     }
 }

@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 public class AdminStatsResponseDto {
     private long totalDoctors;
     private long totalPatients;
+    private long totalReceptionist;
     private long totalAppointments;
     private long pendingDoctorApprovals;
     private BigDecimal totalRevenue;
