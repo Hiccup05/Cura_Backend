@@ -127,7 +127,7 @@ public class AppointmentService {
 
         LocalDateTime cancelTime=LocalDateTime.now();
 
-        if(ChronoUnit.HOURS.between(appointment.getBookedAt(),appointmentTime)<=5 ){
+        if(ChronoUnit.HOURS.between(appointment.getBookedAt(),appointmentTime)<=24 ){
             if(cancelTime.isBefore(appointmentTime)){
                 appointment.setStatus(AppointmentStatus.CANCELLED);
             }
@@ -138,7 +138,7 @@ public class AppointmentService {
         else{
             long between = ChronoUnit.HOURS.between(appointment.getBookedAt(), cancelTime);
 
-            if(ChronoUnit.HOURS.between(appointment.getBookedAt(), cancelTime)<=5){
+            if(ChronoUnit.HOURS.between(appointment.getBookedAt(), cancelTime)<=24){
                 appointment.setStatus(AppointmentStatus.CANCELLED);
             }else{
                 throw new CancellationNotAllowedException("Cannot cancel appointment as booked appointment exceeds 5 hours mark");
