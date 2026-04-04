@@ -22,6 +22,7 @@ Pagination in doctor return
 
 
 Tech Dept:
-change leave response dto field from doctor id to both id and name
-update doctor profile to have name and other field of patient profile
-update all the doctor request from publics or patient controller
+add custom exception instead of illegal state exception
+add doctor first and last name in the dtos
+add admin crud endpoints
+
