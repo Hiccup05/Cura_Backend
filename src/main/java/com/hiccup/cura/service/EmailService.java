@@ -120,7 +120,7 @@ public class EmailService {
         }
     }
 
-    public void sendDoctorPromotionEmail(String to, String name) {
+    public void sendReceptionistPromotionEmail(String to, String name) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
