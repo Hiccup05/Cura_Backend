@@ -40,4 +40,14 @@ public class AuthController {
         Map<String, List<String>> role = Map.of("role", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
         return ResponseEntity.ok(role);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response){
+        Cookie cookie=new Cookie("token", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+        return  ResponseEntity.noContent().build();
+    }
 }
