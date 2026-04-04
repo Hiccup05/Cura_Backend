@@ -11,6 +11,7 @@ import com.hiccup.cura.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -19,6 +20,21 @@ import java.util.Optional;
 public class LeaveService {
     private final DoctorLeaveRepository doctorLeaveRepository;
     private final DoctorRepository doctorRepository;
+
+    public List<LeaveResponseDto> getLeaves(Long doctorId) {
+        if (!doctorRepository.existsById(doctorId)) {
+            throw new ResourceNotFoundException("Doctor cannot be found with id " + doctorId);
+        }
+        return doctorLeaveRepository.findById(doctorId).stream()
+                .map(leave -> new LeaveResponseDto(
+                        leave.getId(),
+                        leave.getStartDate(),
+                        leave.getEndDate(),
+                        leave.getReason(),
+                        leave.getDoctorProfile().getId()
+                ))
+                .toList();
+    }
 
     public LeaveResponseDto getLeave(Long doctorId, Long leaveId){
         if(!doctorRepository.existsById(doctorId)){
