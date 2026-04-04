@@ -1,7 +1,7 @@
 package com.hiccup.cura.controller.admin;
 
 import com.hiccup.cura.dto.response.AdminProfileDto;
-import com.hiccup.cura.model.User;
+import com.hiccup.cura.dto.response.AdminStatsResponseDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.admin.AdminService;
 import lombok.RequiredArgsConstructor;
@@ -20,5 +20,10 @@ public class AdminController {
     @GetMapping
     public ResponseEntity<AdminProfileDto> getAdminProfile(@AuthenticationPrincipal CustomUser user) {
         return ResponseEntity.ok(adminService.getAdminProfile(user.getId()));
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<AdminStatsResponseDto> getStats() {
+        return ResponseEntity.ok(adminService.getStats());
     }
 }
