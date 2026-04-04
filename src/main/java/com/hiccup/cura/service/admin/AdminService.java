@@ -2,11 +2,15 @@ package com.hiccup.cura.service.admin;
 
 import com.hiccup.cura.dto.response.AdminProfileDto;
 import com.hiccup.cura.dto.response.DoctorDto;
+import com.hiccup.cura.dto.response.ReceptionistResponseDto;
+import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.model.DoctorProfile;
+import com.hiccup.cura.model.ReceptionistProfile;
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.AppointmentRepository;
 import com.hiccup.cura.repository.DoctorRepository;
+import com.hiccup.cura.repository.ReceptionistRepository;
 import com.hiccup.cura.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,7 @@ public class AdminService {
     private final UserRepository userRepository;
     private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
+    private final ReceptionistRepository receptionistRepository;
 
     public AdminProfileDto getAdminProfile(Long userId) {
         User user = userRepository.findById(userId)
@@ -35,14 +40,31 @@ public class AdminService {
                 .map(this::mapToDoctorDto).toList();
     }
 
+    public List<ReceptionistResponseDto> getAllReceptionists() {
+        return receptionistRepository.findAll().stream()
+                .map(this::mapToReceptionistDto).toList();
+    }
+
 
     private DoctorDto mapToDoctorDto(DoctorProfile doctor) {
         return DoctorDto.builder()
                 .id(doctor.getId())
+                .firstName(doctor.getFirstName())
+                .lastName(doctor.getLastName())
                 .licenseNumber(doctor.getLicenseNumber())
                 .yearsOfExperience(doctor.getYearsOfExperience())
                 .specialization(doctor.getSpecialization())
                 .doctorStatus(doctor.getDoctorStatus())
+                .build();
+    }
+
+    private ReceptionistResponseDto mapToReceptionistDto(ReceptionistProfile receptionist) {
+        return ReceptionistResponseDto.builder()
+                .id(receptionist.getId())
+                .firstName(receptionist.getFirstName())
+                .lastName(receptionist.getLastName())
+                .phoneNumber(receptionist.getPhoneNumber())
+                .status(receptionist.getStatus())
                 .build();
     }
 }
