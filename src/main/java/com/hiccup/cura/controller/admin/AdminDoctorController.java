@@ -94,6 +94,11 @@ public class AdminDoctorController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}/leave")
+    public ResponseEntity<LeaveResponseDto> getLeaveById(@PathVariable Long id){
+        return ResponseEntity.ok(leaveService.getLeaves(id));
+    }
+
     @GetMapping("/{id}/leave/{leaveId}")
     public ResponseEntity<LeaveResponseDto> getLeaveById(@PathVariable Long id, @PathVariable Long leaveId){
         return ResponseEntity.ok(leaveService.getLeave(id, leaveId));
