@@ -36,4 +36,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     @Query("select A from Appointment A where A.receptionist IS NOT NULL")
     List<Appointment> findByReceptionist();
+
+    List<Appointment> findByDoctor(DoctorProfile doctorProfile);
 }
