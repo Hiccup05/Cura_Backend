@@ -123,8 +123,8 @@ public class DoctorService {
     private PublicDoctorResponseDto mapToPublicResponseDto(DoctorProfile doctor) {
         return PublicDoctorResponseDto.builder()
                 .id(doctor.getId())
-                .firstName(null)
-                .lastName(null)
+                .firstName(doctor.getFirstName())
+                .lastName(doctor.getLastName())
                 .specialization(doctor.getSpecialization())
                 .yearsOfExperience(doctor.getYearsOfExperience())
                 .licenseNumber(doctor.getLicenseNumber())

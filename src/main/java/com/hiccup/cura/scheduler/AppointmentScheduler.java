@@ -17,7 +17,7 @@ import java.util.List;
 public class AppointmentScheduler {
     private final AppointmentRepository appointmentRepository;
 
-    @Scheduled(fixedRate = 60000)
+    @Scheduled(fixedRate = 600000)
     public void scheduleAppointments() {
         LocalDateTime now = LocalDateTime.now();
         List<Appointment> confirmedAppointments = appointmentRepository.findByStatus(AppointmentStatus.CONFIRMED);
