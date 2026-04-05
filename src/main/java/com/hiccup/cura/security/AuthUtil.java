@@ -52,7 +52,7 @@ public class AuthUtil {
                 .subject(user.getUsername())
                 .signWith(getKey())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis()+60*60*100))
+                .expiration(new Date(System.currentTimeMillis()+86400000))
                 .compact();
     }
 
@@ -148,6 +148,12 @@ public class AuthUtil {
             String username=determineUserFromOAuth2User(oAuth2User,registrationId, providerId);
             user = createUser(SignUpRequestDto.builder().username(username).password(null).name(name).build(), authType, providerId);
 
+            try {
+                emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
+            } catch (Exception e) {
+                log.warn("Failed to send welcome email to {}: {}", user.getEmail(), e.getMessage());
+            }
+
         }else if(user!=null){
             if(email!=null && !email.isBlank() && !email.equals(user.getUsername())){
                 user.setUsername(email);
@@ -156,7 +162,6 @@ public class AuthUtil {
         } else{
             throw new BadCredentialsException("This email is already registered with provider "+ emailUser.getProviderId());
         }
-        emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
         return ResponseEntity.ok(new LoginResponseDto(generateTokenFromUser(new CustomUser(user)), user.getId()));
     }
 }
