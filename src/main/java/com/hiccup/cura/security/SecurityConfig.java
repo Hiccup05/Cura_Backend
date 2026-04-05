@@ -53,6 +53,7 @@ public class SecurityConfig {
                 .cors(c-> c.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers(G_URL).permitAll()
+                                .requestMatchers("/api/v1/payment/verify").permitAll()
                                 .requestMatchers(P_URL).permitAll()
                                 .requestMatchers(A_URL).hasRole(RoleType.ADMIN.name())
                                 .requestMatchers(D_URL).hasRole(RoleType.DOCTOR.name())
