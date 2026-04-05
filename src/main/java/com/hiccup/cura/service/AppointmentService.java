@@ -123,6 +123,12 @@ public class AppointmentService {
         }
     }
 
+    public List<AppointmentSummaryDto> getDoctorAppointments(Long doctorId){
+        DoctorProfile doctorProfile = doctorRepository.findById(doctorId).orElseThrow(() -> new ResourceNotFoundException("Doctor cannot be not found with id " + doctorId));
+        List<Appointment> byDoctor = appointmentRepository.findByDoctor(doctorProfile);
+        return byDoctor.stream().map(this::mapToSummaryDto).toList();
+    }
+
     @Transactional
     public AppointmentResponseDto cancelAppointment(Long userId, Long appointmentId){
         User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
