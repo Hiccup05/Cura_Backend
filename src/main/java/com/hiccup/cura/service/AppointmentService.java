@@ -113,6 +113,16 @@ public class AppointmentService {
         return appointmentOfUser.stream().map(this::mapToSummaryDto).toList();
     }
 
+    public List<AppointmentSummaryDto> getAllReceptionistAppointments(Long userId){
+        User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
+        if (user.getRole().stream().noneMatch(role -> role.getName().equals(RoleType.RECEPTIONIST))) {
+            throw new UnauthorizedUserAccessException("You are not allowed to access appointments");
+        } else {
+            List<Appointment> appointmentOfUser = appointmentRepository.getAppointmentOfUser(userId);
+            return appointmentOfUser.stream().map(this::mapToSummaryDto).toList();
+        }
+    }
+
     @Transactional
     public AppointmentResponseDto cancelAppointment(Long userId, Long appointmentId){
         User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
@@ -240,6 +250,7 @@ public class AppointmentService {
     }
 
     private AppointmentSummaryDto mapToSummaryDto(Appointment appointment) {
+        System.out.println(appointment.getId() + " " + appointment.getIsPaid());
         return AppointmentSummaryDto.builder()
                 .appointmentId(appointment.getId())
                 .appointmentDate(appointment.getAppointmentDate())
