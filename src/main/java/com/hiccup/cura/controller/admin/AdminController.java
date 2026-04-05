@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
     private final AdminService adminService;
 
-    @GetMapping
+    @GetMapping("/profile")
     public ResponseEntity<AdminProfileDto> getAdminProfile(@AuthenticationPrincipal CustomUser user) {
         return ResponseEntity.ok(adminService.getAdminProfile(user.getId()));
     }
