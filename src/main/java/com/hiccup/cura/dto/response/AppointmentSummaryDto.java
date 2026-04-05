@@ -20,5 +20,5 @@ public class AppointmentSummaryDto {
     private AppointmentStatus appointmentStatus;
     private Long doctorId;
     private String medicalServiceName;
-    private boolean isPaid;
+    private Boolean isPaid;
 }
