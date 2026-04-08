@@ -2,20 +2,13 @@ package com.hiccup.cura.service.admin;
 
 import com.hiccup.cura.dto.response.AdminProfileDto;
 import com.hiccup.cura.dto.response.AdminStatsResponseDto;
-import com.hiccup.cura.dto.response.DoctorDto;
-import com.hiccup.cura.dto.response.ReceptionistResponseDto;
 import com.hiccup.cura.enums.DoctorStatus;
 import com.hiccup.cura.enums.PaymentStatus;
-import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
-import com.hiccup.cura.model.DoctorProfile;
-import com.hiccup.cura.model.ReceptionistProfile;
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

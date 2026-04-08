@@ -6,10 +6,7 @@ import com.hiccup.cura.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -31,5 +28,11 @@ public class UserController {
             return ResponseEntity.badRequest().body(new ApiResposne("File size must be under 2MB", null));
         }
         return ResponseEntity.ok(new ApiResposne("Upload Successful", userService.updateProfilePictureUrl(user.getId(), file)));
+    }
+
+    @DeleteMapping("/profile/picture")
+    public ResponseEntity<Void> deleteProfilePicture(@AuthenticationPrincipal CustomUser user) throws IOException {
+        userService.deleteProfilePicture(user.getId());
+        return ResponseEntity.noContent().build();
     }
 }

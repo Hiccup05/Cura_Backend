@@ -25,4 +25,25 @@ public class IUserService implements UserService {
         userRepository.save(user);
         return Map.of("profilePictureUrl",profileUrl);
     }
+
+    @Override
+    public void deleteProfilePicture(Long id) throws IOException {
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        if(user.getProfilePictureUrl()!=null){
+            cloudinaryService.delete(extractPublicId(user.getProfilePictureUrl()));
+            user.setProfilePictureUrl(null);
+        }else{
+            throw new ResourceNotFoundException("There is no profile picture of the user with id " + id);
+        }
+        userRepository.save(user);
+    }
+
+    private String extractPublicId(String url) {
+        // URL format: https://res.cloudinary.com/cloud/image/upload/v123456/cura/users/user_1.jpg
+        // We need: cura/users/user_1
+        String withoutExtension = url.substring(0, url.lastIndexOf('.'));
+        String afterUpload = withoutExtension.substring(withoutExtension.indexOf("upload/") + 7);
+        // strip version segment if present (starts with 'v' followed by digits)
+        return afterUpload.replaceFirst("^v\\d+/", "");
+    }
 }

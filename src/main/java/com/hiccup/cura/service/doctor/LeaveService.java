@@ -10,10 +10,8 @@ import com.hiccup.cura.repository.DoctorLeaveRepository;
 import com.hiccup.cura.repository.DoctorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +61,7 @@ public class LeaveService {
                 doctorLeave.getDoctorProfile().getId());
     }
 
+    //future aspect
     public LeaveResponseDto updateLeave(Long doctorId, Long leaveId, LeaveRequestDto leaveRequestDto) {
         DoctorProfile doctorProfile = doctorRepository.findById(doctorId).orElseThrow(() -> new ResourceNotFoundException("Doctor cannot be found with id " + doctorId));
         if(doctorLeaveRepository.existsOverlappingLeaveExcludingCurrent(doctorId,leaveId, leaveRequestDto.getStartDate(),leaveRequestDto.getEndDate())) {

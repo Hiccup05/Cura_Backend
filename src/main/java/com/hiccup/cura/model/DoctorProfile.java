@@ -1,6 +1,5 @@
 package com.hiccup.cura.model;
 
-import com.hiccup.cura.enums.BloodGroup;
 import com.hiccup.cura.enums.DoctorStatus;
 import com.hiccup.cura.enums.Gender;
 import jakarta.persistence.*;
