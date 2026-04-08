@@ -35,4 +35,6 @@ public class PatientResponseDto {
     private String emergencyContactName;
 
     private String emergencyContactPhone;
+
+    private String profilePictureUrl;
 }

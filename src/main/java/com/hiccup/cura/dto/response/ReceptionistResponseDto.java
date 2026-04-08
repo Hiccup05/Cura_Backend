@@ -16,4 +16,5 @@ public class ReceptionistResponseDto {
     private String lastName;
     private String phoneNumber;
     private ReceptionistStatus status;
+    private String profilePictureUrl;
 }

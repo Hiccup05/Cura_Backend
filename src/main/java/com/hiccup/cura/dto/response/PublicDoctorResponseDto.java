@@ -20,4 +20,5 @@ public class PublicDoctorResponseDto {
     private int  yearsOfExperience;
     private String licenseNumber;
     private DoctorStatus doctorStatus;
+    private String profilePictureUrl;
 }
