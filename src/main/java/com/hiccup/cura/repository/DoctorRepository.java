@@ -22,4 +22,7 @@ public interface DoctorRepository extends JpaRepository<DoctorProfile, Long> {
     Optional<DoctorProfile> getPublicDoctor(@Param("id") Long id, @Param("status") List<DoctorStatus> status);
 
     long countByDoctorStatusNot(DoctorStatus doctorStatus);
+
+    @Query("SELECT d FROM DoctorProfile d WHERE LOWER(CONCAT(d.firstName, ' ', d.lastName)) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<DoctorProfile> searchByName(@Param("name") String name);
 }

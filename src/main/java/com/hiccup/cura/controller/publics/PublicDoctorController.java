@@ -33,4 +33,10 @@ public class PublicDoctorController {
     public ResponseEntity<List<PublicScheduleResponseDto>> getDoctorScheduleByDoctorProfileId(@PathVariable Long id) {
         return ResponseEntity.ok(doctorScheduleService.getPublicSchedulesOfDoctor(id));
     }
+
+    @GetMapping("/search")
+    public List<PublicDoctorResponseDto> getDoctors(@RequestParam(required = false) String name) {
+        if (name == null || name.isBlank()) return doctorService.getPublicDoctors();
+        return doctorService.searchByName(name);
+    }
 }

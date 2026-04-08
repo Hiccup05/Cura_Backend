@@ -76,6 +76,11 @@ public class DoctorService {
         return mapToResponseDto(doctorProfile);
     }
 
+    public List<PublicDoctorResponseDto> searchByName(String name){
+        List<DoctorProfile> doctorProfiles = doctorRepository.searchByName(name);
+        return doctorProfiles.stream().map(this::mapToPublicResponseDto).toList();
+    }
+
     public DoctorDto updateDoctor(Long id, DoctorRequestDto request){
         DoctorProfile doctor=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
         if (request.getLicenseNumber() != null) {
