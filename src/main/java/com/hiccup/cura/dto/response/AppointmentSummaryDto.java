@@ -21,4 +21,6 @@ public class AppointmentSummaryDto {
     private Long doctorId;
     private String medicalServiceName;
     private Boolean isPaid;
+    private Long receptionistId;
+    private String walkInPatientName;
 }
