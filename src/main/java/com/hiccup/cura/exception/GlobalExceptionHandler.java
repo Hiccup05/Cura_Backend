@@ -19,13 +19,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidBookingTimeException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidBookingTimeException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleInvalidBookingTimeException(InvalidBookingTimeException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(400, "InvalidBookingTimeException", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
     }
 
     @ExceptionHandler(CancellationNotAllowedException.class)
-    public ResponseEntity<ErrorResponse> handleCancellationNotAllowedException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleCancellationNotAllowedException(CancellationNotAllowedException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(400, "Cancellation Not Allowed", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
     }
