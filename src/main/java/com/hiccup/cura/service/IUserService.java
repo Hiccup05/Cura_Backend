@@ -19,7 +19,7 @@ public class IUserService implements UserService {
     @Override
     public String getProfilePictureUrl(Long id){
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
-        return user.getProfilePictureUrl();
+        return user.getProfilePictureUrl()!=null ? user.getProfilePictureUrl() : " ";
     }
 
     @Override

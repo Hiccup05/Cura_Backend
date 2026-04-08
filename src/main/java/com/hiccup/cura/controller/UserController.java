@@ -15,7 +15,7 @@ import java.io.IOException;
 @RequestMapping("${api.prefix}/user")
 @RequiredArgsConstructor
 public class UserController {
-    private UserService userService;
+    private final UserService userService;
 
     @PostMapping("/profile/picture")
     public ResponseEntity<ApiResposne> uploadProfilePicture(@RequestParam MultipartFile file, @AuthenticationPrincipal CustomUser user) throws IOException {
