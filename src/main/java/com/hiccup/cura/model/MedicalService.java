@@ -22,6 +22,7 @@ public class MedicalService {
     private String description;
     private Boolean isActive;
     private String preInstructions;
+    private String photoUrl;
 
     @ManyToOne
     @JoinColumn(name = "specialization_id")

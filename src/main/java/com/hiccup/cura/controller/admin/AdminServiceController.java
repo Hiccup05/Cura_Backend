@@ -3,12 +3,16 @@ package com.hiccup.cura.controller.admin;
 import com.hiccup.cura.dto.reqeust.MedicalServiceRequestDto;
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
+import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.medicalservice.MedicalServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -47,5 +51,10 @@ public class AdminServiceController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<MessageResponseDto> toggleStatus(@PathVariable Long id){
         return ResponseEntity.ok(serviceService.toggleStatus(id));
+    }
+
+    @PostMapping("/{id}/photo")
+    public ResponseEntity<String> uploadPhoto(@PathVariable Long id, @RequestParam("file") MultipartFile file, @AuthenticationPrincipal CustomUser user) throws IOException {
+        return ResponseEntity.ok(serviceService.uploadPhoto(user.getId(), id, file));
     }
 }

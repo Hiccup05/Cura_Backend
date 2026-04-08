@@ -3,16 +3,23 @@ package com.hiccup.cura.service.medicalservice;
 import com.hiccup.cura.dto.reqeust.MedicalServiceRequestDto;
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
+import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
+import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
 import com.hiccup.cura.model.MedicalService;
 import com.hiccup.cura.model.Specialization;
+import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.MedicalServiceRepository;
 import com.hiccup.cura.repository.SpecializationRepository;
+import com.hiccup.cura.repository.UserRepository;
+import com.hiccup.cura.service.CloudinaryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,6 +28,8 @@ import java.util.List;
 public class MedicalServiceService {
    private final MedicalServiceRepository medicalServiceRepository;
    private final SpecializationRepository specializationRepository;
+   private final UserRepository userRepository;
+   private final CloudinaryService cloudinaryService;
 
    public List<MedicalServiceResponseDto> getAll(){
        return medicalServiceRepository.findAll().stream().map(this::mapToDto).toList();
@@ -92,6 +101,19 @@ public class MedicalServiceService {
         service.setIsActive(!service.getIsActive());
         medicalServiceRepository.save(service);
         return new MessageResponseDto("Service " + (service.getIsActive() ? "activated" : "deactivated") + " successfully", LocalDateTime.now());
+    }
+
+    public String uploadPhoto(Long userId, Long id, MultipartFile file) throws IOException {
+        MedicalService service = medicalServiceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Medical service not found with id " + id));
+        User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
+        if(user.getRole().stream().noneMatch(role->role.getName().equals(RoleType.ADMIN))){
+            throw new UnauthorizedUserAccessException("The user is not a admin.");
+        }
+        String publicId="service_"+service.getId();
+        String photoUrl = cloudinaryService.uploadServicePhoto(file, publicId);
+        service.setPhotoUrl(photoUrl);
+        return photoUrl;
     }
 
    private MedicalServiceResponseDto mapToDto(MedicalService service){
