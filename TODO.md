@@ -13,9 +13,8 @@ Things IN Progress:
 
 
 Things Next in list:
-Doctor controller endpoints
-create bean of authentication manager
-Pagination in doctor return
+Pagination
+searching controller
 
 
 
