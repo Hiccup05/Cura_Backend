@@ -14,9 +14,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class EmailService {
+
     private final JavaMailSender mailSender;
 
-    @Value("${auth.token.jwt}")
+    @Value("${spring.mail.username}")
     private String hostEmail;
 
 
@@ -183,48 +184,50 @@ public class EmailService {
     }
 
     private String buildAppointmentEmailTemplate(Appointment appointment) {
-        return """
-        <div style="font-family: Arial, sans-serif; padding: 20px;">
-            <h2 style="color: #2c3e50;">Appointment Confirmed ✅</h2>
+        String template = """
+    <div style="font-family: Arial, sans-serif; padding: 20px;">
+        <h2 style="color: #2c3e50;">Appointment Confirmed ✅</h2>
 
-            <p>Hello,</p>
+        <p>Hello,</p>
 
-            <p>Your appointment has been successfully booked. Here are the details:</p>
+        <p>Your appointment has been successfully booked. Here are the details:</p>
 
-            <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
-                <tr>
-                    <td style="padding: 8px; font-weight: bold;">Doctor:</td>
-                    <td style="padding: 8px;">Dr. %s</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: bold;">Service:</td>
-                    <td style="padding: 8px;">%s</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: bold;">Date:</td>
-                    <td style="padding: 8px;">%s</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: bold;">Time:</td>
-                    <td style="padding: 8px;">%s</td>
-                </tr>
-                <tr>
-                    <td style="padding: 8px; font-weight: bold;">Status:</td>
-                    <td style="padding: 8px;">%s</td>
-                </tr>
-            </table>
+        <table style="border-collapse: collapse; width: 100%%; margin-top: 10px;">
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Doctor:</td>
+                <td style="padding: 8px;">Dr. %s</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Service:</td>
+                <td style="padding: 8px;">%s</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Date:</td>
+                <td style="padding: 8px;">%s</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Time:</td>
+                <td style="padding: 8px;">%s</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; font-weight: bold;">Status:</td>
+                <td style="padding: 8px;">%s</td>
+            </tr>
+        </table>
 
-            <p style="margin-top: 20px;">
-                Please arrive at least <b>10 minutes early</b>.
-            </p>
+        <p style="margin-top: 20px;">
+            Please arrive at least <b>10 minutes early</b>.
+        </p>
 
-            <p>If you need to cancel, please do so within the allowed time.</p>
+        <p>If you need to cancel, please do so within the allowed time.</p>
 
-            <br/>
+        <br/>
 
-            <p>Thank you,<br/>Cura Healthcare Team</p>
-        </div>
-        """.formatted(
+        <p>Thank you,<br/>Cura Healthcare Team</p>
+    </div>
+    """;
+
+        return String.format(template,
                 appointment.getDoctor().getFirstName() + " " + appointment.getDoctor().getLastName(),
                 appointment.getMedicalService().getName(),
                 appointment.getAppointmentDate(),
@@ -253,15 +256,12 @@ public class EmailService {
     }
 
     private String buildCancellationTemplate(Appointment appointment) {
-        return """
+        String template = """
         <div style="font-family: Arial, sans-serif; padding: 20px;">
             <h2 style="color: #e74c3c;">Appointment Cancelled ❌</h2>
-
             <p>Hello,</p>
-
             <p>Your appointment has been <b>successfully cancelled</b>. Below were the details:</p>
-
-            <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+            <table style="border-collapse: collapse; width: 100%%; margin-top: 10px;">
                 <tr>
                     <td style="padding: 8px; font-weight: bold;">Doctor:</td>
                     <td style="padding: 8px;">Dr. %s</td>
@@ -279,16 +279,12 @@ public class EmailService {
                     <td style="padding: 8px;">%s</td>
                 </tr>
             </table>
-
-            <p style="margin-top: 20px;">
-                If this was a mistake, you can book a new appointment anytime.
-            </p>
-
+            <p style="margin-top: 20px;">If this was a mistake, you can book a new appointment anytime.</p>
             <br/>
-
             <p>Thank you,<br/>Cura Healthcare Team</p>
         </div>
-        """.formatted(
+        """;
+        return String.format(template,
                 appointment.getDoctor().getFirstName() + " " + appointment.getDoctor().getLastName(),
                 appointment.getMedicalService().getName(),
                 appointment.getAppointmentDate(),
@@ -316,15 +312,12 @@ public class EmailService {
     }
 
     private String buildPaymentSuccessTemplate(Appointment appointment) {
-        return """
+        String template = """
         <div style="font-family: Arial, sans-serif; padding: 20px;">
             <h2 style="color: #27ae60;">Payment Successful 💳</h2>
-
             <p>Hello,</p>
-
             <p>Your payment has been <b>successfully processed</b>. Your appointment is now confirmed.</p>
-
-            <table style="border-collapse: collapse; width: 100%; margin-top: 10px;">
+            <table style="border-collapse: collapse; width: 100%%; margin-top: 10px;">
                 <tr>
                     <td style="padding: 8px; font-weight: bold;">Doctor:</td>
                     <td style="padding: 8px;">Dr. %s</td>
@@ -350,18 +343,13 @@ public class EmailService {
                     <td style="padding: 8px;">%s</td>
                 </tr>
             </table>
-
-            <p style="margin-top: 20px;">
-                Please keep this email as your payment confirmation.
-            </p>
-
+            <p style="margin-top: 20px;">Please keep this email as your payment confirmation.</p>
             <p>We look forward to serving you. Please arrive at least <b>10 minutes early</b>.</p>
-
             <br/>
-
             <p>Thank you,<br/>Cura Healthcare Team</p>
         </div>
-        """.formatted(
+        """;
+        return String.format(template,
                 appointment.getDoctor().getFirstName() + " " + appointment.getDoctor().getLastName(),
                 appointment.getMedicalService().getName(),
                 appointment.getAppointmentDate(),
