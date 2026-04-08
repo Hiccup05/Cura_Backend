@@ -22,6 +22,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -113,20 +114,40 @@ public class AppointmentService {
         return appointmentOfUser.stream().map(this::mapToSummaryDto).toList();
     }
 
-    public List<AppointmentSummaryDto> getAllReceptionistAppointments(Long userId){
-        User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
+    public List<AppointmentSummaryDto> getReceptionistBookedAppointments(
+            Long userId,
+            Long receptionistId,
+            String walkInPatientName
+    ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
+
         if (user.getRole().stream().noneMatch(role -> role.getName().equals(RoleType.RECEPTIONIST))) {
             throw new UnauthorizedUserAccessException("You are not allowed to access appointments");
-        } else {
-            List<Appointment> appointmentOfUser = appointmentRepository.getAppointmentOfUser(userId);
-            return appointmentOfUser.stream().map(this::mapToSummaryDto).toList();
         }
+
+        List<Appointment> appointments =
+                appointmentRepository.findReceptionistBookedAppointments(receptionistId, walkInPatientName);
+
+        return appointments.stream().map(this::mapToSummaryDto).toList();
     }
 
-    public List<AppointmentSummaryDto> getDoctorAppointments(Long doctorId){
-        DoctorProfile doctorProfile = doctorRepository.findById(doctorId).orElseThrow(() -> new ResourceNotFoundException("Doctor cannot be not found with id " + doctorId));
-        List<Appointment> byDoctor = appointmentRepository.findByDoctor(doctorProfile);
-        return byDoctor.stream().map(this::mapToSummaryDto).toList();
+    public AppointmentResponseDto getReceptionistAppointmentById(Long userId, Long appointmentId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
+
+        if (user.getRole().stream().noneMatch(role -> role.getName().equals(RoleType.RECEPTIONIST))) {
+            throw new UnauthorizedUserAccessException("You are not allowed to access appointments");
+        }
+
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
+
+        if (appointment.getType() != AppointmentType.RECEPTIONIST_BOOKED) {
+            throw new UnauthorizedUserAccessException("You are not allowed to access this appointment");
+        }
+
+        return mapToDto(appointment);
     }
 
     @Transactional
@@ -152,8 +173,6 @@ public class AppointmentService {
             }
         }
         else{
-            long between = ChronoUnit.HOURS.between(appointment.getBookedAt(), cancelTime);
-
             if(ChronoUnit.HOURS.between(appointment.getBookedAt(), cancelTime)<=24){
                 appointment.setStatus(AppointmentStatus.CANCELLED);
             }else{
@@ -256,19 +275,41 @@ public class AppointmentService {
     }
 
     private AppointmentSummaryDto mapToSummaryDto(Appointment appointment) {
-        System.out.println(appointment.getId() + " " + appointment.getIsPaid());
         return AppointmentSummaryDto.builder()
-                .appointmentId(appointment.getId())
-                .appointmentDate(appointment.getAppointmentDate())
-                .appointmentTime(appointment.getAppointmentTime())
-                .appointmentStatus(appointment.getStatus())
-                .doctorId(appointment.getDoctor().getId())
-                .medicalServiceName(appointment.getMedicalService().getName())
-                .isPaid(appointment.getIsPaid())
+                .appointmentId(appointment != null ? appointment.getId() : null)
+                .appointmentDate(appointment != null ? appointment.getAppointmentDate() : null)
+                .appointmentTime(appointment != null ? appointment.getAppointmentTime() : null)
+                .appointmentStatus(appointment != null ? appointment.getStatus() : null)
+                .doctorId(
+                        appointment != null && appointment.getDoctor() != null
+                                ? appointment.getDoctor().getId()
+                                : null
+                )
+                .medicalServiceName(
+                        appointment != null && appointment.getMedicalService() != null
+                                ? appointment.getMedicalService().getName()
+                                : null
+                )
+                .isPaid(appointment != null ? appointment.getIsPaid() : null)
+                .receptionistId(
+                        appointment != null && appointment.getReceptionist() != null
+                                ? appointment.getReceptionist().getId()
+                                : null
+                )
+                .walkInPatientName(appointment != null ? appointment.getWalkInPatientName() : null)
                 .build();
     }
 
     private PrescriptionResponseDto mapToPrescriptionDto(Prescription prescription){
         return new  PrescriptionResponseDto(prescription.getId(), prescription.getDescription());
+    }
+
+    private LocalDate parseDate(String value, String fieldName) {
+        if (value == null || value.isBlank()) return null;
+        try {
+            return LocalDate.parse(value);
+        } catch (DateTimeParseException ex) {
+            throw new IllegalArgumentException(fieldName + " must be in YYYY-MM-DD format");
+        }
     }
 }

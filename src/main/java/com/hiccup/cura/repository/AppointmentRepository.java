@@ -4,6 +4,7 @@ import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.model.Appointment;
 import com.hiccup.cura.model.DoctorProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -12,7 +13,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
+public interface AppointmentRepository extends JpaRepository<Appointment, Long>, JpaSpecificationExecutor<Appointment> {
     boolean existsByDoctorAndAppointmentDateAndAppointmentTimeAndStatusNot(
             DoctorProfile doctor,
             LocalDate appointmentDate,
@@ -30,12 +31,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     " ORDER BY A.appointmentDate desc")
     List<Appointment> getAppointmentOfUser(@Param("userId") Long userId);
 
-    List<Appointment> Status(AppointmentStatus status);
-
     List<Appointment> findByStatus(AppointmentStatus appointmentStatus);
-
-    @Query("select A from Appointment A where A.receptionist IS NOT NULL")
-    List<Appointment> findByReceptionist();
-
-    List<Appointment> findByDoctor(DoctorProfile doctorProfile);
 }

@@ -31,13 +31,23 @@ public class ReceptionistAppointmentController {
         return ResponseEntity.created(location).body(created);
     }
 
-    @GetMapping("/my")
-    public ResponseEntity<List<AppointmentSummaryDto>> getMyAppointment(@AuthenticationPrincipal CustomUser user){
-        return ResponseEntity.ok(appointmentService.getMyAppointments(user.getId()));
+    @GetMapping("/{appointmentId}")
+    public ResponseEntity<AppointmentResponseDto> getReceptionistAppointmentById(
+            @PathVariable Long appointmentId,
+            @AuthenticationPrincipal CustomUser user
+    ) {
+        return ResponseEntity.ok(
+                appointmentService.getReceptionistAppointmentById(user.getId(), appointmentId)
+        );
     }
 
-    @GetMapping()
-    public ResponseEntity<List<AppointmentSummaryDto>> getAllReceptionistAppointments(@AuthenticationPrincipal CustomUser user){
-        return ResponseEntity.ok(appointmentService.getAllReceptionistAppointments(user.getId()));
+    @GetMapping
+    public ResponseEntity<List<AppointmentSummaryDto>> getReceptionistAppointments(
+            @AuthenticationPrincipal CustomUser principal,
+            @RequestParam(required = false) Long receptionistId,
+            @RequestParam(required = false) String walkInPatientName
+    ) {
+        Long userId = principal.getId();
+        return ResponseEntity.ok(appointmentService.getReceptionistBookedAppointments(userId, receptionistId, walkInPatientName));
     }
 }
