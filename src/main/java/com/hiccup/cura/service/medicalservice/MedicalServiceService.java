@@ -41,6 +41,11 @@ public class MedicalServiceService {
         return medicalServiceRepository.findAllActiveServicesWithSpecialization(specializationId);
     }
 
+    public List<MedicalServiceResponseDto> searchByName(String name){
+       List<MedicalService> medicalService=medicalServiceRepository.searchByName(name);
+       return medicalService.stream().map(this::mapToDto).toList();
+    }
+
     @Transactional
     public MedicalServiceResponseDto createMedicalService(MedicalServiceRequestDto medicalServiceRequestDto){
        if(medicalServiceRepository.existsByNameAndSpecialization_id(medicalServiceRequestDto.getName(), medicalServiceRequestDto.getSpecializationId())){
