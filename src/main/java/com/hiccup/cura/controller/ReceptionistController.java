@@ -25,4 +25,17 @@ public class ReceptionistController {
         return ResponseEntity.ok(receptionistService.updateReceptionist(user.getId(), requestDto));
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<ReceptionistResponseDto> getReceptionistProfile(@AuthenticationPrincipal CustomUser user) {
+        return ResponseEntity.ok(receptionistService.getReceptionist(user.getId()));
+    }
+
+    @PutMapping
+    public ResponseEntity<ReceptionistResponseDto> putReceptionist(
+            @RequestBody ReceptionistRequestDto requestDto,
+            @AuthenticationPrincipal CustomUser user
+    ) {
+        return ResponseEntity.ok(receptionistService.updateReceptionist(user.getId(), requestDto));
+    }
+
 }
