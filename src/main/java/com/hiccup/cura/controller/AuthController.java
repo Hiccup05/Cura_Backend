@@ -4,6 +4,8 @@ import com.hiccup.cura.dto.reqeust.LoginRequestDto;
 import com.hiccup.cura.dto.response.LoginResponseDto;
 import com.hiccup.cura.security.AuthService;
 import com.hiccup.cura.security.CustomUser;
+import com.hiccup.cura.service.IUserService;
+import com.hiccup.cura.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -23,6 +25,7 @@ import java.util.Map;
 @RequestMapping("${api.prefix}/auth")
 public class AuthController {
     private final AuthService authService;
+    private final IUserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> localLogin(@RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
@@ -36,8 +39,10 @@ public class AuthController {
     }
 
     @GetMapping("/me")
-    public ResponseEntity<Map<String, List<String>>> me(@AuthenticationPrincipal CustomUser user) {
-        Map<String, List<String>> role = Map.of("role", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList());
+    public ResponseEntity<Map<String, Object>> me(@AuthenticationPrincipal CustomUser user) {
+        Map<String, Object> role = Map.of("role", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList(),
+                "profilePictureUrl", userService.getProfilePictureUrl(user.getId())
+        );
         return ResponseEntity.ok(role);
     }
 

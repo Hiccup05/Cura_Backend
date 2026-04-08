@@ -17,6 +17,12 @@ public class IUserService implements UserService {
     private final CloudinaryService cloudinaryService;
 
     @Override
+    public String getProfilePictureUrl(Long id){
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        return user.getProfilePictureUrl();
+    }
+
+    @Override
     public Map<String, String> updateProfilePictureUrl(Long id, MultipartFile file) throws IOException {
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
         String publicId="user_"+user.getId();

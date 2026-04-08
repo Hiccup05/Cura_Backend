@@ -7,6 +7,8 @@ import java.util.Map;
 
 public interface UserService {
 
+    String getProfilePictureUrl(Long id);
+
     Map<String, String> updateProfilePictureUrl(Long id, MultipartFile file) throws IOException;
 
     void deleteProfilePicture(Long id) throws IOException;
