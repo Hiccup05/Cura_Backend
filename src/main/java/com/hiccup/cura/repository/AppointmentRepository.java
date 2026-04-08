@@ -32,4 +32,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long>,
     List<Appointment> getAppointmentOfUser(@Param("userId") Long userId);
 
     List<Appointment> findByStatus(AppointmentStatus appointmentStatus);
+
+    @Query(value = """
+    select *
+    from appointment a
+    where a.type = 'RECEPTIONIST_BOOKED'
+      and (:receptionistId is null or a.receptionist_id = :receptionistId)
+      and (:walkInPatientName is null or a.walk_in_patient_name ilike concat('%', :walkInPatientName, '%'))
+    order by a.booked_at desc
+""", nativeQuery = true)
+    List<Appointment> findReceptionistBookedAppointments(
+            @Param("receptionistId") Long receptionistId,
+            @Param("walkInPatientName") String walkInPatientName
+    );
 }

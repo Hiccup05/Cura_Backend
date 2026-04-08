@@ -1,15 +1,21 @@
 package com.hiccup.cura.controller;
 
 import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
+import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.dto.response.DoctorDto;
 import com.hiccup.cura.dto.response.ScheduleResponseDto;
+import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
 import com.hiccup.cura.service.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
 import com.hiccup.cura.service.doctor.specialization.SpecializationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +47,41 @@ public class DoctorController {
         return ResponseEntity.ok(scheduleService.getScheduleOfDoctor(customUser.getId(), scheduleId));
     }
 
-    @GetMapping("/appointments")
-    public ResponseEntity<List<AppointmentSummaryDto>> getMyAppointment(@AuthenticationPrincipal CustomUser customUser) {
-        return ResponseEntity.ok(appointmentService.getDoctorAppointments(customUser.getId()));
+    @GetMapping("/schedule")
+    public ResponseEntity<List<ScheduleResponseDto>> getDoctorSchedules(@AuthenticationPrincipal CustomUser customUser) {
+        return ResponseEntity.ok(scheduleService.getSchedulesOfDoctor(customUser.getId()));
     }
+
+    @GetMapping("appointments")
+    public ResponseEntity<Page<AppointmentSummaryDto>> getDoctorAppointments(
+            @AuthenticationPrincipal CustomUser user,
+            @RequestParam(required = false) String patientName,
+            @RequestParam(required = false) String walkInPatientName,
+            @RequestParam(required = false) String receptionistName,
+            @RequestParam(required = false) AppointmentStatus status,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "appointmentDate") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir
+    ) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<AppointmentSummaryDto> result = appointmentService.getDoctorAppointmentsFiltered(
+                user.getId(),
+                patientName,
+                walkInPatientName,
+                receptionistName,
+                status,
+                dateFrom,
+                dateTo,
+                pageable
+        );
+
+        return ResponseEntity.ok(result);
+    }
+
+
 }

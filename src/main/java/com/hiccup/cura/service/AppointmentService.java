@@ -16,6 +16,9 @@ import com.hiccup.cura.model.*;
 import com.hiccup.cura.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -148,6 +151,77 @@ public class AppointmentService {
         }
 
         return mapToDto(appointment);
+    }
+
+    public Page<AppointmentSummaryDto> getDoctorAppointmentsFiltered(
+            Long doctorUserId,
+            String patientName,
+            String walkInPatientName,
+            String receptionistName,
+            AppointmentStatus status,
+            String dateFrom,
+            String dateTo,
+            Pageable pageable
+    ) {
+        LocalDate from;
+        LocalDate to;
+        if (dateFrom != null && !dateFrom.isBlank()) {
+            from = parseDate(dateFrom, "date from");
+        } else {
+            from = null;
+        }
+        if (dateTo != null && !dateTo.isBlank()) {
+            to = parseDate(dateTo, "date to");
+        } else {
+            to = null;
+        }
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new IllegalArgumentException("dateFrom cannot be after dateTo");
+        }
+        DoctorProfile doctor = doctorRepository.findById(doctorUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor cannot be not found with id " + doctorUserId));
+        Specification<Appointment> spec = Specification
+                .where((root, query, cb) -> cb.equal(root.get("doctor"), doctor));
+        if (patientName != null && !patientName.isBlank()) {
+            String like = "%" + patientName.trim().toLowerCase() + "%";
+            spec = spec.and((root, query, cb) -> {
+                var patient = root.join("patient", jakarta.persistence.criteria.JoinType.LEFT);
+                var fullName = cb.concat(
+                        cb.concat(cb.lower(patient.get("firstName")), " "),
+                        cb.lower(patient.get("lastName"))
+                );
+                return cb.like(fullName, like);
+            });
+        }
+        if (walkInPatientName != null && !walkInPatientName.isBlank()) {
+            String like = "%" + walkInPatientName.trim().toLowerCase() + "%";
+            spec = spec.and((root, query, cb) ->
+                    cb.like(cb.lower(root.get("walkInPatientName")), like));
+        }
+        if (receptionistName != null && !receptionistName.isBlank()) {
+            String like = "%" + receptionistName.trim().toLowerCase() + "%";
+            spec = spec.and((root, query, cb) -> {
+                var receptionist = root.join("receptionist", jakarta.persistence.criteria.JoinType.LEFT);
+                var fullName = cb.concat(
+                        cb.concat(cb.lower(receptionist.get("firstName")), " "),
+                        cb.lower(receptionist.get("lastName"))
+                );
+                return cb.like(fullName, like);
+            });
+        }
+        if (status != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+        }
+        if (from != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.greaterThanOrEqualTo(root.get("appointmentDate"), from));
+        }
+        if (to != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.lessThanOrEqualTo(root.get("appointmentDate"), to));
+        }
+        Page<Appointment> page = appointmentRepository.findAll(spec, pageable);
+        return page.map(this::mapToSummaryDto);
     }
 
     @Transactional
