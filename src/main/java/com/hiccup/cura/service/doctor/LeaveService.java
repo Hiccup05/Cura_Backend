@@ -25,7 +25,7 @@ public class LeaveService {
         if (!doctorRepository.existsById(doctorId)) {
             throw new ResourceNotFoundException("Doctor cannot be found with id " + doctorId);
         }
-        return doctorLeaveRepository.findById(doctorId).stream()
+        return doctorLeaveRepository.findByDoctorProfile_id(doctorId).stream()
                 .map(leave -> new LeaveResponseDto(
                         leave.getId(),
                         leave.getStartDate(),
