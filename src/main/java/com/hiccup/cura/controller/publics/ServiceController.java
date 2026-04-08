@@ -4,10 +4,7 @@ import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.service.medicalservice.MedicalServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,6 +17,11 @@ public class ServiceController {
     @GetMapping
     public ResponseEntity<List<MedicalServiceResponseDto>> getAllServices(){
         return ResponseEntity.ok(serviceService.getActiveServices());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<MedicalServiceResponseDto>> searchByName(@RequestParam String name){
+        return ResponseEntity.ok(serviceService.searchByName(name));
     }
 
     @GetMapping("/{specializationId}")
