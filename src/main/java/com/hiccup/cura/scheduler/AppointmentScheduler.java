@@ -30,7 +30,7 @@ public class AppointmentScheduler {
 
         if(toComplete.isEmpty()) return;
 
-        toComplete.forEach(a-> a.setStatus(AppointmentStatus.CONFIRMED));
+        toComplete.forEach(a-> a.setStatus(AppointmentStatus.COMPLETED));
         appointmentRepository.saveAll(toComplete);
 
         log.info("Completed appointment are {}", toComplete.size());
