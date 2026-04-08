@@ -122,6 +122,7 @@ public class DoctorService {
                 .specialization(doctorProfile.getSpecialization())
                 .licenseNumber(doctorProfile.getLicenseNumber())
                 .yearsOfExperience(doctorProfile.getYearsOfExperience())
+                .profilePictureUrl(doctorProfile.getUser().getProfilePictureUrl())
                 .build();
     }
 
@@ -134,6 +135,7 @@ public class DoctorService {
                 .yearsOfExperience(doctor.getYearsOfExperience())
                 .licenseNumber(doctor.getLicenseNumber())
                 .doctorStatus(doctor.getDoctorStatus())
+                .profilePictureUrl(doctor.getUser().getProfilePictureUrl())
                 .build();
     }
 }

@@ -93,6 +93,7 @@ public class PatientService {
                 .chronicConditions(profile.getChronicConditions())
                 .emergencyContactName(profile.getEmergencyContactName())
                 .emergencyContactPhone(profile.getEmergencyContactPhone())
+                .profilePictureUrl(profile.getUser().getProfilePictureUrl())
                 .build();
     }
 

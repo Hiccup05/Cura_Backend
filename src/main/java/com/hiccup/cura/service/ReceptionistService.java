@@ -95,6 +95,7 @@ public class ReceptionistService {
                 .lastName(profile.getLastName())
                 .phoneNumber(profile.getPhoneNumber())
                 .status(profile.getStatus())
+                .profilePictureUrl(profile.getUser().getProfilePictureUrl())
                 .build();
     }
 }
