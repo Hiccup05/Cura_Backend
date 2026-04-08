@@ -47,6 +47,15 @@ public class DoctorScheduleService {
         return byDoctorProfileId.stream().map( this::mapToDto).toList();
     }
 
+    public ScheduleResponseDto getScheduleOfDoctor(Long doctorId, Long scheduleId){
+        if(!doctorRepository.existsById(doctorId)){
+            throw new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId);
+        }
+        DoctorSchedule byDoctorProfileId = scheduleRepository.findByIdAndDoctorProfile_id(scheduleId, doctorId);
+
+        return mapToDto(byDoctorProfileId);
+    }
+
     public List<PublicScheduleResponseDto> getPublicSchedulesOfDoctor(Long doctorId){
         if(!doctorRepository.existsById(doctorId)){
             throw new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId);
@@ -120,11 +129,5 @@ public class DoctorScheduleService {
                 .dayOfWeek(schedule.getDayOfWeek())
                 .isAvailable(schedule.getIsAvailable())
                 .build();
-    }
-
-    public ScheduleResponseDto getScheduleOfDoctor(Long id, Long scheduleId) {
-        DoctorSchedule validatedSchedule = getValidatedSchedule(id, scheduleId);
-        return mapToDto(validatedSchedule);
-
     }
 }
