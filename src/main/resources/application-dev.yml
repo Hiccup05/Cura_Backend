@@ -1,4 +1,15 @@
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: cura.official.management@gmail.com
+    password: "kjhm jjvd ejvm wnfe"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
     url: jdbc:postgresql://localhost:5432/Cura
     username: postgres
@@ -20,18 +31,6 @@ spring:
       google:
         client-id: 838511677501-gj2nojfroisk336g61vgs77oboapukv8.apps.googleusercontent.com
         client-secret: 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
-
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: cura.offical.management@gmail.com
-    password: xuxc jqgf mxjl sxva
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
 api.prefix: /api/v1
 
 admin:
