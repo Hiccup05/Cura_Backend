@@ -13,4 +13,6 @@ public class DoctorRequestDto {
     private Set<Long> specializationIds;
     private Integer  yearsOfExperience;
     private String licenseNumber;
+    private String firstName;
+    private String lastName;
 }
