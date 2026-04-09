@@ -3,12 +3,14 @@ package com.hiccup.cura.scheduler;
 import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.model.Appointment;
 import com.hiccup.cura.repository.AppointmentRepository;
+import com.hiccup.cura.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Component
@@ -16,6 +18,7 @@ import java.util.List;
 @Slf4j
 public class AppointmentScheduler {
     private final AppointmentRepository appointmentRepository;
+    private final EmailService emailService;
 
     @Scheduled(fixedRate = 600000)
     public void scheduleAppointments() {
@@ -34,5 +37,31 @@ public class AppointmentScheduler {
         appointmentRepository.saveAll(toComplete);
 
         log.info("Completed appointment are {}", toComplete.size());
+    }
+
+    @Scheduled(fixedRate = 600000)
+    public void cancelPendingAppointments() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Appointment> pendingAppointments = appointmentRepository.findByStatus(AppointmentStatus.PENDING);
+
+        List<Appointment> toCancel = pendingAppointments.stream()
+                .filter(a->{
+                    return ChronoUnit.HOURS.between(a.getBookedAt(),now)>5;
+                }).toList();
+
+        if(toCancel.isEmpty()) return;
+
+        toCancel.forEach(a-> {
+            a.setStatus(AppointmentStatus.CANCELLED);
+            try {
+                String email = a.getPatient().getUser().getEmail();
+                emailService.sendAutoCancellationEmail(email, a);
+            } catch (Exception e) {
+                log.warn("Failed to send auto-cancellation email for appointment {}", a.getId());
+            }
+        });
+        appointmentRepository.saveAll(toCancel);
+
+        log.info("Cancelled appointment are {}", toCancel.size());
     }
 }
