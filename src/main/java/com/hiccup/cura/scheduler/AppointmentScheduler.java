@@ -33,7 +33,15 @@ public class AppointmentScheduler {
 
         if(toComplete.isEmpty()) return;
 
-        toComplete.forEach(a-> a.setStatus(AppointmentStatus.COMPLETED));
+        toComplete.forEach(a-> {
+            a.setStatus(AppointmentStatus.COMPLETED);
+            try {
+                String email = a.getPatient().getUser().getEmail();
+                emailService.sendAppointmentCompletedEmail(email, a);
+            } catch (Exception e) {
+                log.warn("Failed to send completion email for appointment {}", a.getId());
+            }
+        });
         appointmentRepository.saveAll(toComplete);
 
         log.info("Completed appointment are {}", toComplete.size());
