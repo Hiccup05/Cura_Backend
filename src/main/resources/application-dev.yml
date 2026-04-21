@@ -1,8 +1,19 @@
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${USERNAME}
+    password: ${PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
     url: jdbc:postgresql://localhost:5432/Cura
-    username: postgres
-    password: Tr3b3lforcity
+    username: ${D_USERNAME}
+    password: ${D_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -15,8 +26,23 @@ spring:
         format_sql: true
         auto_index_ddl: true
 
+  security.oauth2.client:
+    registration:
+      google:
+        client-id: ${CLIENT_ID}
+        client-secret: ${CLIENT_SECRET}
 api.prefix: /api/v1
+
+admin:
+  init:
+    email1: ${admin1}
+    password1: ${password1}
 
 auth:
   token:
     jwt: ${JWT_SECRET}
+
+cloudinary:
+  cloud-name: ${CLOUD_NAME}
+  api-key: ${API_KEY}
+  api-secret: ${API_SECRET}

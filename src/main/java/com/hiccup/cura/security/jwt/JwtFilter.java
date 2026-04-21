@@ -1,11 +1,14 @@
 package com.hiccup.cura.security.jwt;
 
+import com.hiccup.cura.security.AuthUtil;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,34 +21,40 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
-     private final JwtConfig jwtConfig;
-     private final UserDetailsService userDetailsService;
+    private final AuthUtil authUtil;
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        try{
-            String token=parseToken(request);
-            if(token!=null && jwtConfig.validateToken(token)){
-                String userNameFromToken=jwtConfig.getUserNameFromToken(token);
-                UserDetails userDetails=userDetailsService.loadUserByUsername(userNameFromToken);
-                Authentication authentication=new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        try {
+            String token = getToken(request);
+            log.warn(token);
+            if (token != null && authUtil.validateToken(token)) {
+                String userNameFromToken = authUtil.getUserNameFromToken(token);
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userNameFromToken);
+                Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);
-        }
-        catch(UsernameNotFoundException | JwtException e){
+        } catch (UsernameNotFoundException | JwtException e) {
+            log.error(e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("{\"error\":\"Invalid or expiredToken\"}");
+            response.getWriter().write("{\"error\": \"Authorization token not found. please proceed to login\"}");
         }
     }
 
-    private String parseToken(HttpServletRequest request) {
-        String authorization=request.getHeader("Authorization");
-        if(authorization==null || authorization.isBlank() || !authorization.contains("Bearer")){
-            return null;
+    String getToken(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
         }
-        return authorization.substring(7);
+        return null;
+
     }
 }

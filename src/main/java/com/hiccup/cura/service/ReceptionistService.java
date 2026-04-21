@@ -1,0 +1,101 @@
+package com.hiccup.cura.service;
+
+import com.hiccup.cura.dto.reqeust.ChangeReceptionistRequestDto;
+import com.hiccup.cura.dto.reqeust.ReceptionistRequestDto;
+import com.hiccup.cura.dto.response.ReceptionistResponseDto;
+import com.hiccup.cura.enums.ReceptionistStatus;
+import com.hiccup.cura.enums.RoleType;
+import com.hiccup.cura.exception.custom.DuplicateEntryException;
+import com.hiccup.cura.exception.custom.ResourceNotFoundException;
+import com.hiccup.cura.model.ReceptionistProfile;
+import com.hiccup.cura.model.User;
+import com.hiccup.cura.repository.ReceptionistRepository;
+import com.hiccup.cura.repository.RoleRepository;
+import com.hiccup.cura.repository.UserRepository;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Set;
+
+@Service
+@RequiredArgsConstructor
+public class ReceptionistService {
+    private final ReceptionistRepository receptionistRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final EmailService emailService;
+
+    @Transactional
+    public ReceptionistResponseDto createReceptionist(Long userId, ReceptionistRequestDto requestDto) {
+        if (receptionistRepository.existsById(userId)) {
+            throw new DuplicateEntryException("Receptionist with id " + userId + " already exists");
+        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User doesn't exist with id " + userId));
+
+        user.setRole(Set.of(roleRepository.findByName(RoleType.RECEPTIONIST)));
+
+        ReceptionistProfile receptionistProfile = new ReceptionistProfile();
+        receptionistProfile.setUser(user);
+        receptionistProfile.setFirstName(requestDto.getFirstName());
+        receptionistProfile.setLastName(requestDto.getLastName());
+        receptionistProfile.setPhoneNumber(requestDto.getPhoneNumber());
+        receptionistProfile.setStatus(ReceptionistStatus.ACTIVE);
+
+        ReceptionistProfile save = receptionistRepository.save(receptionistProfile);
+        emailService.sendReceptionistPromotionEmail(user.getEmail(), receptionistProfile.getFirstName());
+        return mapToDto(save);
+    }
+
+    public List<ReceptionistResponseDto> getReceptionists() {
+        return receptionistRepository.findAll().stream()
+                .map(this::mapToDto).toList();
+    }
+
+    public ReceptionistResponseDto getReceptionist(Long id) {
+        ReceptionistProfile profile = receptionistRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + id));
+        return mapToDto(profile);
+    }
+
+    public ReceptionistResponseDto updateReceptionist(Long id, ReceptionistRequestDto requestDto) {
+        ReceptionistProfile profile = receptionistRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + id));
+        if (requestDto.getFirstName() != null) {
+            profile.setFirstName(requestDto.getFirstName());
+        }
+        if (requestDto.getLastName() != null) {
+            profile.setLastName(requestDto.getLastName());
+        }
+        if (requestDto.getPhoneNumber() != null) {
+            profile.setPhoneNumber(requestDto.getPhoneNumber());
+        }
+        return mapToDto(receptionistRepository.save(profile));
+    }
+
+    public void deleteReceptionist(Long id) {
+        ReceptionistProfile profile = receptionistRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + id));
+        receptionistRepository.delete(profile);
+    }
+
+    public ReceptionistResponseDto changeStatus(Long id, ChangeReceptionistRequestDto dto) {
+        ReceptionistProfile profile = receptionistRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + id));
+        profile.setStatus(dto.getStatus());
+        return mapToDto(receptionistRepository.save(profile));
+    }
+
+    private ReceptionistResponseDto mapToDto(ReceptionistProfile profile) {
+        return ReceptionistResponseDto.builder()
+                .id(profile.getId())
+                .firstName(profile.getFirstName())
+                .lastName(profile.getLastName())
+                .phoneNumber(profile.getPhoneNumber())
+                .status(profile.getStatus())
+                .profilePictureUrl(profile.getUser().getProfilePictureUrl())
+                .build();
+    }
+}

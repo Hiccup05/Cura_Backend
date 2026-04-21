@@ -1,43 +1,38 @@
 package com.hiccup.cura.controller;
 
-import com.hiccup.cura.model.User;
-import com.hiccup.cura.request.UserRegisterDto;
-import com.hiccup.cura.response.ApiResponse;
-import com.hiccup.cura.response.UpdateUserResponseDto;
-import com.hiccup.cura.response.UserLoginResponseDto;
-import com.hiccup.cura.service.user.UserService;
+import com.hiccup.cura.dto.response.ApiResposne;
+import com.hiccup.cura.security.CustomUser;
+import com.hiccup.cura.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
-@RequestMapping("${api.prefix}/users")
+@RequestMapping("${api.prefix}/user")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/register")
-    public ResponseEntity<ApiResponse> registerUser(@RequestBody UserRegisterDto userRegisterDto){
-        userService.userRegister(userRegisterDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("User Registered Successfully",null));
+    @PostMapping("/profile/picture")
+    public ResponseEntity<ApiResposne> uploadProfilePicture(@RequestParam MultipartFile file, @AuthenticationPrincipal CustomUser user) throws IOException {
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            return ResponseEntity.badRequest().body( new ApiResposne("Only image files are allowed", null) );
+        }
+        if (file.getSize() > 2 * 1024 * 1024) {
+            return ResponseEntity.badRequest().body(new ApiResposne("File size must be under 2MB", null));
+        }
+        return ResponseEntity.ok(new ApiResposne("Upload Successful", userService.updateProfilePictureUrl(user.getId(), file)));
     }
 
-    @GetMapping("/getUser/{id}")
-    public ResponseEntity<ApiResponse> getUser(@PathVariable Long id){
-        UserLoginResponseDto user = userService.getUserById(id);
-        return ResponseEntity.ok().body(new ApiResponse("User fetched successfully",user));
-    }
-
-    @PutMapping("/updateUser/{id}")
-    public ResponseEntity<ApiResponse> updateUser(@PathVariable Long id, @RequestBody User user){
-        UpdateUserResponseDto updatedUser = userService.updateUser(user,id);
-        return ResponseEntity.ok().body(new ApiResponse("User updated successfully",updatedUser));
-    }
-
-    @DeleteMapping("/deleteUser/{id}")
-    public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id){
-        userService.deleteUserByUserId(id);
-        return ResponseEntity.ok().body(new ApiResponse("User fetched successfully",null));
+    @DeleteMapping("/profile/picture")
+    public ResponseEntity<Void> deleteProfilePicture(@AuthenticationPrincipal CustomUser user) throws IOException {
+        userService.deleteProfilePicture(user.getId());
+        return ResponseEntity.noContent().build();
     }
 }

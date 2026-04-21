@@ -1,12 +1,12 @@
 package com.hiccup.cura.enums;
 
 public enum BloodGroup {
-    APOSITIVE,
-    ANEGATIVE,
-    BPOSITIVE,
-    BNEGATIVE,
-    OPOSITIVE,
-    ONEGATIVE,
-    ABPOSITIVE,
-    ABNEGATIVE
+    A_POSITIVE,
+    A_NEGATIVE,
+    B_POSITIVE,
+    B_NEGATIVE,
+    AB_POSITIVE,
+    AB_NEGATIVE,
+    O_POSITIVE,
+    O_NEGATIVE
 }

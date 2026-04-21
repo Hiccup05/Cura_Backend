@@ -1,12 +1,13 @@
 package com.hiccup.cura.model;
 
+import com.hiccup.cura.enums.AuthType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name="users")
@@ -18,23 +19,36 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name="first_name")
-    private String firstName;
-    @Column(name="middle_name")
-    private String middleName;
-    @Column(name="last_name")
-    private String lastName;
+    private String username;
     private String email;
     private String password;
-    @Column(name="mob_no")
-    private String mobNo;
-    @Column(name="date_of_birth")
-    private Date dateOfBirth;
-    private String address;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private DoctorProfile doctorProfile;
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
-    private PatientProfile patientProfile;
-    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL)
-    private StaffProfile staffProfile;
+    private String providerId;
+    private boolean active;
+
+    @Enumerated(EnumType.STRING)
+    private AuthType authType;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> role;
+
+    public User(String email, String password, AuthType authType, String providerId) {
+        this.email = email;
+        this.password = password;
+        this.authType=authType;
+        this.providerId=providerId;
+    }
 }

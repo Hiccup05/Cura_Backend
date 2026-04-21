@@ -1,26 +1,44 @@
 package com.hiccup.cura.model;
 
 import com.hiccup.cura.enums.BloodGroup;
-import com.hiccup.cura.enums.Role;
+import com.hiccup.cura.enums.Gender;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
-@Table(name="patient_profile")
+@AllArgsConstructor
 public class PatientProfile {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String firstName;
+    private String lastName;
+
+    private LocalDate dateOfBirth;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
+    private String phoneNumber;
+    private String address;
+
     @Enumerated(EnumType.STRING)
     private BloodGroup bloodGroup;
-    private String emergencyNumber;
-    @Enumerated(EnumType.STRING)
-    private Role role;
-    @JoinColumn(name="user_id")
+
+    private String allergies;
+    private String chronicConditions;
+    private String emergencyContactName;
+    private String emergencyContactPhone;
+
+    @MapsId
+    @OneToOne(cascade = CascadeType.ALL)
     private User user;
 }
