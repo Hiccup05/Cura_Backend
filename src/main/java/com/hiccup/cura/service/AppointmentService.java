@@ -8,10 +8,7 @@ import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.enums.AppointmentType;
 import com.hiccup.cura.enums.PaymentMethod;
 import com.hiccup.cura.enums.RoleType;
-import com.hiccup.cura.exception.custom.CancellationNotAllowedException;
-import com.hiccup.cura.exception.custom.InvalidBookingTimeException;
-import com.hiccup.cura.exception.custom.ResourceNotFoundException;
-import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
+import com.hiccup.cura.exception.custom.*;
 import com.hiccup.cura.model.*;
 import com.hiccup.cura.repository.*;
 import jakarta.transaction.Transactional;
@@ -224,6 +221,20 @@ public class AppointmentService {
         return page.map(this::mapToSummaryDto);
     }
 
+    public AppointmentResponseDto getDoctorAppointment(Long userId, Long appointmentId) {
+        DoctorProfile doctor = doctorRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with user id " + userId));
+
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id " + appointmentId));
+
+        if (!appointment.getDoctor().getId().equals(doctor.getId())) {
+            throw new UnauthorizedUserAccessException("You are not allowed to access this appointment");
+        }
+
+        return mapToDto(appointment);
+    }
+
     @Transactional
     public AppointmentResponseDto cancelAppointment(Long userId, Long appointmentId){
         User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
@@ -233,6 +244,10 @@ public class AppointmentService {
             throw new UnauthorizedUserAccessException("You are not allowed to access appointments");
         }
         Appointment appointment = appointmentRepository.getAppointmentByIdAndUserId(appointmentId, userId).orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
+
+        if(appointment.getStatus()==AppointmentStatus.CANCELLED){
+            throw new InvalidAppointmentException("Appointment is already cancelled");
+        }
 
         LocalDateTime appointmentTime=LocalDateTime.of(appointment.getAppointmentDate(), appointment.getAppointmentTime());
 
@@ -250,7 +265,7 @@ public class AppointmentService {
             if(ChronoUnit.HOURS.between(appointment.getBookedAt(), cancelTime)<=24){
                 appointment.setStatus(AppointmentStatus.CANCELLED);
             }else{
-                throw new CancellationNotAllowedException("Cannot cancel appointment as booked appointment exceeds 5 hours mark");
+                throw new CancellationNotAllowedException("Cannot cancel appointment as booked appointment exceeds 24 hours mark");
             }
         }
         prescriptionRepository.findById(appointment.getPrescription().getId()).ifPresent(prescriptionRepository::delete);

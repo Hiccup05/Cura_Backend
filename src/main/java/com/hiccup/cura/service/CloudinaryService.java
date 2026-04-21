@@ -36,7 +36,11 @@ public class CloudinaryService {
         return upload.get("secure_url").toString();
     }
 
-    public void delete(String publicId) throws IOException {
+    public void deleteUserProfilePhoto(String publicId) throws IOException {
+        cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+    }
+
+    public void deleteServicePhoto(String publicId) throws IOException {
         cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
     }
 }

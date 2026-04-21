@@ -34,6 +34,7 @@ public class SpecializationService {
         }
         Specialization specialization = new Specialization();
         specialization.setName(requestDto.getName());
+        specialization.setSlotDuration(requestDto.getSlotDuration());
         return specializationRepository.save(specialization);
     }
 

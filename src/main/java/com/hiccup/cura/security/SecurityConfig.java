@@ -12,8 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -27,7 +25,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
-import java.util.Set;
 
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -44,6 +41,7 @@ public class SecurityConfig {
     private static final String P_URL="/api/v1/public/**";
     private static final String PA_URL="/api/v1/patients/**";
     private static final String APPOINTMENT_URL= "/api/v1/appointment/**";
+    private static final String PRESCRIPTION_URL = "/api/v1/appointment/prescription/**";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http){
@@ -57,6 +55,7 @@ public class SecurityConfig {
                                 .requestMatchers(P_URL).permitAll()
                                 .requestMatchers(A_URL).hasRole(RoleType.ADMIN.name())
                                 .requestMatchers(D_URL).hasRole(RoleType.DOCTOR.name())
+                                .requestMatchers(PRESCRIPTION_URL).hasAnyRole(RoleType.DOCTOR.name())
                                 .requestMatchers(PA_URL).hasRole(RoleType.PATIENT.name())
                                 .requestMatchers(APPOINTMENT_URL).hasAnyRole(RoleType.PATIENT.name(), RoleType.RECEPTIONIST.name())
                                 .anyRequest().permitAll()

@@ -24,7 +24,7 @@ public interface MedicalServiceRepository extends JpaRepository<MedicalService, 
     List<MedicalService> findAllByIsActiveTrue();
     @Query("SELECT new com.hiccup.cura.dto.response.MedicalServiceResponseDto(" +
             "s.id, s.name, s.price, s.durationMinutes, s.description, s.isActive, " +
-            "sp.id, sp.name) " +
+            "sp.id, sp.name, s.photoUrl) " +
             "FROM MedicalService s JOIN s.specialization sp " +
             "WHERE s.specialization.id = :specializationId AND s.isActive = true")
     List<MedicalServiceResponseDto> findAllActiveServicesWithSpecialization(@Param("specializationId") Long specializationId);

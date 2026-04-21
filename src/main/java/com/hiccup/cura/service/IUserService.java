@@ -36,7 +36,7 @@ public class IUserService implements UserService {
     public void deleteProfilePicture(Long id) throws IOException {
         User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
         if(user.getProfilePictureUrl()!=null){
-            cloudinaryService.delete(extractPublicId(user.getProfilePictureUrl()));
+            cloudinaryService.deleteUserProfilePhoto(extractPublicId(user.getProfilePictureUrl()));
             user.setProfilePictureUrl(null);
         }else{
             throw new ResourceNotFoundException("There is no profile picture of the user with id " + id);

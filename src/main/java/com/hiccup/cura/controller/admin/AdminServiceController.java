@@ -57,4 +57,10 @@ public class AdminServiceController {
     public ResponseEntity<String> uploadPhoto(@PathVariable Long id, @RequestParam("file") MultipartFile file, @AuthenticationPrincipal CustomUser user) throws IOException {
         return ResponseEntity.ok(serviceService.uploadPhoto(user.getId(), id, file));
     }
+
+    @DeleteMapping("/{id}/photo")
+    public ResponseEntity<Void> deleteServicePhoto(@PathVariable Long id) throws IOException {
+        serviceService.deletePhoto(id);
+        return ResponseEntity.noContent().build();
+    }
 }

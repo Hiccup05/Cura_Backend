@@ -47,6 +47,8 @@ public class DoctorService {
                .map(specializationService::getById).collect(Collectors.toSet());
         DoctorProfile doctorProfile=new DoctorProfile();
         doctorProfile.setUser(user);
+        doctorProfile.setFirstName(doctorRequestDto.getFirstName());
+        doctorProfile.setLastName(doctorRequestDto.getLastName());
         doctorProfile.setSpecialization(specializationSet);
         doctorProfile.setDoctorStatus(DoctorStatus.ACTIVE);
         doctorProfile.setLicenseNumber(doctorRequestDto.getLicenseNumber());
@@ -83,6 +85,12 @@ public class DoctorService {
 
     public DoctorDto updateDoctor(Long id, DoctorRequestDto request){
         DoctorProfile doctor=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
+        if(request.getFirstName()!=null){
+            doctor.setFirstName(request.getFirstName());
+        }
+        if(request.getLastName()!=null){
+            doctor.setLastName(request.getLastName());
+        }
         if (request.getLicenseNumber() != null) {
             doctor.setLicenseNumber(request.getLicenseNumber());
         }
@@ -123,6 +131,8 @@ public class DoctorService {
                 .licenseNumber(doctorProfile.getLicenseNumber())
                 .yearsOfExperience(doctorProfile.getYearsOfExperience())
                 .profilePictureUrl(doctorProfile.getUser().getProfilePictureUrl())
+                .firstName(doctorProfile.getFirstName())
+                .lastName(doctorProfile.getLastName())
                 .build();
     }
 

@@ -113,12 +113,37 @@ public class MedicalServiceService {
         String publicId="service_"+service.getId();
         String photoUrl = cloudinaryService.uploadServicePhoto(file, publicId);
         service.setPhotoUrl(photoUrl);
+        medicalServiceRepository.save(service);
         return photoUrl;
+    }
+
+    public String getPhoto(Long id){
+        MedicalService service = medicalServiceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Medical service not found with id " + id));
+        return service.getPhotoUrl()!=null?service.getPhotoUrl():"";
+    }
+
+    public void deletePhoto(Long id) throws IOException {
+        MedicalService service = medicalServiceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Medical service not found with id " + id));
+        String publicId = extractPublicId(service.getPhotoUrl());
+        cloudinaryService.deleteServicePhoto(publicId);
+        service.setPhotoUrl(null);
+        medicalServiceRepository.save(service);
     }
 
    private MedicalServiceResponseDto mapToDto(MedicalService service){
        return new MedicalServiceResponseDto(
                service.getId(), service.getName(), service.getPrice(), service.getDurationMinutes(),
-                       service.getDescription(), service.getIsActive(),service.getSpecialization().getId(), service.getSpecialization().getName());
+                       service.getDescription(), service.getIsActive(),service.getSpecialization().getId(), service.getSpecialization().getName(), service.getPhotoUrl());
    }
+
+    private String extractPublicId(String url) {
+        // URL format: https://res.cloudinary.com/cloud/image/upload/v123456/cura/users/user_1.jpg
+        // We need: cura/users/user_1
+        String withoutExtension = url.substring(0, url.lastIndexOf('.'));
+        String afterUpload = withoutExtension.substring(withoutExtension.indexOf("upload/") + 7);
+        // strip version segment if present (starts with 'v' followed by digits)
+        return afterUpload.replaceFirst("^v\\d+/", "");
+    }
 }

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,5 +28,10 @@ public class ServiceController {
     @GetMapping("/{specializationId}")
     public ResponseEntity<List<MedicalServiceResponseDto>> getAllServices(@PathVariable Long specializationId){
         return ResponseEntity.ok(serviceService.getActiveSpecializationServices(specializationId));
+    }
+
+    @GetMapping("/{id}/photo")
+    public ResponseEntity<String> getServicePhoto(@PathVariable Long id){
+        return ResponseEntity.ok(serviceService.getPhoto(id));
     }
 }

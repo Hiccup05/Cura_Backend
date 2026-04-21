@@ -2,11 +2,13 @@ package com.hiccup.cura.dto.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class MedicalServiceResponseDto {
     private Long id;
     private String name;
@@ -16,15 +18,5 @@ public class MedicalServiceResponseDto {
     private Boolean isActive;
     private Long specializationId;
     private String specializationName;
-
-    public MedicalServiceResponseDto(Long id, String name, BigDecimal price, Integer durationMinutes, String description, Boolean isActive, Long specializationId, String specializationName) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.durationMinutes = durationMinutes;
-        this.description = description;
-        this.isActive = isActive;
-        this.specializationId = specializationId;
-        this.specializationName = specializationName;
-    }
+    private String photoUrl;
 }

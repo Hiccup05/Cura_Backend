@@ -83,5 +83,10 @@ public class DoctorController {
         return ResponseEntity.ok(result);
     }
 
+    @GetMapping("appointment/{id}")
+    public ResponseEntity<AppointmentResponseDto> getAppointment(@PathVariable Long id, @AuthenticationPrincipal CustomUser user){
+        return ResponseEntity.ok(appointmentService.getDoctorAppointment(user.getId(), id));
+    }
+
 
 }
