@@ -144,7 +144,6 @@ public class AuthUtil {
         User emailUser=userRepository.findByEmail(email).orElse(null);
 
         if(user==null && emailUser==null){
-            //signup flow
             String username=determineUserFromOAuth2User(oAuth2User,registrationId, providerId);
             user = createUser(SignUpRequestDto.builder().username(username).password(null).name(name).build(), authType, providerId);
 

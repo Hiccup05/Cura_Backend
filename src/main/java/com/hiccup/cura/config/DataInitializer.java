@@ -46,7 +46,6 @@ public class DataInitializer implements ApplicationRunner {
 
     private void initAdmins() {
         createAdminIfNotExists(adminEmail1, adminPassword1);
-        // repeat for admin 2 and 3
     }
 
     private void createAdminIfNotExists(String email, String password) {

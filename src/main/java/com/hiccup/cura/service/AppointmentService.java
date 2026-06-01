@@ -4,10 +4,7 @@ import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.dto.response.PrescriptionResponseDto;
-import com.hiccup.cura.enums.AppointmentStatus;
-import com.hiccup.cura.enums.AppointmentType;
-import com.hiccup.cura.enums.PaymentMethod;
-import com.hiccup.cura.enums.RoleType;
+import com.hiccup.cura.enums.*;
 import com.hiccup.cura.exception.custom.*;
 import com.hiccup.cura.model.*;
 import com.hiccup.cura.repository.*;
@@ -16,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -25,6 +23,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +37,7 @@ public class AppointmentService {
     private final DoctorLeaveRepository doctorLeaveRepository;
     private final DoctorScheduleRepository doctorScheduleRepository;
     private final PrescriptionRepository prescriptionRepository;
+    private final RoleRepository roleRepository;
     private final EmailService emailService;
 
     @Transactional
@@ -81,6 +81,12 @@ public class AppointmentService {
         }
 
         User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
+        if(user.getRole().contains(roleRepository.findByName(RoleType.RECEPTIONIST))){
+            ReceptionistProfile byId = receptionistRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("This user is not staff"));
+            if(byId.getStatus()== ReceptionistStatus.INACTIVE){
+                throw new UnauthorizedUserAccessException("Current staff is inactive and cannot book appointment currently");
+            }
+        }
         applyUserContext(appointment, user, userId, appointmentRequestDto);
 
         appointment.setDoctor(doctor);

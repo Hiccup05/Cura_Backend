@@ -27,7 +27,7 @@ public class PaymentController {
     public void checkPayment(@RequestParam String pidx, HttpServletResponse response) throws IOException {
         try {
             paymentService.khaltiLookup(pidx);
-            response.sendRedirect("http://localhost:3000/payment/verify?pidx=" + pidx);
+            response.sendRedirect("http://localhost:3000/payment/success?pidx=" + pidx);
         } catch (Exception e) {
             log.error("Payment verification failed: {}", e.getMessage());
             response.sendRedirect("http://localhost:3000/payment/failed");
