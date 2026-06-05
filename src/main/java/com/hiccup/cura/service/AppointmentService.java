@@ -1,5 +1,6 @@
 package com.hiccup.cura.service;
 
+import com.hiccup.cura.Specification.AppointmentSpecification;
 import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
@@ -8,6 +9,9 @@ import com.hiccup.cura.enums.*;
 import com.hiccup.cura.exception.custom.*;
 import com.hiccup.cura.model.*;
 import com.hiccup.cura.repository.*;
+import com.hiccup.cura.service.doctor.DoctorScheduleService;
+import com.hiccup.cura.service.doctor.DoctorService;
+import com.hiccup.cura.service.medicalservice.MedicalServiceService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,10 +24,7 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -33,39 +34,31 @@ public class AppointmentService {
     private final UserRepository userRepository;
     private final PatientRepository patientRepository;
     private final ReceptionistRepository receptionistRepository;
-    private final MedicalServiceRepository medicalServiceRepository;
     private final DoctorLeaveRepository doctorLeaveRepository;
-    private final DoctorScheduleRepository doctorScheduleRepository;
     private final PrescriptionRepository prescriptionRepository;
-    private final RoleRepository roleRepository;
     private final EmailService emailService;
+    private final DoctorScheduleService doctorScheduleService;
+    private final MedicalServiceRepository medicalServiceRepository;
 
     @Transactional
     public AppointmentResponseDto createAppointment(AppointmentRequestDto appointmentRequestDto, Long userId) {
+        //create new appointment object
         Appointment appointment=new Appointment();
-        DoctorProfile doctor = doctorRepository.findById(appointmentRequestDto.getDoctorId()).orElseThrow(() ->
-                new ResourceNotFoundException("Doctor cannot be not found with id "+ appointmentRequestDto.getDoctorId()));
-        MedicalService medicalService = medicalServiceRepository.findActiveMedicalServiceById(appointmentRequestDto.getMedicalServiceId()).orElseThrow(() ->
-                new ResourceNotFoundException("Medical service cannot be not found with id " + appointmentRequestDto.getMedicalServiceId()));
-        boolean specializationMatch = doctor.getSpecialization().stream().anyMatch(spec ->
-                spec.getId().equals(medicalService.getSpecialization().getId())
-        );
-        if (!specializationMatch) {
-            throw new IllegalStateException("Doctor does not have the required specialization for this service");
-        }
 
+        //fetch the doctor
+        DoctorProfile doctor = getDoctor(appointmentRequestDto.getDoctorId());
+
+        //fetch medical service
+        MedicalService medicalService = getMedicalService(appointmentRequestDto.getMedicalServiceId());
+
+        checkMedicalServiceMatch(appointment, doctor, medicalService);
+
+        //check if the day selected falls on the doctor schedule
         DayOfWeek dayOfWeek = appointmentRequestDto.getAppointmentDate().getDayOfWeek();
-        DoctorSchedule doctorSchedule = doctorScheduleRepository.findByDayOfWeekAndDoctorProfile_Id(dayOfWeek, doctor.getId()).orElseThrow(() ->
-                new ResourceNotFoundException("Doctor does not have the schedule for this appointment day")
-        );
 
-        if(!Boolean.TRUE.equals(doctorSchedule.getIsAvailable())) {
-            throw new IllegalStateException("Doctor is not available for this appointment day");
-        }
+        DoctorSchedule doctorSchedule=doctorScheduleService.getScheduleFromDay(doctor, dayOfWeek);
 
-        if(doctorLeaveRepository.isOnLeave(doctor.getId(), appointmentRequestDto.getAppointmentDate())){
-            throw new IllegalStateException("Doctor is on the leave on "+appointmentRequestDto.getAppointmentDate());
-        }
+        checkDoctorAvaiability(doctorSchedule, doctor, appointmentRequestDto);
 
         validateAppointmentTime(appointmentRequestDto.getAppointmentDate(), appointmentRequestDto.getAppointmentTime());
 
@@ -75,76 +68,42 @@ public class AppointmentService {
             throw new IllegalStateException("This appointment slot is already booked.");
         }
 
-        long bookedCount=appointmentRepository.countByDoctorAndAppointmentDate(doctor, appointmentRequestDto.getAppointmentDate());
-        if(bookedCount>=doctorSchedule.getMaxAppointments()){
-            throw new IllegalStateException("Doctor has reached maximum appointments for this day.");
-        }
+        checkBookCapacity(doctor, appointmentRequestDto, doctorSchedule);
 
-        User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
-        if(user.getRole().contains(roleRepository.findByName(RoleType.RECEPTIONIST))){
-            ReceptionistProfile byId = receptionistRepository.findById(userId).orElseThrow(()-> new UsernameNotFoundException("This user is not staff"));
-            if(byId.getStatus()== ReceptionistStatus.INACTIVE){
-                throw new UnauthorizedUserAccessException("Current staff is inactive and cannot book appointment currently");
-            }
-        }
+        User user= getUser(userId);
+
         applyUserContext(appointment, user, userId, appointmentRequestDto);
 
-        appointment.setDoctor(doctor);
-        appointment.setAppointmentDate(appointmentRequestDto.getAppointmentDate());
-        appointment.setAppointmentTime(appointmentRequestDto.getAppointmentTime());
-        appointment.setBookedAt(LocalDateTime.now());
-        appointment.setMedicalService(medicalService);
-        appointment.setReason(appointmentRequestDto.getReason());
-        Prescription prescription=new Prescription();
-        prescription.setAppointment(appointment);
-        prescription=prescriptionRepository.save(prescription);
-        appointment.setPrescription(prescription);
-        Appointment save = appointmentRepository.save(appointment);
-        emailService.sendAppointmentEmail(user.getEmail(), save);
-        return mapToDto(save);
+        finalizeAppointment(appointment, doctor, appointmentRequestDto);
+
+        Appointment savedAppointment = appointmentRepository.save(appointment);
+
+        emailService.sendAppointmentEmail(user.getEmail(), savedAppointment);
+
+        return mapToDto(savedAppointment);
     }
 
     public AppointmentResponseDto getAppointment(Long userId, Long appointmentId){
-        User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
-        if(user.getRole().stream().anyMatch(role -> role.getName().equals(RoleType.ADMIN)
-                ||  role.getName().equals(RoleType.DOCTOR)
-        )){
-            throw new UnauthorizedUserAccessException("You are not allowed to access appointments");
-        }
         Appointment appointment = appointmentRepository.getAppointmentByIdAndUserId(appointmentId, userId).orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
         return mapToDto(appointment);
     }
 
-    public List<AppointmentSummaryDto> getMyAppointments(Long userId){
-        List<Appointment> appointmentOfUser = appointmentRepository.getAppointmentOfUser(userId);
-        return appointmentOfUser.stream().map(this::mapToSummaryDto).toList();
+    public Page<AppointmentSummaryDto> getMyAppointments(Long userId, Pageable pageable){
+        Page<Appointment> appointmentOfUser = appointmentRepository.getAppointmentOfUser(userId, pageable);
+        return appointmentOfUser.map(this::mapToSummaryDto);
     }
 
-    public List<AppointmentSummaryDto> getReceptionistBookedAppointments(
-            Long userId,
+    public Page<AppointmentSummaryDto> getReceptionistBookedAppointments(
             Long receptionistId,
-            String walkInPatientName
+            String walkInPatientName,
+            Pageable pageable
     ) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
-
-        if (user.getRole().stream().noneMatch(role -> role.getName().equals(RoleType.RECEPTIONIST))) {
-            throw new UnauthorizedUserAccessException("You are not allowed to access appointments");
-        }
-
-        List<Appointment> appointments =
-                appointmentRepository.findReceptionistBookedAppointments(receptionistId, walkInPatientName);
-
-        return appointments.stream().map(this::mapToSummaryDto).toList();
+       Specification<Appointment> sp= AppointmentSpecification.hasReceptionistId(receptionistId).and(AppointmentSpecification.hasWalkInPatientName(walkInPatientName));
+        Page<Appointment> appointments = appointmentRepository.findAll(sp, pageable);
+        return appointments.map(this::mapToSummaryDto);
     }
 
-    public AppointmentResponseDto getReceptionistAppointmentById(Long userId, Long appointmentId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
-
-        if (user.getRole().stream().noneMatch(role -> role.getName().equals(RoleType.RECEPTIONIST))) {
-            throw new UnauthorizedUserAccessException("You are not allowed to access appointments");
-        }
+    public AppointmentResponseDto getReceptionistAppointmentById(Long appointmentId) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
@@ -156,8 +115,9 @@ public class AppointmentService {
         return mapToDto(appointment);
     }
 
+    //return page of Appointment summary
     public Page<AppointmentSummaryDto> getDoctorAppointmentsFiltered(
-            Long doctorUserId,
+            Long userId,
             String patientName,
             String walkInPatientName,
             String receptionistName,
@@ -166,70 +126,22 @@ public class AppointmentService {
             String dateTo,
             Pageable pageable
     ) {
-        LocalDate from;
-        LocalDate to;
-        if (dateFrom != null && !dateFrom.isBlank()) {
-            from = parseDate(dateFrom, "date from");
-        } else {
-            from = null;
-        }
-        if (dateTo != null && !dateTo.isBlank()) {
-            to = parseDate(dateTo, "date to");
-        } else {
-            to = null;
-        }
-        if (from != null && to != null && from.isAfter(to)) {
-            throw new IllegalArgumentException("dateFrom cannot be after dateTo");
-        }
-        DoctorProfile doctor = doctorRepository.findById(doctorUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("Doctor cannot be not found with id " + doctorUserId));
-        Specification<Appointment> spec = Specification
-                .where((root, query, cb) -> cb.equal(root.get("doctor"), doctor));
-        if (patientName != null && !patientName.isBlank()) {
-            String like = "%" + patientName.trim().toLowerCase() + "%";
-            spec = spec.and((root, query, cb) -> {
-                var patient = root.join("patient", jakarta.persistence.criteria.JoinType.LEFT);
-                var fullName = cb.concat(
-                        cb.concat(cb.lower(patient.get("firstName")), " "),
-                        cb.lower(patient.get("lastName"))
-                );
-                return cb.like(fullName, like);
-            });
-        }
-        if (walkInPatientName != null && !walkInPatientName.isBlank()) {
-            String like = "%" + walkInPatientName.trim().toLowerCase() + "%";
-            spec = spec.and((root, query, cb) ->
-                    cb.like(cb.lower(root.get("walkInPatientName")), like));
-        }
-        if (receptionistName != null && !receptionistName.isBlank()) {
-            String like = "%" + receptionistName.trim().toLowerCase() + "%";
-            spec = spec.and((root, query, cb) -> {
-                var receptionist = root.join("receptionist", jakarta.persistence.criteria.JoinType.LEFT);
-                var fullName = cb.concat(
-                        cb.concat(cb.lower(receptionist.get("firstName")), " "),
-                        cb.lower(receptionist.get("lastName"))
-                );
-                return cb.like(fullName, like);
-            });
-        }
-        if (status != null) {
-            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
-        }
-        if (from != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.greaterThanOrEqualTo(root.get("appointmentDate"), from));
-        }
-        if (to != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.lessThanOrEqualTo(root.get("appointmentDate"), to));
-        }
+
+        DoctorProfile doctor = getDoctor(userId);
+
+        Specification<Appointment> spec=AppointmentSpecification.hasDoctor(doctor).and(AppointmentSpecification.hasPatientName(patientName))
+                .and(AppointmentSpecification.hasWalkInPatientName(walkInPatientName))
+                .and(AppointmentSpecification.hasReceptionistName(receptionistName))
+                .and(AppointmentSpecification.hasStatus(status))
+                .and(AppointmentSpecification.hasDateFrom(dateFrom))
+                .and(AppointmentSpecification.hasDateTo(dateTo));
+
         Page<Appointment> page = appointmentRepository.findAll(spec, pageable);
         return page.map(this::mapToSummaryDto);
     }
 
     public AppointmentResponseDto getDoctorAppointment(Long userId, Long appointmentId) {
-        DoctorProfile doctor = doctorRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with user id " + userId));
+        DoctorProfile doctor = getDoctor(userId);
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id " + appointmentId));
@@ -243,7 +155,7 @@ public class AppointmentService {
 
     @Transactional
     public AppointmentResponseDto cancelAppointment(Long userId, Long appointmentId){
-        User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
+        User user=getUser(userId);
         if(user.getRole().stream().anyMatch(role -> role.getName().equals(RoleType.ADMIN)
                 ||  role.getName().equals(RoleType.DOCTOR)
         )){
@@ -312,7 +224,6 @@ public class AppointmentService {
         if(LocalDateTime.now().isAfter(appointment)){
             throw new InvalidBookingTimeException("Appointment time is before booking time");
         }
-
     }
     private void validateSlot(DoctorSchedule schedule, MedicalService service, LocalTime requestTime) {
         LocalTime startTime = schedule.getStartTime();
@@ -352,14 +263,21 @@ public class AppointmentService {
     }
 
     private void applyReceptionistContext(Appointment appointment, Long userId, AppointmentRequestDto dto) {
+        ReceptionistProfile receptionist = receptionistRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + userId));
+
+        if(receptionist.getStatus() == ReceptionistStatus.INACTIVE){
+            throw new UnauthorizedUserAccessException("Current staff is inactive and cannot book appointment currently");
+        }
+
+
         if (dto.getWalkInPatientName() == null || dto.getWalkInPatientPhone() == null) {
             throw new IllegalStateException("Walk-in patient name and phone are required.");
         }
         if (dto.getPaymentMethod() == null) {
             throw new IllegalStateException("Payment method is required for walk-in appointments.");
         }
-        ReceptionistProfile receptionist = receptionistRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + userId));
+
         appointment.setReceptionist(receptionist);
         appointment.setType(AppointmentType.RECEPTIONIST_BOOKED);
         appointment.setPaymentMethod(dto.getPaymentMethod());
@@ -399,12 +317,57 @@ public class AppointmentService {
         return new  PrescriptionResponseDto(prescription.getId(), prescription.getDescription());
     }
 
-    private LocalDate parseDate(String value, String fieldName) {
-        if (value == null || value.isBlank()) return null;
-        try {
-            return LocalDate.parse(value);
-        } catch (DateTimeParseException ex) {
-            throw new IllegalArgumentException(fieldName + " must be in YYYY-MM-DD format");
+    private void checkMedicalServiceMatch(Appointment appointment, DoctorProfile doctor, MedicalService medicalService){
+        boolean specializationMatch = doctor.getSpecialization().stream().anyMatch(spec ->
+                spec.getId().equals(medicalService.getSpecialization().getId())
+        );
+        if (!specializationMatch) {
+            throw new IllegalStateException("Doctor does not have the required specialization for this service");
+        }
+        appointment.setMedicalService(medicalService);
+    }
+
+    private void checkDoctorAvaiability(DoctorSchedule doctorSchedule, DoctorProfile doctor, AppointmentRequestDto appointmentRequestDto){
+        if(!Boolean.TRUE.equals(doctorSchedule.getIsAvailable())) {
+            throw new IllegalStateException("Doctor is not available for this appointment day");
+        }
+
+        if(doctorLeaveRepository.isOnLeave(doctor.getId(), appointmentRequestDto.getAppointmentDate())){
+            throw new IllegalStateException("Doctor is on the leave on "+appointmentRequestDto.getAppointmentDate());
         }
     }
+
+    private void checkBookCapacity(DoctorProfile doctor, AppointmentRequestDto appointmentRequestDto, DoctorSchedule doctorSchedule){
+        long bookedCount=appointmentRepository.countByDoctorAndAppointmentDate(doctor, appointmentRequestDto.getAppointmentDate());
+        if(bookedCount>=doctorSchedule.getMaxAppointments()){
+            throw new IllegalStateException("Doctor has reached maximum appointments for this day.");
+        }
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User cannot be not found with id " + userId));
+    }
+
+    private DoctorProfile getDoctor(Long doctorId){
+        return doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with user id " + doctorId));
+    }
+
+    public MedicalService getMedicalService(Long id){
+        return medicalServiceRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Service isn't created with id " + id));
+
+    }
+
+    private void finalizeAppointment(Appointment appointment, DoctorProfile doctor, AppointmentRequestDto appointmentRequestDto){
+        appointment.setDoctor(doctor);
+        appointment.setAppointmentDate(appointmentRequestDto.getAppointmentDate());
+        appointment.setAppointmentTime(appointmentRequestDto.getAppointmentTime());
+        appointment.setBookedAt(LocalDateTime.now());
+        appointment.setReason(appointmentRequestDto.getReason());
+        Prescription prescription=new Prescription();
+        prescription.setAppointment(appointment);
+        prescription=prescriptionRepository.save(prescription);
+        appointment.setPrescription(prescription);
+    }
+
 }
