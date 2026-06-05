@@ -3,6 +3,8 @@ package com.hiccup.cura.repository;
 import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.model.Appointment;
 import com.hiccup.cura.model.DoctorProfile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -29,7 +31,7 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long>,
     @Query("Select A From Appointment A Where " +
     "((A.patient Is NOT NULL AND A.patient.id=:userId) OR (A.receptionist IS NOT NULL AND A.receptionist.id=:userId))" +
     " ORDER BY A.appointmentDate desc")
-    List<Appointment> getAppointmentOfUser(@Param("userId") Long userId);
+    Page<Appointment> getAppointmentOfUser(@Param("userId") Long userId, Pageable pageable);
 
     List<Appointment> findByStatus(AppointmentStatus appointmentStatus);
 
