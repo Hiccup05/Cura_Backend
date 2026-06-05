@@ -8,7 +8,7 @@ import com.hiccup.cura.dto.response.ScheduleResponseDto;
 import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
-import com.hiccup.cura.service.DoctorScheduleService;
+import com.hiccup.cura.service.doctor.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
 import com.hiccup.cura.service.doctor.specialization.SpecializationService;
 import lombok.RequiredArgsConstructor;

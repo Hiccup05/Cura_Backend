@@ -6,6 +6,8 @@ import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.medicalservice.MedicalServiceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +25,10 @@ public class AdminServiceController {
     private final MedicalServiceService serviceService;
 
     @GetMapping
-    public ResponseEntity<List<MedicalServiceResponseDto>> getMedicalServices(){
-        return ResponseEntity.ok(serviceService.getAll());
+    public ResponseEntity<List<MedicalServiceResponseDto>> getMedicalServices(@RequestParam(defaultValue = "0") int page,
+                                                                              @RequestParam(defaultValue = "10") int size){
+        Pageable pageable=PageRequest.of(page, size);
+        return ResponseEntity.ok(serviceService.getAll(pageable));
     }
 
     @GetMapping("/{id}")

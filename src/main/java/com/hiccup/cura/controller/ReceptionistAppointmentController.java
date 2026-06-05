@@ -6,7 +6,11 @@ import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -32,22 +36,25 @@ public class ReceptionistAppointmentController {
     }
 
     @GetMapping("/{appointmentId}")
+    @PreAuthorize("hasRole('RECEPTIONIST')")
     public ResponseEntity<AppointmentResponseDto> getReceptionistAppointmentById(
-            @PathVariable Long appointmentId,
-            @AuthenticationPrincipal CustomUser user
+            @PathVariable Long appointmentId
     ) {
         return ResponseEntity.ok(
-                appointmentService.getReceptionistAppointmentById(user.getId(), appointmentId)
+                appointmentService.getReceptionistAppointmentById(appointmentId)
         );
     }
 
     @GetMapping
-    public ResponseEntity<List<AppointmentSummaryDto>> getReceptionistAppointments(
+    @PreAuthorize("hasRole('RECEPTIONIST')")
+    public ResponseEntity<Page<AppointmentSummaryDto>> getReceptionistAppointments(
             @AuthenticationPrincipal CustomUser principal,
             @RequestParam(required = false) Long receptionistId,
-            @RequestParam(required = false) String walkInPatientName
+            @RequestParam(required = false) String walkInPatientName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        Long userId = principal.getId();
-        return ResponseEntity.ok(appointmentService.getReceptionistBookedAppointments(userId, receptionistId, walkInPatientName));
+        Pageable pageable= PageRequest.of(page, size);
+        return ResponseEntity.ok(appointmentService.getReceptionistBookedAppointments(receptionistId, walkInPatientName, pageable));
     }
 }

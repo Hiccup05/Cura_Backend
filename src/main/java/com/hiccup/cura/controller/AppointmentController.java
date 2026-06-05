@@ -6,13 +6,17 @@ import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,8 +36,14 @@ public class AppointmentController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AppointmentSummaryDto>> getMyAppointment(@AuthenticationPrincipal CustomUser user){
-        return ResponseEntity.ok(appointmentService.getMyAppointments(user.getId()));
+    public ResponseEntity<Page<AppointmentSummaryDto>> getMyAppointments(@AuthenticationPrincipal CustomUser user,
+                                                                         @RequestParam(defaultValue = "0") int page,
+                                                                         @RequestParam(defaultValue = "10") int size,
+                                                                         @RequestParam(defaultValue="DESC") String sortDir,
+                                                                         @RequestParam(defaultValue = "appointmentDate") String sortBy){
+        Sort sort=Sort.by(Sort.Direction.fromString(sortDir), sortBy);
+        Pageable pageable= PageRequest.of(page, size, sort);
+        return ResponseEntity.ok(appointmentService.getMyAppointments(user.getId(), pageable));
     }
 
     @GetMapping("/{id}")

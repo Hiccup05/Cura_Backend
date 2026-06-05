@@ -2,7 +2,7 @@ package com.hiccup.cura.controller.admin;
 
 import com.hiccup.cura.dto.reqeust.*;
 import com.hiccup.cura.dto.response.*;
-import com.hiccup.cura.service.DoctorScheduleService;
+import com.hiccup.cura.service.doctor.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
 import com.hiccup.cura.service.doctor.LeaveService;
 import lombok.RequiredArgsConstructor;
