@@ -16,6 +16,8 @@ import com.hiccup.cura.repository.UserRepository;
 import com.hiccup.cura.service.CloudinaryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,8 +33,9 @@ public class MedicalServiceService {
    private final UserRepository userRepository;
    private final CloudinaryService cloudinaryService;
 
-   public List<MedicalServiceResponseDto> getAll(){
-       return medicalServiceRepository.findAll().stream().map(this::mapToDto).toList();
+   public Page<MedicalServiceResponseDto> getAll(Pageable pageable){
+       Page<MedicalService> allService = medicalServiceRepository.findAll(pageable);
+       return allService.map(this::mapToDto);
    }
 
    public MedicalServiceResponseDto getService(Long id){
@@ -40,19 +43,24 @@ public class MedicalServiceService {
        return mapToDto(medicalService);
    }
 
-   public List<MedicalServiceResponseDto> getActiveServices(){
-       return medicalServiceRepository.findAllByIsActiveTrue().stream().map(
-               this::mapToDto
-       ).toList();
+   //use to fetch raw medical service data internally for other services
+    public MedicalService getServiceInternal(Long id){
+        return medicalServiceRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Service isn't created with id " + id));
+
+    }
+
+   public Page<MedicalServiceResponseDto> getActiveServices(Pageable pageable){
+       Page<MedicalService> allByIsActiveTrue = medicalServiceRepository.findAllByIsActiveTrue(pageable);
+       return allByIsActiveTrue.map(this::mapToDto);
    }
 
     public List<MedicalServiceResponseDto> getActiveSpecializationServices(Long specializationId){
         return medicalServiceRepository.findAllActiveServicesWithSpecialization(specializationId);
     }
 
-    public List<MedicalServiceResponseDto> searchByName(String name){
-       List<MedicalService> medicalService=medicalServiceRepository.searchByName(name);
-       return medicalService.stream().map(this::mapToDto).toList();
+    public Page<MedicalServiceResponseDto> searchByKeyword(String name, Pageable pageable){
+        Page<MedicalService> medicalServices = medicalServiceRepository.searchByKeyword(name, pageable);
+        return medicalServices.map(this::mapToDto);
     }
 
     @Transactional

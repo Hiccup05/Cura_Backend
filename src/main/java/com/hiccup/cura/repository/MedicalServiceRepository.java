@@ -2,6 +2,8 @@ package com.hiccup.cura.repository;
 
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.model.MedicalService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +23,7 @@ public interface MedicalServiceRepository extends JpaRepository<MedicalService, 
     Optional<MedicalService> findById(Long id);
 
     @EntityGraph(attributePaths = {"specialization"})
-    List<MedicalService> findAllByIsActiveTrue();
+    Page<MedicalService> findAllByIsActiveTrue(Pageable pageable);
     @Query("SELECT new com.hiccup.cura.dto.response.MedicalServiceResponseDto(" +
             "s.id, s.name, s.price, s.durationMinutes, s.description, s.isActive, " +
             "sp.id, sp.name, s.photoUrl) " +
@@ -34,6 +36,6 @@ public interface MedicalServiceRepository extends JpaRepository<MedicalService, 
 
     boolean existsByNameAndSpecialization_id(String name, Long specializationId);
 
-    @Query("select m from MedicalService m where LOWER(m.name) like lower(Concat('%', :name , '%')) ")
-    List<MedicalService> searchByName(@RequestParam("name") String name);
+    @Query("select m from MedicalService m where LOWER(m.name) like lower(Concat('%', :keyword , '%')) ")
+    Page<MedicalService> searchByKeyword(@RequestParam("keyword") String keyword, Pageable pageable);
 }
