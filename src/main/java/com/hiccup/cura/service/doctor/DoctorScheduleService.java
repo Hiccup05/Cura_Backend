@@ -1,4 +1,4 @@
-package com.hiccup.cura.service;
+package com.hiccup.cura.service.doctor;
 
 import com.hiccup.cura.dto.reqeust.ScheduleRequestDto;
 import com.hiccup.cura.dto.reqeust.ScheduleUpdateRequestDto;
@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.util.List;
 
 @Service
@@ -54,6 +55,12 @@ public class DoctorScheduleService {
         DoctorSchedule byDoctorProfileId = scheduleRepository.findByIdAndDoctorProfile_id(scheduleId, doctorId);
 
         return mapToDto(byDoctorProfileId);
+    }
+
+    public DoctorSchedule getScheduleFromDay(DoctorProfile doctor, DayOfWeek dayOfWeek){
+        return scheduleRepository.findByDayOfWeekAndDoctorProfile_Id(dayOfWeek, doctor.getId()).orElseThrow(() ->
+                new ResourceNotFoundException("Doctor does not have the schedule for this appointment day")
+        );
     }
 
     public List<PublicScheduleResponseDto> getPublicSchedulesOfDoctor(Long doctorId){

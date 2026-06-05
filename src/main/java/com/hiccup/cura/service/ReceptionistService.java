@@ -7,6 +7,7 @@ import com.hiccup.cura.enums.ReceptionistStatus;
 import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
+import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
 import com.hiccup.cura.model.ReceptionistProfile;
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.ReceptionistRepository;
@@ -14,9 +15,13 @@ import com.hiccup.cura.repository.RoleRepository;
 import com.hiccup.cura.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -49,9 +54,9 @@ public class ReceptionistService {
         return mapToDto(save);
     }
 
-    public List<ReceptionistResponseDto> getReceptionists() {
-        return receptionistRepository.findAll().stream()
-                .map(this::mapToDto).toList();
+    public Page<ReceptionistResponseDto> getReceptionists(Pageable pageable) {
+        Page<ReceptionistProfile> all = receptionistRepository.findAll(pageable);
+        return all.map(this::mapToDto);
     }
 
     public ReceptionistResponseDto getReceptionist(Long id) {

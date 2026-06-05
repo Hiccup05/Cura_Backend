@@ -9,18 +9,19 @@ import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.model.DoctorProfile;
+import com.hiccup.cura.model.DoctorSchedule;
 import com.hiccup.cura.model.Specialization;
 import com.hiccup.cura.model.User;
-import com.hiccup.cura.repository.DoctorRepository;
-import com.hiccup.cura.repository.RoleRepository;
-import com.hiccup.cura.repository.SpecializationRepository;
-import com.hiccup.cura.repository.UserRepository;
+import com.hiccup.cura.repository.*;
 import com.hiccup.cura.service.EmailService;
 import com.hiccup.cura.service.doctor.specialization.SpecializationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -64,8 +65,9 @@ public class DoctorService {
                 .map(this::mapToResponseDto).toList();
     }
 
-    public List<PublicDoctorResponseDto> getPublicDoctors(){
-        return doctorRepository.getPublicDoctors(List.of(DoctorStatus.ACTIVE, DoctorStatus.ON_LEAVE)).stream().map(this::mapToPublicResponseDto).toList();
+    public Page<PublicDoctorResponseDto> getPublicDoctors(Pageable pageable){
+        Page<DoctorProfile> publicDoctors = doctorRepository.getPublicDoctors(List.of(DoctorStatus.ACTIVE, DoctorStatus.ON_LEAVE), pageable);
+        return publicDoctors.map(this::mapToPublicResponseDto);
     }
 
     public PublicDoctorResponseDto getPublicDoctor(Long id){
@@ -78,9 +80,13 @@ public class DoctorService {
         return mapToResponseDto(doctorProfile);
     }
 
-    public List<PublicDoctorResponseDto> searchByName(String name){
-        List<DoctorProfile> doctorProfiles = doctorRepository.searchByName(name);
-        return doctorProfiles.stream().map(this::mapToPublicResponseDto).toList();
+    public DoctorProfile getDoctorInternal(Long id){
+        return doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
+    }
+
+    public Page<PublicDoctorResponseDto> searchByName(String name, Pageable pageable){
+        Page<DoctorProfile> doctorProfiles = doctorRepository.searchByName(name, pageable);
+        return doctorProfiles.map(this::mapToPublicResponseDto);
     }
 
     public DoctorDto updateDoctor(Long id, DoctorRequestDto request){
