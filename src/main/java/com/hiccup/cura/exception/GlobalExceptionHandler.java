@@ -2,8 +2,10 @@ package com.hiccup.cura.exception;
 
 import com.hiccup.cura.exception.custom.*;
 import jakarta.servlet.http.HttpServletRequest;
+import org.modelmapper.internal.bytebuddy.dynamic.TypeResolutionStrategy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -48,6 +50,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(new ErrorResponse(409, "Duplicate Entry", ex.getMessage(),
                         request.getRequestURI(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(PatientAccountDeactivatedException.class)
+    public ResponseEntity<ErrorResponse> handlePatientAccountDeactivate(PatientAccountDeactivatedException ex, HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(403, "ACCOUNT_DEACTIVATED", ex.getMessage(),
+                request.getRequestURI(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(StaffAccountDeactivatedException.class)
+    public ResponseEntity<ErrorResponse> handleStaffDisable(StaffAccountDeactivatedException ex, HttpServletRequest request){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(403, "ACCOUNT_DISABLED", ex.getMessage(),
+                request.getRequestURI(), LocalDateTime.now()));
     }
 
     @ExceptionHandler(Exception.class)

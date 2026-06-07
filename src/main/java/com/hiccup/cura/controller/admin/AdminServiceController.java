@@ -60,7 +60,7 @@ public class AdminServiceController {
 
     @PostMapping("/{id}/photo")
     public ResponseEntity<String> uploadPhoto(@PathVariable Long id, @RequestParam("file") MultipartFile file, @AuthenticationPrincipal CustomUser user) throws IOException {
-        return ResponseEntity.ok(serviceService.uploadPhoto(user.getId(), id, file));
+        return ResponseEntity.ok(serviceService.uploadPhoto(id, file));
     }
 
     @DeleteMapping("/{id}/photo")
