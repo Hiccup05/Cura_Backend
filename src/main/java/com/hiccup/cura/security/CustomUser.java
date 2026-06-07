@@ -33,6 +33,11 @@ public class CustomUser implements UserDetails {
         return user.getEmail();
     }
 
+    @Override
+    public boolean isEnabled() {
+        return user.isActive();
+    }
+
     public Long getId(){
         return user.getId();
     }
