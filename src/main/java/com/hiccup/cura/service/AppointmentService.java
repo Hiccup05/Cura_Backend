@@ -99,8 +99,8 @@ public class AppointmentService {
             Pageable pageable
     ) {
        Specification<Appointment> sp= AppointmentSpecification.hasReceptionistId(receptionistId).and(AppointmentSpecification.hasWalkInPatientName(walkInPatientName));
-        Page<Appointment> appointments = appointmentRepository.findAll(sp, pageable);
-        return appointments.map(this::mapToSummaryDto);
+       Page<Appointment> appointments = appointmentRepository.findAll(sp, pageable);
+       return appointments.map(this::mapToSummaryDto);
     }
 
     public AppointmentResponseDto getReceptionistAppointmentById(Long appointmentId) {

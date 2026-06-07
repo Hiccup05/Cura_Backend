@@ -56,7 +56,6 @@ public class PaymentService {
             }
         }
 
-
         KhaltiResposneDto response = getKhaltiResponse(appointmentId, userId,  appointment);
         Payment payment=new Payment();
         payment.setPaymentType(PaymentType.KHALTI);
