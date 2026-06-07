@@ -17,6 +17,8 @@ import com.hiccup.cura.service.EmailService;
 import com.hiccup.cura.service.doctor.specialization.SpecializationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -75,6 +77,7 @@ public class DoctorService {
         return mapToPublicResponseDto(doctorProfile);
     }
 
+    @Cacheable(value="doctors", key="#id")
     public DoctorDto getDoctor(Long id){
         DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
         return mapToResponseDto(doctorProfile);
@@ -89,6 +92,7 @@ public class DoctorService {
         return doctorProfiles.map(this::mapToPublicResponseDto);
     }
 
+    @CacheEvict(value = "doctors", key = "#id")
     public DoctorDto updateDoctor(Long id, DoctorRequestDto request){
         DoctorProfile doctor=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
         if(request.getFirstName()!=null){
@@ -113,6 +117,7 @@ public class DoctorService {
         return mapToResponseDto(doctorRepository.save(doctor));
     }
 
+    @CacheEvict(value = "doctors", key = "#id")
     public void deleteDoctor(Long id){
          DoctorProfile doctor = doctorRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with id " + id));
@@ -123,6 +128,7 @@ public class DoctorService {
         doctorRepository.delete(doctor);
     }
 
+    @CacheEvict(value="doctors", key="#id")
     @Transactional
     public DoctorDto changeStatus(Long id, ChangeDoctorStatusRequestDto changeDoctorStatusRequestDto){
         DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));

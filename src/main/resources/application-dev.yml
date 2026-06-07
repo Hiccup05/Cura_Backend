@@ -31,6 +31,9 @@ spring:
       google:
         client-id: ${CLIENT_ID}
         client-secret: ${CLIENT_SECRET}
+
+  redis:
+    uri: ${REDIS_URI}
 api.prefix: /api/v1
 
 admin:
