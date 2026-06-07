@@ -16,6 +16,8 @@ import com.hiccup.cura.repository.UserRepository;
 import com.hiccup.cura.service.CloudinaryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ public class MedicalServiceService {
        return allService.map(this::mapToDto);
    }
 
+   @Cacheable(value="medical service", key="#id")
    public MedicalServiceResponseDto getService(Long id){
        MedicalService medicalService=medicalServiceRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Service isn't created with id " + id));
        return mapToDto(medicalService);
@@ -81,6 +84,7 @@ public class MedicalServiceService {
        return mapToDto(medicalServiceRepository.save(medicalService));
     }
 
+    @CacheEvict(value="medical service", key="#id")
     @Transactional
     public MedicalServiceResponseDto updateMedicalService(Long id, MedicalServiceRequestDto medicalServiceRequestDto){
         MedicalService medicalService = medicalServiceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Service isn't created with id " + id));
@@ -103,6 +107,7 @@ public class MedicalServiceService {
         return mapToDto(medicalServiceRepository.save(medicalService));
     }
 
+    @CacheEvict(value="medical service", key = "#id")
     public MessageResponseDto toggleStatus(Long id) {
         MedicalService service = medicalServiceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Medical service not found with id " + id));
@@ -111,13 +116,10 @@ public class MedicalServiceService {
         return new MessageResponseDto("Service " + (service.getIsActive() ? "activated" : "deactivated") + " successfully", LocalDateTime.now());
     }
 
-    public String uploadPhoto(Long userId, Long id, MultipartFile file) throws IOException {
+    @CacheEvict(value="medical service photo", key="#id")
+    public String uploadPhoto(Long id, MultipartFile file) throws IOException {
         MedicalService service = medicalServiceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Medical service not found with id " + id));
-        User user=userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + userId));
-        if(user.getRole().stream().noneMatch(role->role.getName().equals(RoleType.ADMIN))){
-            throw new UnauthorizedUserAccessException("The user is not a admin.");
-        }
         String publicId="service_"+service.getId();
         String photoUrl = cloudinaryService.uploadServicePhoto(file, publicId);
         service.setPhotoUrl(photoUrl);
@@ -125,12 +127,14 @@ public class MedicalServiceService {
         return photoUrl;
     }
 
+    @Cacheable(value="medical service photo", key="#id")
     public String getPhoto(Long id){
         MedicalService service = medicalServiceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Medical service not found with id " + id));
         return service.getPhotoUrl()!=null?service.getPhotoUrl():"";
     }
 
+    @CacheEvict(value="medical service photo", key="#id")
     public void deletePhoto(Long id) throws IOException {
         MedicalService service = medicalServiceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Medical service not found with id " + id));

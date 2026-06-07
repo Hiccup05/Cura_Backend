@@ -60,7 +60,6 @@ public class LeaveService {
         doctorLeave.setEndDate(leaveRequestDto.getEndDate());
         doctorLeave.setReason(leaveRequestDto.getReason());
         doctorLeave= doctorLeaveRepository.save(doctorLeave);
-        doctorProfile.setDoctorStatus(DoctorStatus.ON_LEAVE);
         return new LeaveResponseDto(doctorLeave.getId(), doctorLeave.getStartDate(), doctorLeave.getEndDate(), doctorLeave.getReason(),
                 doctorLeave.getDoctorProfile().getId());
     }

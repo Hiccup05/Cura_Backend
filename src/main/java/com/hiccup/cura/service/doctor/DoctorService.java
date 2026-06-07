@@ -9,7 +9,6 @@ import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.model.DoctorProfile;
-import com.hiccup.cura.model.DoctorSchedule;
 import com.hiccup.cura.model.Specialization;
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.*;
@@ -22,8 +21,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.time.DayOfWeek;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -72,6 +69,7 @@ public class DoctorService {
         return publicDoctors.map(this::mapToPublicResponseDto);
     }
 
+    @Cacheable(value="publicDoctor", key="#id")
     public PublicDoctorResponseDto getPublicDoctor(Long id){
         DoctorProfile doctorProfile = doctorRepository.getPublicDoctor(id, List.of(DoctorStatus.ACTIVE, DoctorStatus.ON_LEAVE)).orElseThrow(() -> new ResourceNotFoundException("Doctor with id " + id + "does not exist"));
         return mapToPublicResponseDto(doctorProfile);
