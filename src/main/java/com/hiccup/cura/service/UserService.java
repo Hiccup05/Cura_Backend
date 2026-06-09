@@ -9,6 +9,8 @@ import java.util.Map;
 @Service
 public interface UserService {
 
+    void toggleStatus(Long id);
+
     String getProfilePictureUrl(Long id);
 
     Map<String, String> updateProfilePictureUrl(Long id, MultipartFile file) throws IOException;

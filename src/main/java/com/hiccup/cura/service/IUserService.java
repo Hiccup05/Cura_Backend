@@ -17,6 +17,13 @@ public class IUserService implements UserService {
     private final CloudinaryService cloudinaryService;
 
     @Override
+    public void toggleStatus(Long id){
+        User user=getUserByIdInternal(id);
+        user.setActive(!user.isActive());
+        userRepository.save(user);
+    }
+
+    @Override
     public String getProfilePictureUrl(Long id){
         User user = getUserByIdInternal(id);
         return user.getProfilePictureUrl()!=null ? user.getProfilePictureUrl() : " ";
