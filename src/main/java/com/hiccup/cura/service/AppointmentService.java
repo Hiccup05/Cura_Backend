@@ -10,14 +10,11 @@ import com.hiccup.cura.exception.custom.*;
 import com.hiccup.cura.model.*;
 import com.hiccup.cura.repository.*;
 import com.hiccup.cura.service.doctor.DoctorScheduleService;
-import com.hiccup.cura.service.doctor.DoctorService;
-import com.hiccup.cura.service.medicalservice.MedicalServiceService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -58,7 +55,7 @@ public class AppointmentService {
 
         DoctorSchedule doctorSchedule=doctorScheduleService.getScheduleFromDay(doctor, dayOfWeek);
 
-        checkDoctorAvaiability(doctorSchedule, doctor, appointmentRequestDto);
+        checkDoctorAvailability(doctorSchedule, doctor, appointmentRequestDto);
 
         validateAppointmentTime(appointmentRequestDto.getAppointmentDate(), appointmentRequestDto.getAppointmentTime());
 
@@ -329,7 +326,7 @@ public class AppointmentService {
         appointment.setMedicalService(medicalService);
     }
 
-    private void checkDoctorAvaiability(DoctorSchedule doctorSchedule, DoctorProfile doctor, AppointmentRequestDto appointmentRequestDto){
+    private void checkDoctorAvailability(DoctorSchedule doctorSchedule, DoctorProfile doctor, AppointmentRequestDto appointmentRequestDto){
         if(!Boolean.TRUE.equals(doctorSchedule.getIsAvailable())) {
             throw new IllegalStateException("Doctor is not available for this appointment day");
         }

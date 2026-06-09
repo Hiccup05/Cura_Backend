@@ -18,13 +18,13 @@ public class IUserService implements UserService {
 
     @Override
     public String getProfilePictureUrl(Long id){
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        User user = getUserByIdInternal(id);
         return user.getProfilePictureUrl()!=null ? user.getProfilePictureUrl() : " ";
     }
 
     @Override
     public Map<String, String> updateProfilePictureUrl(Long id, MultipartFile file) throws IOException {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        User user = getUserByIdInternal(id);
         String publicId="user_"+user.getId();
         String profileUrl = cloudinaryService.uploadUserProfile(file, publicId);
         user.setProfilePictureUrl(profileUrl);
@@ -34,7 +34,7 @@ public class IUserService implements UserService {
 
     @Override
     public void deleteProfilePicture(Long id) throws IOException {
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+        User user = getUserByIdInternal(id);
         if(user.getProfilePictureUrl()!=null){
             cloudinaryService.deleteUserProfilePhoto(extractPublicId(user.getProfilePictureUrl()));
             user.setProfilePictureUrl(null);
@@ -51,5 +51,9 @@ public class IUserService implements UserService {
         String afterUpload = withoutExtension.substring(withoutExtension.indexOf("upload/") + 7);
         // strip version segment if present (starts with 'v' followed by digits)
         return afterUpload.replaceFirst("^v\\d+/", "");
+    }
+
+    private User getUserByIdInternal(Long id){
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
     }
 }
