@@ -5,6 +5,7 @@ import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +17,13 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+
+    @PreAuthorize("hasRole('PATIENT')")
+    @PatchMapping
+    public ResponseEntity<Void> toggleStatus(@AuthenticationPrincipal CustomUser user){
+        userService.toggleStatus(user.getId());
+        return ResponseEntity.noContent().build();
+    }
 
     @PostMapping("/profile/picture")
     public ResponseEntity<ApiResposne> uploadProfilePicture(@RequestParam MultipartFile file, @AuthenticationPrincipal CustomUser user) throws IOException {

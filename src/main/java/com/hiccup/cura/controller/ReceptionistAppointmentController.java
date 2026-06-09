@@ -36,7 +36,6 @@ public class ReceptionistAppointmentController {
     }
 
     @GetMapping("/{appointmentId}")
-    @PreAuthorize("hasRole('RECEPTIONIST')")
     public ResponseEntity<AppointmentResponseDto> getReceptionistAppointmentById(
             @PathVariable Long appointmentId
     ) {
@@ -46,9 +45,7 @@ public class ReceptionistAppointmentController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('RECEPTIONIST')")
     public ResponseEntity<Page<AppointmentSummaryDto>> getReceptionistAppointments(
-            @AuthenticationPrincipal CustomUser principal,
             @RequestParam(required = false) Long receptionistId,
             @RequestParam(required = false) String walkInPatientName,
             @RequestParam(defaultValue = "0") int page,

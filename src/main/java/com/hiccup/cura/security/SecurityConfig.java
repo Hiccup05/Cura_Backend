@@ -35,13 +35,14 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final Oauth2SuccessHandler oauth2SuccessHandler;
     private final ObjectMapper mapper;
-    private static final String G_URL="/api/v1/auth/**";
-    private static final String A_URL="/api/v1/admin/**";
-    private static final String D_URL="/api/v1/doctor/**";
-    private static final String P_URL="/api/v1/public/**";
-    private static final String PA_URL="/api/v1/patients/**";
-    private static final String APPOINTMENT_URL= "/api/v1/appointment/**";
-    private static final String PRESCRIPTION_URL = "/api/v1/appointment/prescription/**";
+    private static final String G_URL="${api.prefix}/auth/**";
+    private static final String A_URL="${api.prefix}/admin/**";
+    private static final String D_URL="${api.prefix}/doctor/**";
+    private static final String P_URL="${api.prefix}/public/**";
+    private static final String PA_URL="${api.prefix}/patients/**";
+    private static final String APPOINTMENT_URL= "${api.prefix}/appointment/**";
+    private static final String PRESCRIPTION_URL = "${api.prefix}/appointment/prescription/**";
+    private static final String RECEPTIONIST_URL="${api.prefix}/receptionist/**";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http){
@@ -51,14 +52,15 @@ public class SecurityConfig {
                 .cors(c-> c.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers(G_URL).permitAll()
-                                .requestMatchers("/api/v1/payment/verify").permitAll()
+                                .requestMatchers("${api.prefix}/payment/verify").permitAll()
                                 .requestMatchers(P_URL).permitAll()
                                 .requestMatchers(A_URL).hasRole(RoleType.ADMIN.name())
                                 .requestMatchers(D_URL).hasRole(RoleType.DOCTOR.name())
                                 .requestMatchers(PRESCRIPTION_URL).hasAnyRole(RoleType.DOCTOR.name())
                                 .requestMatchers(PA_URL).hasRole(RoleType.PATIENT.name())
                                 .requestMatchers(APPOINTMENT_URL).hasAnyRole(RoleType.PATIENT.name(), RoleType.RECEPTIONIST.name())
-                                .anyRequest().permitAll()
+                                .requestMatchers(RECEPTIONIST_URL).hasAnyRole(RoleType.RECEPTIONIST.name())
+                                .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .oauth2Login(oAuth2-> oAuth2.failureHandler(
