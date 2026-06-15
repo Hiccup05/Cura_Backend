@@ -363,6 +363,7 @@ public class AppointmentService {
         appointment.setAppointmentTime(appointmentRequestDto.getAppointmentTime());
         appointment.setBookedAt(LocalDateTime.now());
         appointment.setReason(appointmentRequestDto.getReason());
+        appointment.setStatus(AppointmentStatus.PENDING);
         Prescription prescription=new Prescription();
         prescription.setAppointment(appointment);
         prescription=prescriptionRepository.save(prescription);
