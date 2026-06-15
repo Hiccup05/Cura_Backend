@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class CustomUserService implements UserDetailsService {
@@ -21,12 +23,15 @@ public class CustomUserService implements UserDetailsService {
         User user= userRepository.findByEmail(email).orElseThrow(()-> new UsernameNotFoundException("User not found"));
 
         if(!user.isActive()){
-            boolean isPatient=user.getRole().stream().anyMatch(role-> role.getName().equals(RoleType.PATIENT));
+            Set<RoleType> staffRoles = Set.of(RoleType.ADMIN, RoleType.RECEPTIONIST, RoleType.DOCTOR);
+            boolean isStaff = user.getRole().stream()
+                    .anyMatch(role -> staffRoles.contains(role.getName()));
 
-            if(isPatient){
-                throw new PatientAccountDeactivatedException("Your account is deactivated. Would you like to reactivate?");
+            if(isStaff){
+                throw new StaffAccountDeactivatedException("Your account has been deactivated. Please contact admin.");
             }
-            throw new StaffAccountDeactivatedException("Your account has been deactivated. Please contact admin.");
+            throw new PatientAccountDeactivatedException("Your account is deactivated. Would you like to reactivate?");
+
         }
         return new CustomUser(user);
     }
