@@ -1,7 +1,7 @@
 package com.hiccup.cura.exception.custom;
 
-public class TokenExpiredException extends RuntimeException {
-    public TokenExpiredException(String message) {
+public class ReactivationTokenExpiredException extends RuntimeException {
+    public ReactivationTokenExpiredException(String message) {
         super(message);
     }
 }
