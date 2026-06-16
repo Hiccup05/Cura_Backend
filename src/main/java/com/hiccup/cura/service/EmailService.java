@@ -478,4 +478,75 @@ public class EmailService {
                 appointment.getAppointmentTime()
         );
     }
+
+    public void sendReactivationTokenUrl(String to, String reactivationUrl) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject("Reactivation of the account-CuraOfficial");
+
+            String content = buildReactivationEmailTemplate(reactivationUrl);
+
+            helper.setText(content, true);
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String buildReactivationEmailTemplate(String reactivationUrl) {
+        String template = """
+<div style="font-family: Arial, sans-serif; padding: 20px;">
+    <h2 style="color: #2980b9;">Reactivate Your Account 🔓</h2>
+    <p>Hello,</p>
+    <p>We received a request to reactivate your Cura account.</p>
+    <p>Click the button below to reactivate your account:</p>
+    <a href="%s" style="display: inline-block; padding: 12px 24px; background-color: #2980b9; color: white; text-decoration: none; border-radius: 4px; margin: 20px 0;">
+        Reactivate Account
+    </a>
+    <p>This link will expire in <b>24 hours</b>.</p>
+    <p>If you did not request this, you can safely ignore this email.</p>
+    <br/>
+    <p>Thank you,<br/>Cura Healthcare Team</p>
+</div>
+""";
+        return String.format(template, reactivationUrl);
+    }
+
+    public void sendReactivationSuccess(String to, String username) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(to);
+            helper.setSubject("Reactivation Successfull-CuraOfficial");
+
+            String content = buildReactivationSuccessTemplate(username);
+
+            helper.setText(content, true);
+
+            mailSender.send(message);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String buildReactivationSuccessTemplate(String username) {
+        String template = """
+<div style="font-family: Arial, sans-serif; padding: 20px;">
+    <h2 style="color: #27ae60;">Account Reactivated Successfully ✅</h2>
+    <p>Hello %s,</p>
+    <p>Your Cura account has been successfully reactivated. You can now log in and access all your health records and appointments.</p>
+    <p style="margin-top: 20px;">If you did not request this reactivation, please contact us immediately.</p>
+    <br/>
+    <p>Thank you,<br/>Cura Healthcare Team</p>
+</div>
+""";
+        return String.format(template, username);
+    }
 }
