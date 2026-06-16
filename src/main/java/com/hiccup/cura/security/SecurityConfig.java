@@ -44,6 +44,7 @@ public class SecurityConfig {
     private static final String APPOINTMENT_URL= "/api/v1/appointment/**";
     private static final String PRESCRIPTION_URL = "/api/v1/appointment/prescription/**";
     private static final String RECEPTIONIST_URL="/api/v1/receptionist/**";
+    private static final String REACTIVATE_URL="/api/v1/reactivate/**";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http){
@@ -61,6 +62,7 @@ public class SecurityConfig {
                                 .requestMatchers(PA_URL).hasRole(RoleType.PATIENT.name())
                                 .requestMatchers(APPOINTMENT_URL).hasAnyRole(RoleType.PATIENT.name(), RoleType.RECEPTIONIST.name())
                                 .requestMatchers(RECEPTIONIST_URL).hasAnyRole(RoleType.RECEPTIONIST.name())
+                                .requestMatchers(REACTIVATE_URL).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
