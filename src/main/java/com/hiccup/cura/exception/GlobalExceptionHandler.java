@@ -2,10 +2,8 @@ package com.hiccup.cura.exception;
 
 import com.hiccup.cura.exception.custom.*;
 import jakarta.servlet.http.HttpServletRequest;
-import org.modelmapper.internal.bytebuddy.dynamic.TypeResolutionStrategy;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -62,6 +60,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleStaffDisable(StaffAccountDeactivatedException ex, HttpServletRequest request){
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse(403, "ACCOUNT_DISABLED", ex.getMessage(),
                 request.getRequestURI(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(InvalidReactivationTokenException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidToken(
+            Exception ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(404, "INVALID_TOKEN",
+                        "Invalid reactivation link", request.getRequestURI(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(ReactivationTokenExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleTokenExpired(
+            Exception ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.GONE)
+                .body(new ErrorResponse(410, "TOKEN_EXPIRED",
+                        "Your reactivation link has expired. Please request a new one.", request.getRequestURI(), LocalDateTime.now()));
     }
 
     @ExceptionHandler(Exception.class)
