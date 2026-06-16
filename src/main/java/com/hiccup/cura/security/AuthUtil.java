@@ -36,7 +36,6 @@ public class AuthUtil {
     private final PatientRepository patientRepository;
     @Value("${auth.token.jwt}")
     private String jwtSecret;
-
     private final UserRepository userRepository;
     private final RoleRepository repository;
     private final EmailService emailService;
