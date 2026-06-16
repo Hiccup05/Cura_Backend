@@ -5,6 +5,8 @@ import com.hiccup.cura.dto.response.LoginResponseDto;
 import com.hiccup.cura.dto.response.SignupResponseDto;
 import com.hiccup.cura.enums.AuthType;
 import com.hiccup.cura.enums.RoleType;
+import com.hiccup.cura.exception.custom.PatientAccountDeactivatedException;
+import com.hiccup.cura.exception.custom.StaffAccountDeactivatedException;
 import com.hiccup.cura.model.PatientProfile;
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.PatientRepository;
@@ -157,6 +159,17 @@ public class AuthUtil {
             if(email!=null && !email.isBlank() && !email.equals(user.getUsername())){
                 user.setUsername(email);
                 userRepository.save(user);
+            }
+            if(!user.isActive()){
+                Set<RoleType> staffRoles = Set.of(RoleType.RECEPTIONIST, RoleType.DOCTOR);
+                boolean isStaff = user.getRole().stream()
+                        .anyMatch(role -> staffRoles.contains(role.getName()));
+
+                if(isStaff){
+                    throw new StaffAccountDeactivatedException("Your account has been deactivated. Please contact admin.");
+                }
+                throw new PatientAccountDeactivatedException("Your account is deactivated. Would you like to reactivate?");
+
             }
         } else{
             throw new BadCredentialsException("This email is already registered with provider "+ emailUser.getProviderId());
