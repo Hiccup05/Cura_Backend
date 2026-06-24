@@ -35,7 +35,6 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final JwtFilter jwtFilter;
     private final Oauth2SuccessHandler oauth2SuccessHandler;
-    private final ObjectMapper mapper;
     private static final String G_URL="/api/v1/auth/**";
     private static final String A_URL="/api/v1/admin/**";
     private static final String D_URL="/api/v1/doctor/**";
