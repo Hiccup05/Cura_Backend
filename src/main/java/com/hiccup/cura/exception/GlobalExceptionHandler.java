@@ -78,6 +78,14 @@ public class GlobalExceptionHandler {
                         "Your reactivation link has expired. Please request a new one.", request.getRequestURI(), LocalDateTime.now()));
     }
 
+    @ExceptionHandler(PaymentProviderNotSupported.class)
+    public ResponseEntity<ErrorResponse> handlePaymentProviderNotSupported(
+            Exception ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.GONE)
+                .body(new ErrorResponse(404, "Payment_Provider_NOT_SUPPORTED",
+                        ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneral(
             Exception ex, HttpServletRequest request) {
