@@ -1,4 +1,13 @@
 package com.hiccup.cura.service.payment;
 
-public class PaymentStrategy {
+import com.hiccup.cura.dto.response.PaymentInitiateResponse;
+import com.hiccup.cura.dto.response.PaymentVerificationResponse;
+import org.springframework.stereotype.Component;
+
+import java.util.Map;
+
+@Component
+public interface PaymentStrategy {
+    PaymentInitiateResponse initiate(Long appointmentId, Long userId);
+    PaymentVerificationResponse verify(Map<String, String> requestParams);
 }
