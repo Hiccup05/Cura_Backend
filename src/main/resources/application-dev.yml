@@ -52,3 +52,7 @@ cloudinary:
 
 frontend:
   url: http://localhost:3000
+
+esewa:
+  secret: ${ESEWA_SECRET}
+  product_code: EPAYTEST
