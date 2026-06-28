@@ -9,5 +9,5 @@ import java.util.Map;
 @Component
 public interface PaymentStrategy {
     PaymentInitiateResponse initiate(Long appointmentId, Long userId) throws Exception;
-    PaymentVerificationResponse verify(Map<String, String> requestParams);
+    PaymentVerificationResponse verify(Map<String, String> requestParams) throws Exception;
 }
