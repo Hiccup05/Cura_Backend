@@ -1,36 +1,48 @@
 package com.hiccup.cura.controller;
 
+import com.hiccup.cura.dto.response.PaymentInitiateResponse;
+import com.hiccup.cura.dto.response.PaymentVerificationResponse;
+import com.hiccup.cura.enums.PaymentProvider;
 import com.hiccup.cura.security.CustomUser;
-import com.hiccup.cura.service.PaymentService;
-import jakarta.servlet.http.HttpServletResponse;
+import com.hiccup.cura.service.payment.PaymentFactory;
+import com.hiccup.cura.service.payment.PaymentStrategy;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.util.Map;
 
 @RestController
+@RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
-@RequestMapping("${api.prefix}/payment")
-@Slf4j
 public class PaymentController {
-    private final PaymentService paymentService;
 
-    @PostMapping("/{appointmentId}")
-    public ResponseEntity<String> initiatePayment(@PathVariable Long appointmentId, @AuthenticationPrincipal CustomUser user){
-        return ResponseEntity.ok(paymentService.initiatePaymentService(appointmentId, user.getId()));
+    private final PaymentFactory paymentFactory;
+
+    @PostMapping("/initiate")
+    public ResponseEntity<PaymentInitiateResponse> initiatePayment(
+            @RequestParam Long appointmentId,
+            @AuthenticationPrincipal CustomUser user,
+            @RequestParam PaymentProvider provider) throws Exception {
+
+        PaymentStrategy strategy = paymentFactory.createPaymentStrategy(provider);
+
+        PaymentInitiateResponse response = strategy.initiate(appointmentId, user.getId());
+
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/verify")
-    public void checkPayment(@RequestParam String pidx, HttpServletResponse response) throws IOException {
-        try {
-            paymentService.khaltiLookup(pidx);
-            response.sendRedirect("http://localhost:3000/payment/success?pidx=" + pidx);
-        } catch (Exception e) {
-            log.error("Payment verification failed: {}", e.getMessage());
-            response.sendRedirect("http://localhost:3000/payment/failed");
-        }
+
+    @PostMapping("/verify/{provider}")
+    public ResponseEntity<PaymentVerificationResponse> verifyPayment(
+            @PathVariable PaymentProvider provider,
+            @RequestParam Map<String, String> allRequestParams) throws Exception {
+
+        PaymentStrategy strategy = paymentFactory.createPaymentStrategy(provider);
+
+        PaymentVerificationResponse response = strategy.verify(allRequestParams);
+
+        return ResponseEntity.ok(response);
     }
 }
