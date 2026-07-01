@@ -1,9 +1,18 @@
 package com.hiccup.cura.util;
 
+import com.hiccup.cura.enums.PaymentStatus;
+import com.hiccup.cura.enums.PaymentType;
 import com.hiccup.cura.enums.RoleType;
+import com.hiccup.cura.model.PatientProfile;
+import com.hiccup.cura.model.Payment;
 import com.hiccup.cura.model.Role;
 import com.hiccup.cura.model.User;
 import net.datafaker.Faker;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 public class TestDataFactory {
@@ -37,5 +46,24 @@ public class TestDataFactory {
         doctor.setRole(Set.of(role));
 
         return doctor;
+    }
+
+    public static PatientProfile createPatientProfile(){
+        PatientProfile patientProfile=new PatientProfile();
+        patientProfile.setUser(createPatient());
+        patientProfile.setId(createPatient().getId());
+        return patientProfile;
+    }
+
+    public static Payment createPayment(PaymentStatus paymentStatus){
+        Payment payment=new Payment();
+        payment.setPaymentStatus(paymentStatus);
+        payment.setPaymentUrl("random url");
+        payment.setPidx(String.valueOf(faker.number().randomNumber()));
+        payment.setPaymentType(PaymentType.KHALTI);
+        payment.setAmount(BigDecimal.ONE);
+        payment.setPaidAt(LocalDateTime.now());
+        payment.setExpiresAt(OffsetDateTime.from(LocalDateTime.now().plusHours(10)));
+        return payment;
     }
 }
