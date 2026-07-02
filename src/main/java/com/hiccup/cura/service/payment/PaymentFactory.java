@@ -6,18 +6,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class PaymentFactory {
     private final Map<String, PaymentStrategy> paymentStrategyMap;
 
-    public PaymentStrategy createPaymentStrategy(PaymentProvider paymentProvider){
-
-        if(paymentStrategyMap.containsKey(paymentProvider.getBeanName())){
-            return paymentStrategyMap.get(paymentProvider.getBeanName());
-        }else{
-            throw new PaymentProviderNotSupported(paymentProvider + " is not supported in Cura.");
-        }
+    public PaymentStrategy createPaymentStrategy(PaymentProvider paymentProvider) {
+        return Optional.ofNullable(paymentStrategyMap.get(paymentProvider.getBeanName()))
+                .orElseThrow(() -> new PaymentProviderNotSupported(
+                        paymentProvider + " is not supported in Cura."
+                ));
     }
 }
