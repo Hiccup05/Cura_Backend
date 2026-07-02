@@ -150,7 +150,7 @@ public class KhaltiPaymentStrategy implements PaymentStrategy {
             }else if(appointment.getStatus()== AppointmentStatus.CANCELLED){
                 throw new InvalidAppointmentException("Appointment is cancelled");
             }
-        }else{
+        }else if(appointment.getReceptionist()!=null && appointment.getReceptionist().getId().equals(userId)){
             throw new InvalidAppointmentException("Appointment booked by receptionist does not need payment");
         }
     }
