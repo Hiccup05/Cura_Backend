@@ -1,10 +1,20 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/Cura
-    username: postgres
-    password: password
+    username: yoyoyuo
+    password: p70ddad
     driver-class-name: org.postgresql.Driver
-
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: hdlasjfoenlmn
+    password: kadfadsfada
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   jpa:
     database:
       platform: org.hibernate.dialect.PostgreSQLDialect
@@ -18,8 +28,8 @@ spring:
   security.oauth2.client:
     registration:
       google:
-        client-id: 838511677501-gj2nojfroisk336g61vgs77oboapukv8.apps.googleusercontent.com
-        client-secret: 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
+        client-id: ddsadeeadda
+        client-secret: adfeeedadesada
 
 api.prefix: /api/v1
 
@@ -30,5 +40,16 @@ admin:
 
 auth:
   token:
-    jwt: G7K2Q9L1M5Z8X49832DNALDKJP0B3R7T9H2Y5N8D1V4S0F6J3W7U9A2
+    jwt: test-secret-key-doesnt-need-to-be-real-1234567890
 
+cloudinary:
+  cloud-name: docy21232212jnjhdnewa
+  api-key: 232122w344534qdad
+  api-secret: T123234edsfsadsd
+
+esewa:
+  secret: 33332333
+  product_code: E233322
+
+frontend:
+  url: http://localhost:3000
