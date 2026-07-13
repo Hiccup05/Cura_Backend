@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidToken(
             Exception ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(404, "INVALID_TOKEN",
+                .body(new ErrorResponse(400, "INVALID_TOKEN",
                         "Invalid reactivation link", request.getRequestURI(), LocalDateTime.now()));
     }
 
