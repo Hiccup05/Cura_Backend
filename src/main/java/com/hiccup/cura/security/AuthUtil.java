@@ -168,7 +168,6 @@ public class AuthUtil {
                     throw new StaffAccountDeactivatedException("Your account has been deactivated. Please contact admin.");
                 }
                 throw new PatientAccountDeactivatedException("Your account is deactivated. Would you like to reactivate?");
-
             }
         } else{
             throw new BadCredentialsException("This email is already registered with provider "+ emailUser.getProviderId());
