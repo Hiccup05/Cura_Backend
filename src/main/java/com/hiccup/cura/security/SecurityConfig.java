@@ -62,6 +62,7 @@ public class SecurityConfig {
                                 .requestMatchers(APPOINTMENT_URL).hasAnyRole(RoleType.PATIENT.name(), RoleType.RECEPTIONIST.name())
                                 .requestMatchers(RECEPTIONIST_URL).hasAnyRole(RoleType.RECEPTIONIST.name())
                                 .requestMatchers(REACTIVATE_URL).permitAll()
+                                .requestMatchers("/api/v1/payments/verify/{provider}").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
