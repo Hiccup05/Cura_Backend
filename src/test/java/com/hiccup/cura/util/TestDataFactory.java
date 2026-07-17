@@ -33,6 +33,8 @@ public class TestDataFactory {
     @Autowired
     private MedicalServiceRepository medicalServiceRepository;
 
+    @Autowired
+    private PaymentRepository paymentRepository;
 
     /**
      * Generates a realistic User profile with a PATIENT role.
@@ -121,5 +123,46 @@ public class TestDataFactory {
                 .medicalService(medicalService)
                 .status(AppointmentStatus.PENDING)
                 .build());
+    }
+
+    @Transactional
+    public void createPendingPayment(BigDecimal servicePrice) {
+        Role patientRole = roleRepository.save(Role.builder().name(RoleType.PATIENT).build());
+
+        User user = userRepository.save(User.builder()
+                .email("patient-" + UUID.randomUUID() + "@test.com")
+                .active(true)
+                .role(Set.of(patientRole))
+                .build());
+
+        PatientProfile patientProfile = patientProfileRepository.save(
+                PatientProfile.builder()
+                        .user(user)
+                        .firstName("Test")
+                        .lastName("Patient")
+                        .build());
+
+        MedicalService medicalService = medicalServiceRepository.save(
+                MedicalService.builder()
+                        .name("Test Service")
+                        .price(servicePrice)
+                        .isActive(true)
+                        .build());
+
+        Appointment pendingAppointmentForNewPatient  = appointmentRepository.save(Appointment.builder()
+                .patient(patientProfile)
+                .medicalService(medicalService)
+                .status(AppointmentStatus.PENDING)
+                .build());
+
+        Payment payment=new Payment();
+        payment.setPaymentType(PaymentType.ESEWA);
+        payment.setPaymentStatus(PaymentStatus.PENDING);
+        payment.setAmount(pendingAppointmentForNewPatient.getMedicalService().getPrice());
+        payment.setAppointment(pendingAppointmentForNewPatient);
+        payment.setPidx(String.valueOf(1));
+        payment.setPaymentUrl("https://rc-epay.esewa.com.np/api/epay/main/v2/form");
+        payment.setExpiresAt(OffsetDateTime.now().plusMinutes(15));
+        paymentRepository.save(payment);
     }
 }
