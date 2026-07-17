@@ -114,7 +114,5 @@ public class KhaltiPaymentIntegrationTesting {
                         .param("provider", PaymentProvider.KHALTI.toString())
                         .with(user(mockUser)))
                 .andExpect(status().isOk());
-
-
     }
 }
