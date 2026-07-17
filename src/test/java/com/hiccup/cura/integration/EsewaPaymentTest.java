@@ -4,6 +4,7 @@ package com.hiccup.cura.integration;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import com.hiccup.cura.enums.PaymentProvider;
 import com.hiccup.cura.enums.PaymentStatus;
+import com.hiccup.cura.enums.PaymentType;
 import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.model.Appointment;
 import com.hiccup.cura.model.Payment;
@@ -11,6 +12,7 @@ import com.hiccup.cura.model.Role;
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.*;
 import com.hiccup.cura.security.CustomUser;
+import com.hiccup.cura.util.EsewaSignatureGenerator;
 import com.hiccup.cura.util.TestDataFactory;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -19,14 +21,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.time.OffsetDateTime;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -50,19 +56,8 @@ public class EsewaPaymentTest {
     private MockMvc mockMvc;
 
     @Autowired
-    private AppointmentRepository appointmentRepository;
-
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private MedicalServiceRepository medicalServiceRepository;
-
-    @Autowired
-    private PatientRepository patientRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
 
     @Autowired
     private PaymentRepository paymentRepository;
@@ -70,10 +65,8 @@ public class EsewaPaymentTest {
     @Autowired
     private TestDataFactory testDataFactory;
 
-    @DynamicPropertySource
-    static void overrideKhaltiUrl(DynamicPropertyRegistry registry) {
-        registry.add("khalti.base-url", wireMock::baseUrl);
-    }
+    @Autowired
+    private EsewaSignatureGenerator signatureGenerator;
 
     @Test
     void testInitiate() throws Exception {
@@ -94,4 +87,52 @@ public class EsewaPaymentTest {
         assertNotNull(byPidx);
         assertEquals(PaymentStatus.PENDING, byPidx.getPaymentStatus());
     }
+
+     // same bean your service uses
+
+    @Test
+    void testVerify() throws Exception {
+        String transactionCode = "000AWEO";
+        String status = "COMPLETE";
+        String totalAmount = "1000.0";
+        String transactionUuid = "1";
+        String productCode = "EPAYTEST";
+        String signedFieldNames = "transaction_code,status,total_amount,transaction_uuid,product_code";
+
+        String signatureMessage = "transaction_code=" + transactionCode +
+                ",status=" + status +
+                ",total_amount=" + totalAmount +
+                ",transaction_uuid=" + transactionUuid +
+                ",product_code=" + productCode +
+                ",signed_field_names=" + signedFieldNames;
+
+        String signature = signatureGenerator.getSignature(signatureMessage);
+
+        String json = """
+        {
+            "transaction_code": "%s",
+            "status": "%s",
+            "total_amount": "%s",
+            "transaction_uuid": "%s",
+            "product_code": "%s",
+            "signed_field_names": "%s",
+            "signature": "%s"
+        }
+        """.formatted(transactionCode, status, totalAmount, transactionUuid, productCode, signedFieldNames, signature);
+
+        String base64Data = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+
+        testDataFactory.createPendingPayment(BigDecimal.ONE);
+
+        mockMvc.perform(post("/api/v1/payments/verify/{provider}", PaymentProvider.ESEWA)
+                        .param("data", base64Data))
+                .andExpect(status().isOk());
+
+        Payment byPidx = paymentRepository.findByPidx(String.valueOf(1));
+        assertNotNull(byPidx);
+        assertEquals(PaymentStatus.COMPLETE, byPidx.getPaymentStatus());
+    }
 }
+
+
+//you know this session of testing payment is a huge lesson and i want to share the things i learned in this test like how i realized that even if we call the endpoints from test i thought it negates the fillter but mockmcv works like calling from external client so it goes through each filter, and how we need permitall for specific request and authenticate for every request, and other we learned here
