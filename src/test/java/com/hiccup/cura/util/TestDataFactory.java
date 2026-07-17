@@ -1,30 +1,44 @@
 package com.hiccup.cura.util;
 
-import com.hiccup.cura.enums.PaymentStatus;
-import com.hiccup.cura.enums.PaymentType;
-import com.hiccup.cura.enums.RoleType;
-import com.hiccup.cura.model.PatientProfile;
-import com.hiccup.cura.model.Payment;
-import com.hiccup.cura.model.Role;
-import com.hiccup.cura.model.User;
+import com.hiccup.cura.enums.*;
+import com.hiccup.cura.model.*;
+import com.hiccup.cura.repository.*;
 import net.datafaker.Faker;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Set;
+import java.util.UUID;
 
+@Component
 public class TestDataFactory {
 
     private static final Faker faker = new Faker();
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PatientRepository patientProfileRepository;
+
+    @Autowired
+    private MedicalServiceRepository medicalServiceRepository;
+
 
     /**
      * Generates a realistic User profile with a PATIENT role.
      */
     public static User createPatient() {
         User user = new User();
-        user.setId(faker.number().randomNumber());
+        user.setId(1L);
         user.setEmail(faker.internet().emailAddress());
         user.setActive(true);
         // Setup the role exactly how your security model expects it
@@ -44,7 +58,6 @@ public class TestDataFactory {
         Role role = new Role();
         role.setName(RoleType.DOCTOR);
         doctor.setRole(Set.of(role));
-
         return doctor;
     }
 
@@ -53,6 +66,17 @@ public class TestDataFactory {
         patientProfile.setUser(createPatient());
         patientProfile.setId(createPatient().getId());
         return patientProfile;
+    }
+
+    public static DoctorProfile createDoctorProfile(){
+       DoctorProfile doctorProfile=new DoctorProfile();
+       doctorProfile.setFirstName("");
+        doctorProfile.setLastName(" ");
+        doctorProfile.setDoctorStatus(DoctorStatus.ACTIVE);
+        doctorProfile.setUser(createDoctor());
+        doctorProfile.setId(1L);
+        doctorProfile.setSpecialization(Set.of(new Specialization(1L, "Cardiologist", 60)));
+        return doctorProfile;
     }
 
     public static Payment createPayment(PaymentStatus paymentStatus){
@@ -65,5 +89,36 @@ public class TestDataFactory {
         payment.setPaidAt(LocalDateTime.now());
         payment.setExpiresAt(OffsetDateTime.from(LocalDateTime.now().plusHours(10)));
         return payment;
+    }
+
+
+    public Appointment createPendingAppointmentForNewPatient(BigDecimal servicePrice) {
+        Role patientRole = roleRepository.save(Role.builder().name(RoleType.PATIENT).build());
+
+        User user = userRepository.save(User.builder()
+                .email("patient-" + UUID.randomUUID() + "@test.com")
+                .active(true)
+                .role(Set.of(patientRole))
+                .build());
+
+        PatientProfile patientProfile = patientProfileRepository.save(
+                PatientProfile.builder()
+                        .user(user)
+                        .firstName("Test")
+                        .lastName("Patient")
+                        .build());
+
+        MedicalService medicalService = medicalServiceRepository.save(
+                MedicalService.builder()
+                        .name("Test Service")
+                        .price(servicePrice)
+                        .isActive(true)
+                        .build());
+
+        return appointmentRepository.save(Appointment.builder()
+                .patient(patientProfile)
+                .medicalService(medicalService)
+                .status(AppointmentStatus.PENDING)
+                .build());
     }
 }
