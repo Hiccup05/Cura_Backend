@@ -3,10 +3,7 @@ package com.hiccup.cura.model;
 import com.hiccup.cura.enums.BloodGroup;
 import com.hiccup.cura.enums.Gender;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -15,6 +12,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PatientProfile {
 
     @Id
