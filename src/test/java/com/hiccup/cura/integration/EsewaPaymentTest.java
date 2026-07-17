@@ -133,6 +133,3 @@ public class EsewaPaymentTest {
         assertEquals(PaymentStatus.COMPLETE, byPidx.getPaymentStatus());
     }
 }
-
-
-//you know this session of testing payment is a huge lesson and i want to share the things i learned in this test like how i realized that even if we call the endpoints from test i thought it negates the fillter but mockmcv works like calling from external client so it goes through each filter, and how we need permitall for specific request and authenticate for every request, and other we learned here
