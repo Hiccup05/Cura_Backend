@@ -3,6 +3,7 @@ package com.hiccup.cura.util;
 import com.hiccup.cura.enums.*;
 import com.hiccup.cura.model.*;
 import com.hiccup.cura.repository.*;
+import jakarta.transaction.Transactional;
 import net.datafaker.Faker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -91,7 +92,7 @@ public class TestDataFactory {
         return payment;
     }
 
-
+    @Transactional
     public Appointment createPendingAppointmentForNewPatient(BigDecimal servicePrice) {
         Role patientRole = roleRepository.save(Role.builder().name(RoleType.PATIENT).build());
 
