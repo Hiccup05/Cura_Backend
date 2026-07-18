@@ -63,10 +63,23 @@ public class EsewaPaymentTest {
     private PaymentRepository paymentRepository;
 
     @Autowired
+    private AppointmentRepository appointmentRepository;
+
+    @Autowired
     private TestDataFactory testDataFactory;
 
     @Autowired
     private EsewaSignatureGenerator signatureGenerator;
+
+    @BeforeEach
+    void cleanDatabase() {
+        // Deleting payments directly is silently undone by the
+        // Appointment.payment cascade (the managed Appointment re-saves the
+        // payment on flush), so remove the owning appointments instead —
+        // CascadeType.ALL propagates the delete to their payments.
+        appointmentRepository.deleteAll();
+        paymentRepository.deleteAll();
+    }
 
     @Test
     void testInitiate() throws Exception {

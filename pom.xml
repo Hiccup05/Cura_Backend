@@ -195,6 +195,17 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<!-- Windows reports the obsolete tzdata id "Asia/Katmandu", which
+					     postgres images based on Debian trixie no longer ship; the JDBC
+					     driver sends it as the TimeZone startup parameter and every
+					     connection is rejected. Use the canonical id instead. -->
+					<argLine>-Duser.timezone=Asia/Kathmandu</argLine>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
