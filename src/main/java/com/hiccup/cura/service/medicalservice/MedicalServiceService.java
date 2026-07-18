@@ -10,6 +10,7 @@ import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
 import com.hiccup.cura.model.MedicalService;
 import com.hiccup.cura.model.Specialization;
 import com.hiccup.cura.model.User;
+import com.hiccup.cura.mapper.MedicalServiceMapper;
 import com.hiccup.cura.repository.MedicalServiceRepository;
 import com.hiccup.cura.repository.SpecializationRepository;
 import com.hiccup.cura.repository.UserRepository;
@@ -34,16 +35,17 @@ public class MedicalServiceService {
    private final SpecializationRepository specializationRepository;
    private final UserRepository userRepository;
    private final CloudinaryService cloudinaryService;
+   private final MedicalServiceMapper medicalServiceMapper;
 
    public Page<MedicalServiceResponseDto> getAll(Pageable pageable){
        Page<MedicalService> allService = medicalServiceRepository.findAll(pageable);
-       return allService.map(this::mapToDto);
+       return allService.map(medicalServiceMapper::toDto);
    }
 
    @Cacheable(value="medical service", key="#id")
    public MedicalServiceResponseDto getService(Long id){
        MedicalService medicalService=medicalServiceRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Service isn't created with id " + id));
-       return mapToDto(medicalService);
+       return medicalServiceMapper.toDto(medicalService);
    }
 
    //use to fetch raw medical service data internally for other services
@@ -54,7 +56,7 @@ public class MedicalServiceService {
 
    public Page<MedicalServiceResponseDto> getActiveServices(Pageable pageable){
        Page<MedicalService> allByIsActiveTrue = medicalServiceRepository.findAllByIsActiveTrue(pageable);
-       return allByIsActiveTrue.map(this::mapToDto);
+       return allByIsActiveTrue.map(medicalServiceMapper::toDto);
    }
 
     public List<MedicalServiceResponseDto> getActiveSpecializationServices(Long specializationId){
@@ -63,7 +65,7 @@ public class MedicalServiceService {
 
     public Page<MedicalServiceResponseDto> searchByKeyword(String name, Pageable pageable){
         Page<MedicalService> medicalServices = medicalServiceRepository.searchByKeyword(name, pageable);
-        return medicalServices.map(this::mapToDto);
+        return medicalServices.map(medicalServiceMapper::toDto);
     }
 
     @Transactional
@@ -81,7 +83,7 @@ public class MedicalServiceService {
                .isActive(true)
                .specialization(specialization)
                .build();
-       return mapToDto(medicalServiceRepository.save(medicalService));
+       return medicalServiceMapper.toDto(medicalServiceRepository.save(medicalService));
     }
 
     @CacheEvict(value="medical service", key="#id")
@@ -104,7 +106,7 @@ public class MedicalServiceService {
             Specialization specialization=specializationRepository.findById(medicalServiceRequestDto.getSpecializationId()).orElseThrow(()-> new ResourceNotFoundException("Specialization cannot be found with id "+medicalServiceRequestDto.getSpecializationId()));
             medicalService.setSpecialization(specialization);
         }
-        return mapToDto(medicalServiceRepository.save(medicalService));
+        return medicalServiceMapper.toDto(medicalServiceRepository.save(medicalService));
     }
 
     @CacheEvict(value="medical service", key = "#id")
@@ -143,12 +145,6 @@ public class MedicalServiceService {
         service.setPhotoUrl(null);
         medicalServiceRepository.save(service);
     }
-
-   private MedicalServiceResponseDto mapToDto(MedicalService service){
-       return new MedicalServiceResponseDto(
-               service.getId(), service.getName(), service.getPrice(), service.getDurationMinutes(),
-                       service.getDescription(), service.getIsActive(),service.getSpecialization().getId(), service.getSpecialization().getName(), service.getPhotoUrl());
-   }
 
     private String extractPublicId(String url) {
         // URL format: https://res.cloudinary.com/cloud/image/upload/v123456/cura/users/user_1.jpg
