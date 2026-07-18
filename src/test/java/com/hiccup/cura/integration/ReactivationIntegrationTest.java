@@ -7,6 +7,7 @@ import com.hiccup.cura.repository.ReactivationTokenRepository;
 import com.hiccup.cura.repository.UserRepository;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +58,12 @@ class ReactivationIntegrationTest {
 
     @MockitoBean
     JavaMailSender javaMailSender;
+
+    @BeforeEach
+    void cleanDatabase() {
+        reactivationTokenRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
     @Test
     void testReactivationTokenInitiate() throws Exception {
