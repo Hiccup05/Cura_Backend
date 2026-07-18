@@ -6,6 +6,7 @@ import com.hiccup.cura.dto.response.PublicScheduleResponseDto;
 import com.hiccup.cura.dto.response.ScheduleResponseDto;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
+import com.hiccup.cura.mapper.DoctorScheduleMapper;
 import com.hiccup.cura.model.DoctorProfile;
 import com.hiccup.cura.model.DoctorSchedule;
 import com.hiccup.cura.repository.DoctorRepository;
@@ -22,6 +23,7 @@ import java.util.List;
 public class DoctorScheduleService {
     private final DoctorScheduleRepository scheduleRepository;
     private final DoctorRepository doctorRepository;
+    private final DoctorScheduleMapper doctorScheduleMapper;
 
     public ScheduleResponseDto createSchedule(ScheduleRequestDto scheduleRequestDto, Long doctorId){
         DoctorProfile doctor=doctorRepository.findById(doctorId).orElseThrow(()->new ResourceNotFoundException("Doctor cannot be found with id "+ doctorId));
@@ -36,7 +38,7 @@ public class DoctorScheduleService {
         doctorSchedule.setMaxAppointments(scheduleRequestDto.getMaxAppointments());
         doctorSchedule.setIsAvailable(true);
 
-        return mapToDto(scheduleRepository.save(doctorSchedule));
+        return doctorScheduleMapper.toDto(scheduleRepository.save(doctorSchedule));
     }
 
     public List<ScheduleResponseDto> getSchedulesOfDoctor(Long doctorId){
@@ -45,7 +47,7 @@ public class DoctorScheduleService {
         }
         List<DoctorSchedule> byDoctorProfileId = scheduleRepository.findByDoctorProfile_id(doctorId);
 
-        return byDoctorProfileId.stream().map( this::mapToDto).toList();
+        return byDoctorProfileId.stream().map(doctorScheduleMapper::toDto).toList();
     }
 
     public ScheduleResponseDto getScheduleOfDoctor(Long doctorId, Long scheduleId){
@@ -54,7 +56,7 @@ public class DoctorScheduleService {
         }
         DoctorSchedule byDoctorProfileId = scheduleRepository.findByIdAndDoctorProfile_id(scheduleId, doctorId);
 
-        return mapToDto(byDoctorProfileId);
+        return doctorScheduleMapper.toDto(byDoctorProfileId);
     }
 
     public DoctorSchedule getScheduleFromDay(DoctorProfile doctor, DayOfWeek dayOfWeek){
@@ -97,14 +99,14 @@ public class DoctorScheduleService {
         if(updateRequestDto.getMaxAppointments()!=null){
             validatedSchedule.setMaxAppointments(updateRequestDto.getMaxAppointments());
         }
-        return mapToDto(scheduleRepository.save(validatedSchedule));
+        return doctorScheduleMapper.toDto(scheduleRepository.save(validatedSchedule));
     }
 
     @Transactional
     public ScheduleResponseDto toggleScheduleOfDoctor(Long doctorId, Long scheduleId){
         DoctorSchedule validatedSchedule = getValidatedSchedule(doctorId, scheduleId);
         validatedSchedule.setIsAvailable(!validatedSchedule.getIsAvailable());
-        return  mapToDto(scheduleRepository.save(validatedSchedule));
+        return doctorScheduleMapper.toDto(scheduleRepository.save(validatedSchedule));
     }
 
     @Transactional
@@ -123,18 +125,5 @@ public class DoctorScheduleService {
             throw new ResourceNotFoundException("Schedule does not belong to doctor with id " + doctorId);
         }
         return schedule;
-    }
-
-    public ScheduleResponseDto mapToDto(DoctorSchedule schedule){
-        return ScheduleResponseDto.builder()
-                .id(schedule.getId())
-                .doctorId(schedule.getDoctorProfile().getId())
-                .doctorName(schedule.getDoctorProfile().getUser().getUsername())
-                .maxAppointments(schedule.getMaxAppointments())
-                .endTime(schedule.getEndTime())
-                .startTime(schedule.getStartTime())
-                .dayOfWeek(schedule.getDayOfWeek())
-                .isAvailable(schedule.getIsAvailable())
-                .build();
     }
 }
