@@ -1,4 +1,4 @@
-package com.hiccup.cura.controller;
+package com.hiccup.cura.controller.receptionist;
 
 import com.hiccup.cura.dto.reqeust.ReceptionistRequestDto;
 import com.hiccup.cura.dto.response.ReceptionistResponseDto;
