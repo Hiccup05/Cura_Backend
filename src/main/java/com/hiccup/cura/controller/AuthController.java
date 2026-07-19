@@ -4,7 +4,6 @@ import com.hiccup.cura.dto.reqeust.LoginRequestDto;
 import com.hiccup.cura.dto.response.LoginResponseDto;
 import com.hiccup.cura.security.AuthService;
 import com.hiccup.cura.security.CustomUser;
-import com.hiccup.cura.service.IUserService;
 import com.hiccup.cura.service.UserService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,7 +24,7 @@ import java.util.Map;
 @RequestMapping("${api.prefix}/auth")
 public class AuthController {
     private final AuthService authService;
-    private final IUserService userService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> localLogin(@RequestBody LoginRequestDto requestDto, HttpServletResponse response) {
