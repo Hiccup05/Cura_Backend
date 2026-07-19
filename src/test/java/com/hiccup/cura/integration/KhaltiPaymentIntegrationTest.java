@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Testcontainers
 @ActiveProfiles("test")
-public class KhaltiPaymentIntegrationTesting {
+public class KhaltiPaymentIntegrationTest {
     @Container
     @ServiceConnection(name = "postgres")
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
