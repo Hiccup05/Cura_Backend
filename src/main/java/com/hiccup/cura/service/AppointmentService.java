@@ -4,9 +4,9 @@ import com.hiccup.cura.Specification.AppointmentSpecification;
 import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
-import com.hiccup.cura.dto.response.PrescriptionResponseDto;
 import com.hiccup.cura.enums.*;
 import com.hiccup.cura.exception.custom.*;
+import com.hiccup.cura.mapper.AppointmentMapper;
 import com.hiccup.cura.model.*;
 import com.hiccup.cura.repository.*;
 import com.hiccup.cura.service.doctor.DoctorScheduleService;
@@ -36,6 +36,7 @@ public class AppointmentService {
     private final EmailService emailService;
     private final DoctorScheduleService doctorScheduleService;
     private final MedicalServiceRepository medicalServiceRepository;
+    private final AppointmentMapper appointmentMapper;
 
     @Transactional
     public AppointmentResponseDto createAppointment(AppointmentRequestDto appointmentRequestDto, Long userId) {
@@ -77,17 +78,17 @@ public class AppointmentService {
 
         emailService.sendAppointmentEmail(user.getEmail(), savedAppointment);
 
-        return mapToDto(savedAppointment);
+        return appointmentMapper.toDto(savedAppointment);
     }
 
     public AppointmentResponseDto getAppointment(Long userId, Long appointmentId){
         Appointment appointment = appointmentRepository.getAppointmentByIdAndUserId(appointmentId, userId).orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
-        return mapToDto(appointment);
+        return appointmentMapper.toDto(appointment);
     }
 
     public Page<AppointmentSummaryDto> getMyAppointments(Long userId, Pageable pageable){
         Page<Appointment> appointmentOfUser = appointmentRepository.getAppointmentOfUser(userId, pageable);
-        return appointmentOfUser.map(this::mapToSummaryDto);
+        return appointmentOfUser.map(appointmentMapper::toSummaryDto);
     }
 
     public Page<AppointmentSummaryDto> getReceptionistBookedAppointments(
@@ -97,7 +98,7 @@ public class AppointmentService {
     ) {
        Specification<Appointment> sp= AppointmentSpecification.hasReceptionistId(receptionistId).and(AppointmentSpecification.hasWalkInPatientName(walkInPatientName));
        Page<Appointment> appointments = appointmentRepository.findAll(sp, pageable);
-       return appointments.map(this::mapToSummaryDto);
+       return appointments.map(appointmentMapper::toSummaryDto);
     }
 
     public AppointmentResponseDto getReceptionistAppointmentById(Long appointmentId) {
@@ -109,7 +110,7 @@ public class AppointmentService {
             throw new UnauthorizedUserAccessException("You are not allowed to access this appointment");
         }
 
-        return mapToDto(appointment);
+        return appointmentMapper.toDto(appointment);
     }
 
     //return page of Appointment summary
@@ -134,7 +135,7 @@ public class AppointmentService {
                 .and(AppointmentSpecification.hasDateTo(dateTo));
 
         Page<Appointment> page = appointmentRepository.findAll(spec, pageable);
-        return page.map(this::mapToSummaryDto);
+        return page.map(appointmentMapper::toSummaryDto);
     }
 
     public AppointmentResponseDto getDoctorAppointment(Long userId, Long appointmentId) {
@@ -147,7 +148,7 @@ public class AppointmentService {
             throw new UnauthorizedUserAccessException("You are not allowed to access this appointment");
         }
 
-        return mapToDto(appointment);
+        return appointmentMapper.toDto(appointment);
     }
 
     @Transactional
@@ -188,36 +189,9 @@ public class AppointmentService {
             appointment.setPrescription(null);
         }
         emailService.sendCancellationEmail(user.getEmail(), appointment);
-        return mapToDto(appointmentRepository.save(appointment));
+        return appointmentMapper.toDto(appointmentRepository.save(appointment));
     }
 
-    private AppointmentResponseDto mapToDto(Appointment appointment) {
-        return AppointmentResponseDto.builder()
-                .id(appointment.getId())
-                .doctorId(appointment.getDoctor().getId())
-                .medicalServiceId(appointment.getMedicalService().getId())
-                .medicalServiceName(appointment.getMedicalService().getName())
-                .appointmentDate(appointment.getAppointmentDate())
-                .appointmentTime(appointment.getAppointmentTime())
-                .status(appointment.getStatus())
-                .type(appointment.getType())
-                .reason(appointment.getReason())
-                .price(appointment.getMedicalService().getPrice())
-                .durationMinutes(appointment.getMedicalService().getDurationMinutes())
-                .isPaid(appointment.getIsPaid())
-                .paymentMethod(appointment.getPaymentMethod())
-                .bookedAt(appointment.getBookedAt())
-                .patientId(appointment.getPatient() != null ? appointment.getPatient().getId() : null)
-                .patientName(appointment.getPatient() != null ?
-                        appointment.getPatient().getFirstName() + " " + appointment.getPatient().getLastName() : null)
-                .receptionistId(appointment.getReceptionist() != null ? appointment.getReceptionist().getId() : null)
-                .receptionistName(appointment.getReceptionist() != null ?
-                        appointment.getReceptionist().getFirstName() + " " + appointment.getReceptionist().getLastName() : null)
-                .walkInPatientName(appointment.getWalkInPatientName())
-                .walkInPatientPhone(appointment.getWalkInPatientPhone())
-                .prescriptionResponseDto(appointment.getPrescription()!=null? mapToPrescriptionDto(appointment.getPrescription()):null)
-                .build();
-    }
     private void validateAppointmentTime(LocalDate appointmentDate, LocalTime appointmentTime){
         LocalDateTime appointment=LocalDateTime.of(appointmentDate, appointmentTime);
         if(LocalDateTime.now().isAfter(appointment)){
@@ -284,36 +258,6 @@ public class AppointmentService {
         appointment.setWalkInPatientName(dto.getWalkInPatientName());
         appointment.setWalkInPatientPhone(dto.getWalkInPatientPhone());
         appointment.setIsPaid(true);
-    }
-
-    private AppointmentSummaryDto mapToSummaryDto(Appointment appointment) {
-        return AppointmentSummaryDto.builder()
-                .appointmentId(appointment != null ? appointment.getId() : null)
-                .appointmentDate(appointment != null ? appointment.getAppointmentDate() : null)
-                .appointmentTime(appointment != null ? appointment.getAppointmentTime() : null)
-                .appointmentStatus(appointment != null ? appointment.getStatus() : null)
-                .doctorId(
-                        appointment != null && appointment.getDoctor() != null
-                                ? appointment.getDoctor().getId()
-                                : null
-                )
-                .medicalServiceName(
-                        appointment != null && appointment.getMedicalService() != null
-                                ? appointment.getMedicalService().getName()
-                                : null
-                )
-                .isPaid(appointment != null ? appointment.getIsPaid() : null)
-                .receptionistId(
-                        appointment != null && appointment.getReceptionist() != null
-                                ? appointment.getReceptionist().getId()
-                                : null
-                )
-                .walkInPatientName(appointment != null ? appointment.getWalkInPatientName() : null)
-                .build();
-    }
-
-    private PrescriptionResponseDto mapToPrescriptionDto(Prescription prescription){
-        return new  PrescriptionResponseDto(prescription.getId(), prescription.getDescription());
     }
 
     private void checkMedicalServiceMatch(Appointment appointment, DoctorProfile doctor, MedicalService medicalService){
