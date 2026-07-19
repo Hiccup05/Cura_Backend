@@ -8,6 +8,7 @@ import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
+import com.hiccup.cura.mapper.ReceptionistProfileMapper;
 import com.hiccup.cura.model.ReceptionistProfile;
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.ReceptionistRepository;
@@ -31,6 +32,7 @@ public class ReceptionistService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final EmailService emailService;
+    private final ReceptionistProfileMapper receptionistProfileMapper;
 
     @Transactional
     public ReceptionistResponseDto createReceptionist(Long userId, ReceptionistRequestDto requestDto) {
@@ -51,18 +53,18 @@ public class ReceptionistService {
 
         ReceptionistProfile save = receptionistRepository.save(receptionistProfile);
         emailService.sendReceptionistPromotionEmail(user.getEmail(), receptionistProfile.getFirstName());
-        return mapToDto(save);
+        return receptionistProfileMapper.toDto(save);
     }
 
     public Page<ReceptionistResponseDto> getReceptionists(Pageable pageable) {
         Page<ReceptionistProfile> all = receptionistRepository.findAll(pageable);
-        return all.map(this::mapToDto);
+        return all.map(receptionistProfileMapper::toDto);
     }
 
     public ReceptionistResponseDto getReceptionist(Long id) {
         ReceptionistProfile profile = receptionistRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + id));
-        return mapToDto(profile);
+        return receptionistProfileMapper.toDto(profile);
     }
 
     public ReceptionistResponseDto updateReceptionist(Long id, ReceptionistRequestDto requestDto) {
@@ -77,7 +79,7 @@ public class ReceptionistService {
         if (requestDto.getPhoneNumber() != null) {
             profile.setPhoneNumber(requestDto.getPhoneNumber());
         }
-        return mapToDto(receptionistRepository.save(profile));
+        return receptionistProfileMapper.toDto(receptionistRepository.save(profile));
     }
 
     public void deleteReceptionist(Long id) {
@@ -90,17 +92,7 @@ public class ReceptionistService {
         ReceptionistProfile profile = receptionistRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Receptionist not found with id " + id));
         profile.setStatus(dto.getStatus());
-        return mapToDto(receptionistRepository.save(profile));
+        return receptionistProfileMapper.toDto(receptionistRepository.save(profile));
     }
 
-    private ReceptionistResponseDto mapToDto(ReceptionistProfile profile) {
-        return ReceptionistResponseDto.builder()
-                .id(profile.getId())
-                .firstName(profile.getFirstName())
-                .lastName(profile.getLastName())
-                .phoneNumber(profile.getPhoneNumber())
-                .status(profile.getStatus())
-                .profilePictureUrl(profile.getUser().getProfilePictureUrl())
-                .build();
-    }
 }
