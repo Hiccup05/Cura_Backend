@@ -1,5 +1,6 @@
 package com.hiccup.cura.service.payment.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hiccup.cura.dto.response.EsewaInitiateResponseDto;
 import com.hiccup.cura.dto.response.PaymentInitiateResponse;
 import com.hiccup.cura.dto.response.PaymentVerificationResponse;
@@ -7,7 +8,10 @@ import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.enums.PaymentStatus;
 import com.hiccup.cura.enums.PaymentType;
 import com.hiccup.cura.enums.RoleType;
-import com.hiccup.cura.exception.custom.*;
+import com.hiccup.cura.exception.custom.DuplicatePaymentException;
+import com.hiccup.cura.exception.custom.InvalidAppointmentException;
+import com.hiccup.cura.exception.custom.ResourceNotFoundException;
+import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
 import com.hiccup.cura.model.Appointment;
 import com.hiccup.cura.model.Payment;
 import com.hiccup.cura.model.User;
@@ -21,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -151,7 +154,7 @@ public class EsewaPaymentStrategy implements PaymentStrategy {
         }
     }
 
-    private Map<String, String> buildEsewaPayload(Long appointmentId, Appointment appointment) throws Exception {
+    private Map<String, String> buildEsewaPayload(Long appointmentId, Appointment appointment){
         String amountStr = appointment.getMedicalService().getPrice().stripTrailingZeros().toPlainString();
         String transactionUuidStr = String.valueOf(appointmentId);
         

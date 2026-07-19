@@ -90,7 +90,7 @@ public class TestDataFactory {
         payment.setPaymentType(PaymentType.KHALTI);
         payment.setAmount(BigDecimal.ONE);
         payment.setPaidAt(LocalDateTime.now());
-        payment.setExpiresAt(OffsetDateTime.from(LocalDateTime.now().plusHours(10)));
+        payment.setExpiresAt(OffsetDateTime.now().plusMinutes(60));
         return payment;
     }
 

@@ -1,4 +1,4 @@
-package com.hiccup.cura.Specification;
+package com.hiccup.cura.specification;
 
 import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.enums.AppointmentType;

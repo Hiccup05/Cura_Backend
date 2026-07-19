@@ -9,7 +9,7 @@ import java.time.OffsetDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class KhaltiResposneDto {
+public class KhaltiResponseDto {
     private String pidx;
     @JsonProperty("payment_url")
     private String paymentUrl;

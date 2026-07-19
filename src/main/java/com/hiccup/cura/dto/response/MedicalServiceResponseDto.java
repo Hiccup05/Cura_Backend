@@ -1,8 +1,8 @@
 package com.hiccup.cura.dto.response;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.context.annotation.ApplicationScope;
 
 import java.math.BigDecimal;
 

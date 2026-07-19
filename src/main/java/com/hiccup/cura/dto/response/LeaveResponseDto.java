@@ -14,5 +14,5 @@ public class LeaveResponseDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private String reason;
-    private Long DoctorId;
+    private Long doctorId;
 }

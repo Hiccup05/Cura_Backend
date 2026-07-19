@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(KhaltiGatewayFailException.class)
     public ResponseEntity<ErrorResponse> handleKhaltiGatewayFailException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(502, "KhaliGatewayFailException", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
+                .body(new ErrorResponse(502, "KhaltiGatewayFailException", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
     }
 
     @ExceptionHandler(InvalidBookingTimeException.class)

@@ -1,10 +1,7 @@
 package com.hiccup.cura.dto.response;
 
-import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.enums.PaymentStatus;
 import com.hiccup.cura.enums.PaymentType;
-import com.hiccup.cura.model.Appointment;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 
 @Data
 @AllArgsConstructor

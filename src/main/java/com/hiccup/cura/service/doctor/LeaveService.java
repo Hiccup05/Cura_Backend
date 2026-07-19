@@ -2,7 +2,6 @@ package com.hiccup.cura.service.doctor;
 
 import com.hiccup.cura.dto.reqeust.LeaveRequestDto;
 import com.hiccup.cura.dto.response.LeaveResponseDto;
-import com.hiccup.cura.enums.DoctorStatus;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.model.DoctorLeave;
@@ -12,6 +11,7 @@ import com.hiccup.cura.repository.DoctorRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Objects;
 

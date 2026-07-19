@@ -2,7 +2,6 @@ package com.hiccup.cura.security.oauth2;
 
 import com.hiccup.cura.dto.response.LoginResponseDto;
 import com.hiccup.cura.security.AuthUtil;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +28,7 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
     private final ObjectMapper objectMapper;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException{
         OAuth2AuthenticationToken token=(OAuth2AuthenticationToken) authentication;
         OAuth2User oAuth2User=(OAuth2User) authentication.getPrincipal();
         log.info(oAuth2User.getName());
