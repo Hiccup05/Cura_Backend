@@ -33,7 +33,6 @@ import java.util.List;
 public class MedicalServiceService {
    private final MedicalServiceRepository medicalServiceRepository;
    private final SpecializationRepository specializationRepository;
-   private final UserRepository userRepository;
    private final CloudinaryService cloudinaryService;
    private final MedicalServiceMapper medicalServiceMapper;
 
