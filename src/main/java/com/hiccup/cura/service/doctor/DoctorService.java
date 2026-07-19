@@ -8,6 +8,7 @@ import com.hiccup.cura.enums.DoctorStatus;
 import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
+import com.hiccup.cura.mapper.DoctorProfileMapper;
 import com.hiccup.cura.model.DoctorProfile;
 import com.hiccup.cura.model.Specialization;
 import com.hiccup.cura.model.User;
@@ -35,6 +36,7 @@ public class DoctorService {
     private final RoleRepository roleRepository;
     private final SpecializationService specializationService;
     private final EmailService emailService;
+    private final DoctorProfileMapper doctorProfileMapper;
 
     @Transactional
     public DoctorDto createDoctor (Long userId, DoctorRequestDto doctorRequestDto){
@@ -56,29 +58,29 @@ public class DoctorService {
 
         DoctorProfile saveDoctor = doctorRepository.save(doctorProfile);
         emailService.sendDoctorPromotionEmail(doctorProfile.getUser().getEmail(), doctorProfile.getUser().getUsername());
-        return mapToResponseDto(saveDoctor);
+        return doctorProfileMapper.toDto(saveDoctor);
     }
 
     public List<DoctorDto> getDoctors(){
         return doctorRepository.findAll().stream()
-                .map(this::mapToResponseDto).toList();
+                .map(doctorProfileMapper::toDto).toList();
     }
 
     public Page<PublicDoctorResponseDto> getPublicDoctors(Pageable pageable){
         Page<DoctorProfile> publicDoctors = doctorRepository.getPublicDoctors(List.of(DoctorStatus.ACTIVE, DoctorStatus.ON_LEAVE), pageable);
-        return publicDoctors.map(this::mapToPublicResponseDto);
+        return publicDoctors.map(doctorProfileMapper::toPublicDto);
     }
 
     @Cacheable(value="publicDoctor", key="#id")
     public PublicDoctorResponseDto getPublicDoctor(Long id){
         DoctorProfile doctorProfile = doctorRepository.getPublicDoctor(id, List.of(DoctorStatus.ACTIVE, DoctorStatus.ON_LEAVE)).orElseThrow(() -> new ResourceNotFoundException("Doctor with id " + id + "does not exist"));
-        return mapToPublicResponseDto(doctorProfile);
+        return doctorProfileMapper.toPublicDto(doctorProfile);
     }
 
     @Cacheable(value="doctors", key="#id")
     public DoctorDto getDoctor(Long id){
         DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
-        return mapToResponseDto(doctorProfile);
+        return doctorProfileMapper.toDto(doctorProfile);
     }
 
     public DoctorProfile getDoctorInternal(Long id){
@@ -87,7 +89,7 @@ public class DoctorService {
 
     public Page<PublicDoctorResponseDto> searchByName(String name, Pageable pageable){
         Page<DoctorProfile> doctorProfiles = doctorRepository.searchByName(name, pageable);
-        return doctorProfiles.map(this::mapToPublicResponseDto);
+        return doctorProfiles.map(doctorProfileMapper::toPublicDto);
     }
 
     @CacheEvict(value = "doctors", key = "#id")
@@ -112,7 +114,7 @@ public class DoctorService {
             doctor.setSpecialization(specializations);
         }
 
-        return mapToResponseDto(doctorRepository.save(doctor));
+        return doctorProfileMapper.toDto(doctorRepository.save(doctor));
     }
 
     @CacheEvict(value = "doctors", key = "#id")
@@ -131,31 +133,6 @@ public class DoctorService {
     public DoctorDto changeStatus(Long id, ChangeDoctorStatusRequestDto changeDoctorStatusRequestDto){
         DoctorProfile doctorProfile=doctorRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Doctor Not found by id "+id));
         doctorProfile.setDoctorStatus(changeDoctorStatusRequestDto.getDoctorStatus());
-        return mapToResponseDto(doctorRepository.save(doctorProfile));
-    }
-
-    private DoctorDto mapToResponseDto(DoctorProfile doctorProfile){
-        return DoctorDto.builder().doctorStatus(doctorProfile.getDoctorStatus())
-                .id(doctorProfile.getId())
-                .specialization(doctorProfile.getSpecialization())
-                .licenseNumber(doctorProfile.getLicenseNumber())
-                .yearsOfExperience(doctorProfile.getYearsOfExperience())
-                .profilePictureUrl(doctorProfile.getUser().getProfilePictureUrl())
-                .firstName(doctorProfile.getFirstName())
-                .lastName(doctorProfile.getLastName())
-                .build();
-    }
-
-    private PublicDoctorResponseDto mapToPublicResponseDto(DoctorProfile doctor) {
-        return PublicDoctorResponseDto.builder()
-                .id(doctor.getId())
-                .firstName(doctor.getFirstName())
-                .lastName(doctor.getLastName())
-                .specialization(doctor.getSpecialization())
-                .yearsOfExperience(doctor.getYearsOfExperience())
-                .licenseNumber(doctor.getLicenseNumber())
-                .doctorStatus(doctor.getDoctorStatus())
-                .profilePictureUrl(doctor.getUser().getProfilePictureUrl())
-                .build();
+        return doctorProfileMapper.toDto(doctorRepository.save(doctorProfile));
     }
 }
