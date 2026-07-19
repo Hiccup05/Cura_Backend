@@ -4,6 +4,7 @@ import com.hiccup.cura.dto.reqeust.PrescriptionRequestDto;
 import com.hiccup.cura.dto.response.PrescriptionResponseDto;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
+import com.hiccup.cura.mapper.PrescriptionMapper;
 import com.hiccup.cura.model.Appointment;
 import com.hiccup.cura.model.Prescription;
 import com.hiccup.cura.repository.AppointmentRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class PrescriptionService {
     private final PrescriptionRepository prescriptionRepository;
     private final AppointmentRepository appointmentRepository;
+    private final PrescriptionMapper prescriptionMapper;
 
     public PrescriptionResponseDto updatePrescription(PrescriptionRequestDto prescription,Long prescriptionId, Long doctorId) {
         Appointment appointment = appointmentRepository.findById(prescriptionId).orElseThrow(() -> new ResourceNotFoundException("Appointment Not Found with id " + prescriptionId));
@@ -26,10 +28,6 @@ public class PrescriptionService {
         if(prescription.getDescription()!=null && !prescription.getDescription().isBlank()){
             saved.setDescription(prescription.getDescription());
         }
-        return  mapToDto(prescriptionRepository.save(saved));
-    }
-
-    private PrescriptionResponseDto mapToDto(Prescription prescription){
-        return new  PrescriptionResponseDto(prescription.getId(), prescription.getDescription());
+        return prescriptionMapper.toDto(prescriptionRepository.save(saved));
     }
 }
