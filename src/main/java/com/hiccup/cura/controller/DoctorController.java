@@ -10,7 +10,7 @@ import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
 import com.hiccup.cura.service.doctor.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
-import com.hiccup.cura.service.doctor.specialization.SpecializationService;
+import com.hiccup.cura.service.SpecializationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

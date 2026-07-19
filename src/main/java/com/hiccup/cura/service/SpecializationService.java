@@ -1,4 +1,4 @@
-package com.hiccup.cura.service.doctor.specialization;
+package com.hiccup.cura.service;
 
 import com.hiccup.cura.dto.reqeust.SpecializationRequestDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;

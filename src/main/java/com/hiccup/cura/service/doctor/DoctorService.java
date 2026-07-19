@@ -14,7 +14,7 @@ import com.hiccup.cura.model.Specialization;
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.*;
 import com.hiccup.cura.service.EmailService;
-import com.hiccup.cura.service.doctor.specialization.SpecializationService;
+import com.hiccup.cura.service.SpecializationService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;

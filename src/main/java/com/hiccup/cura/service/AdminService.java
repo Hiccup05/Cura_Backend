@@ -1,4 +1,4 @@
-package com.hiccup.cura.service.admin;
+package com.hiccup.cura.service;
 
 import com.hiccup.cura.dto.response.AdminProfileDto;
 import com.hiccup.cura.dto.response.AdminStatsResponseDto;

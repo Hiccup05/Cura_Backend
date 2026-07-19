@@ -1,4 +1,4 @@
-package com.hiccup.cura.service.patient;
+package com.hiccup.cura.service;
 
 import com.hiccup.cura.dto.reqeust.PatientRequestDto;
 import com.hiccup.cura.dto.response.PatientResponseDto;

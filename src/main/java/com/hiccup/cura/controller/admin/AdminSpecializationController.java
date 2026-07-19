@@ -3,7 +3,7 @@ package com.hiccup.cura.controller.admin;
 import com.hiccup.cura.dto.reqeust.SpecializationRequestDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.model.Specialization;
-import com.hiccup.cura.service.doctor.specialization.SpecializationService;
+import com.hiccup.cura.service.SpecializationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

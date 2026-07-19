@@ -1,7 +1,7 @@
 package com.hiccup.cura.controller.publics;
 
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
-import com.hiccup.cura.service.medicalservice.MedicalServiceService;
+import com.hiccup.cura.service.MedicalServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

@@ -1,4 +1,4 @@
-package com.hiccup.cura.service.medicalservice;
+package com.hiccup.cura.service;
 
 import com.hiccup.cura.dto.reqeust.MedicalServiceRequestDto;
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
@@ -35,6 +35,7 @@ public class MedicalServiceService {
    private final SpecializationRepository specializationRepository;
    private final CloudinaryService cloudinaryService;
    private final MedicalServiceMapper medicalServiceMapper;
+    private static final String SERVICE_NOT_FOUND = "Medical service not found with id ";
 
    public Page<MedicalServiceResponseDto> getAll(Pageable pageable){
        Page<MedicalService> allService = medicalServiceRepository.findAll(pageable);
@@ -43,13 +44,13 @@ public class MedicalServiceService {
 
    @Cacheable(value="medical service", key="#id")
    public MedicalServiceResponseDto getService(Long id){
-       MedicalService medicalService=medicalServiceRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Service isn't created with id " + id));
+       MedicalService medicalService=medicalServiceRepository.findById(id).orElseThrow(()->new ResourceNotFoundException(SERVICE_NOT_FOUND+ id));
        return medicalServiceMapper.toDto(medicalService);
    }
 
    //use to fetch raw medical service data internally for other services
     public MedicalService getServiceInternal(Long id){
-        return medicalServiceRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Service isn't created with id " + id));
+        return medicalServiceRepository.findById(id).orElseThrow(()->new ResourceNotFoundException(SERVICE_NOT_FOUND + id));
 
     }
 

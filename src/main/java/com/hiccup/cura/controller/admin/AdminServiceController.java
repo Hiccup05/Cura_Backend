@@ -4,7 +4,7 @@ import com.hiccup.cura.dto.reqeust.MedicalServiceRequestDto;
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.security.CustomUser;
-import com.hiccup.cura.service.medicalservice.MedicalServiceService;
+import com.hiccup.cura.service.MedicalServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +17,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("${api.prefix}/admin/services")

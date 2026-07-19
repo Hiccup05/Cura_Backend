@@ -3,7 +3,7 @@ package com.hiccup.cura.controller.admin;
 import com.hiccup.cura.dto.response.AdminProfileDto;
 import com.hiccup.cura.dto.response.AdminStatsResponseDto;
 import com.hiccup.cura.security.CustomUser;
-import com.hiccup.cura.service.admin.AdminService;
+import com.hiccup.cura.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
