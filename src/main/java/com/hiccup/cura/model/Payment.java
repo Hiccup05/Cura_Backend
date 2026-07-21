@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -32,7 +31,7 @@ public class Payment {
 
     private String transactionId;
 
-    private LocalDateTime paidAt;
+    private OffsetDateTime paidAt;
 
     private OffsetDateTime expiresAt;
     private String paymentUrl;

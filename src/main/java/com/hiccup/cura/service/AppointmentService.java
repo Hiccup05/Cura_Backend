@@ -17,7 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -37,6 +39,7 @@ public class AppointmentService {
     private final DoctorScheduleService doctorScheduleService;
     private final MedicalServiceRepository medicalServiceRepository;
     private final AppointmentMapper appointmentMapper;
+    private final Clock clock;
 
     @Transactional
     public AppointmentResponseDto createAppointment(AppointmentRequestDto appointmentRequestDto, Long userId) {
@@ -166,10 +169,11 @@ public class AppointmentService {
         }
 
         LocalDateTime appointmentTime=LocalDateTime.of(appointment.getAppointmentDate(), appointment.getAppointmentTime());
+        Instant appointmentInstant=appointmentTime.atZone(clock.getZone()).toInstant();
 
-        LocalDateTime cancelTime=LocalDateTime.now();
+        LocalDateTime cancelTime=LocalDateTime.now(clock);
 
-        if(ChronoUnit.HOURS.between(appointment.getBookedAt(),appointmentTime)<=24 ){
+        if(ChronoUnit.HOURS.between(appointment.getBookedAt(),appointmentInstant)<=24 ){
             if(cancelTime.isBefore(appointmentTime)){
                 appointment.setStatus(AppointmentStatus.CANCELLED);
             }
@@ -178,7 +182,7 @@ public class AppointmentService {
             }
         }
         else{
-            if(ChronoUnit.HOURS.between(appointment.getBookedAt(), cancelTime)<=24){
+            if(ChronoUnit.HOURS.between(appointment.getBookedAt(), clock.instant())<=24){
                 appointment.setStatus(AppointmentStatus.CANCELLED);
             }else{
                 throw new CancellationNotAllowedException("Cannot cancel appointment as booked appointment exceeds 24 hours mark");
@@ -194,7 +198,7 @@ public class AppointmentService {
 
     private void validateAppointmentTime(LocalDate appointmentDate, LocalTime appointmentTime){
         LocalDateTime appointment=LocalDateTime.of(appointmentDate, appointmentTime);
-        if(LocalDateTime.now().isAfter(appointment)){
+        if(LocalDateTime.now(clock).isAfter(appointment)){
             throw new InvalidBookingTimeException("Appointment time is before booking time");
         }
     }
@@ -305,7 +309,7 @@ public class AppointmentService {
         appointment.setDoctor(doctor);
         appointment.setAppointmentDate(appointmentRequestDto.getAppointmentDate());
         appointment.setAppointmentTime(appointmentRequestDto.getAppointmentTime());
-        appointment.setBookedAt(LocalDateTime.now());
+        appointment.setBookedAt(clock.instant());
         appointment.setReason(appointmentRequestDto.getReason());
         appointment.setStatus(AppointmentStatus.PENDING);
         Prescription prescription=new Prescription();

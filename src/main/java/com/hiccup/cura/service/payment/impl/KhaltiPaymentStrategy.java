@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +38,7 @@ public class KhaltiPaymentStrategy implements PaymentStrategy {
     private final UserRepository userRepository;
     private final WebClient webClient;
     private final EmailService emailService;
+    private final Clock clock;
 
     @Override
     public PaymentInitiateResponse initiate(Long appointmentId, Long userId) {
@@ -47,7 +48,7 @@ public class KhaltiPaymentStrategy implements PaymentStrategy {
         if(existedPayment!=null && existedPayment.getPaymentStatus().equals(PaymentStatus.COMPLETE)){
             throw new DuplicatePaymentException("Payment is already completed");
         }else if(existedPayment!=null && existedPayment.getPaymentStatus().equals(PaymentStatus.PENDING)){
-            if(OffsetDateTime.now().isAfter(existedPayment.getExpiresAt())){
+            if(OffsetDateTime.now(clock).isAfter(existedPayment.getExpiresAt())){
                 KhaltiResponseDto response = getKhaltiResponse(appointmentId, userId, appointment);
                 existedPayment.setExpiresAt(response.getExpiresAt());
                 existedPayment.setPidx(response.getPidx());
@@ -92,7 +93,7 @@ public class KhaltiPaymentStrategy implements PaymentStrategy {
             Payment payment = paymentRepository.findByPidx(block.getPidx());
             payment.setPaymentStatus(PaymentStatus.COMPLETE);
             payment.setTransactionId(block.getTransactionId());
-            payment.setPaidAt(LocalDateTime.now());
+            payment.setPaidAt(OffsetDateTime.now(clock));
 
             Appointment appointment = payment.getAppointment();
             appointment.setStatus(AppointmentStatus.CONFIRMED);

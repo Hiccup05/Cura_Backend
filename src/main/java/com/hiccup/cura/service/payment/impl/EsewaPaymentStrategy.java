@@ -26,7 +26,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.Base64;
 import java.util.HashMap;
@@ -44,6 +44,7 @@ public class EsewaPaymentStrategy implements PaymentStrategy {
     private String productCode;
     private final EsewaSignatureGenerator signatureGenerator;
     private final ObjectMapper objectMapper;
+    private final Clock clock;
 
     @Override
     public PaymentInitiateResponse initiate(Long appointmentId, Long userId) throws Exception {
@@ -53,13 +54,13 @@ public class EsewaPaymentStrategy implements PaymentStrategy {
         if(existedPayment!=null && existedPayment.getPaymentStatus().equals(PaymentStatus.COMPLETE)){
             throw new DuplicatePaymentException("Payment is already completed");
         }else if(existedPayment!=null && existedPayment.getPaymentStatus().equals(PaymentStatus.PENDING)){
-            if(OffsetDateTime.now().isAfter(existedPayment.getExpiresAt())){
+            if(OffsetDateTime.now(clock).isAfter(existedPayment.getExpiresAt())){
                 PaymentInitiateResponse regeneratedPost = PaymentInitiateResponse.builder()
                         .url("https://rc-epay.esewa.com.np/api/epay/main/v2/form")
                         .methodType("POST")
                         .fields(buildEsewaPayload(appointmentId, appointment)).build();
 
-                existedPayment.setExpiresAt(OffsetDateTime.now().plusMinutes(15));
+                existedPayment.setExpiresAt(OffsetDateTime.now(clock).plusMinutes(15));
                 existedPayment.setPaymentUrl(regeneratedPost.getUrl());
                 paymentRepository.save(existedPayment);
 
@@ -78,7 +79,7 @@ public class EsewaPaymentStrategy implements PaymentStrategy {
         payment.setAppointment(appointment);
         payment.setPidx(post.getFields().get("transaction_uuid"));
         payment.setPaymentUrl(post.getUrl());
-        payment.setExpiresAt(OffsetDateTime.now().plusMinutes(15));
+        payment.setExpiresAt(OffsetDateTime.now(clock).plusMinutes(15));
         paymentRepository.save(payment);
         return post;
     }
@@ -119,7 +120,7 @@ public class EsewaPaymentStrategy implements PaymentStrategy {
             throw new ResourceNotFoundException("Payment tracking reference not found for ID: " + responseDto.getTransactionUuid());
         }
 
-        payment.setPaidAt(LocalDateTime.now());
+        payment.setPaidAt(OffsetDateTime.now(clock));
         payment.setPaymentStatus(PaymentStatus.COMPLETE);
         payment.setTransactionId(responseDto.getTransactionCode());
 

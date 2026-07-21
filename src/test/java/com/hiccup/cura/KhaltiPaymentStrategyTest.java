@@ -20,11 +20,15 @@ import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.math.BigDecimal;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -63,6 +67,9 @@ public class KhaltiPaymentStrategyTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Spy
+    private Clock clock = Clock.fixed(Instant.parse("2026-07-19T06:00:00Z"), ZoneId.of("Asia/Kathmandu"));
 
     @InjectMocks
     private KhaltiPaymentStrategy paymentStrategy;

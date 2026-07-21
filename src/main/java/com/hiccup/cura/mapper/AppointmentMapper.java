@@ -6,10 +6,13 @@ import com.hiccup.cura.model.Appointment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
+
 @Component
 @RequiredArgsConstructor
 public class AppointmentMapper {
     private final PrescriptionMapper prescriptionMapper;
+    private final Clock clock;
 
     public AppointmentResponseDto toDto(Appointment appointment) {
         return AppointmentResponseDto.builder()
@@ -26,7 +29,8 @@ public class AppointmentMapper {
                 .durationMinutes(appointment.getMedicalService().getDurationMinutes())
                 .isPaid(appointment.getIsPaid())
                 .paymentMethod(appointment.getPaymentMethod())
-                .bookedAt(appointment.getBookedAt())
+                .bookedAt(appointment.getBookedAt() != null ?
+                        appointment.getBookedAt().atZone(clock.getZone()).toLocalDateTime() : null)
                 .patientId(appointment.getPatient() != null ? appointment.getPatient().getId() : null)
                 .patientName(appointment.getPatient() != null ?
                         appointment.getPatient().getFirstName() + " " + appointment.getPatient().getLastName() : null)

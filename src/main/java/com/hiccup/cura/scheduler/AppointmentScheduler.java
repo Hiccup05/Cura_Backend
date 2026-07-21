@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -19,10 +21,11 @@ import java.util.List;
 public class AppointmentScheduler {
     private final AppointmentRepository appointmentRepository;
     private final EmailService emailService;
+    private final Clock clock;
 
     @Scheduled(fixedRate = 600000)
     public void scheduleAppointments() {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now(clock);
         List<Appointment> confirmedAppointments = appointmentRepository.findByStatus(AppointmentStatus.CONFIRMED);
 
         List<Appointment> toComplete=confirmedAppointments.stream()
@@ -49,7 +52,7 @@ public class AppointmentScheduler {
 
     @Scheduled(fixedRate = 600000)
     public void cancelPendingAppointments() {
-        LocalDateTime now = LocalDateTime.now();
+        Instant now = clock.instant();
         List<Appointment> pendingAppointments = appointmentRepository.findByStatus(AppointmentStatus.PENDING);
 
         List<Appointment> toCancel = pendingAppointments.stream()

@@ -13,6 +13,9 @@ import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Base64;
 import java.util.Map;
 
@@ -29,6 +32,9 @@ class EsewaPaymentStrategyTest {
 
     @Spy // Use Spy for Jackson ObjectMapper to test real JSON parsing alongside mocks
     private ObjectMapper objectMapper = new ObjectMapper();
+
+    @Spy
+    private Clock clock = Clock.fixed(Instant.parse("2026-07-19T06:00:00Z"), ZoneId.of("Asia/Kathmandu"));
 
     @InjectMocks
     private EsewaPaymentStrategy esewaPaymentStrategy;
