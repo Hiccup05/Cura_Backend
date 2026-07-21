@@ -5,6 +5,7 @@ import com.hiccup.cura.dto.reqeust.ReceptionistRequestDto;
 import com.hiccup.cura.dto.response.ReceptionistResponseDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.ReceptionistService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("${api.prefix}/admin/receptionists")
 @RequiredArgsConstructor
+@Tag(name="Admin Receptionist", description = "Admin control on User with role Receptionist")
 public class AdminReceptionistController {
     private final ReceptionistService receptionistService;
 

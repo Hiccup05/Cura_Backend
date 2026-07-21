@@ -4,6 +4,7 @@ import com.hiccup.cura.dto.reqeust.SpecializationRequestDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.model.Specialization;
 import com.hiccup.cura.service.SpecializationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,10 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("${api.prefix}/admin/specialization")
+@RequestMapping("${api.prefix}/admin/specializations")
 @RequiredArgsConstructor
-public class AdminSpecializationController {
+@Tag(name="Admin Specialization", description = "Admin action on Specializations")
+public class   AdminSpecializationController {
     private final SpecializationService service;
 
     @GetMapping

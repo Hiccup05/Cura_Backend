@@ -3,6 +3,7 @@ package com.hiccup.cura.controller;
 import com.hiccup.cura.dto.response.ApiResponse;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,6 +16,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("${api.prefix}/user")
 @RequiredArgsConstructor
+@Tag(name="User", description = "Toggle status, upload profile, delete profile")
 public class UserController {
     private final UserService userService;
 

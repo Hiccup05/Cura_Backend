@@ -2,6 +2,7 @@ package com.hiccup.cura.controller.publics;
 
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.service.MedicalServiceService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("${api.prefix}/public/service")
 @RequiredArgsConstructor
+@Tag(name="Services", description = "Clinic Services")
 public class ServiceController {
     private final MedicalServiceService medicalService;
 

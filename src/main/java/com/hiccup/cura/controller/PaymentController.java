@@ -6,6 +6,7 @@ import com.hiccup.cura.enums.PaymentProvider;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.payment.PaymentFactory;
 import com.hiccup.cura.service.payment.PaymentStrategy;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +17,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
+@Tag(name="Payment", description = "initiate, verify")
 public class PaymentController {
 
     private final PaymentFactory paymentFactory;
