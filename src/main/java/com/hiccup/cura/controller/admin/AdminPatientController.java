@@ -2,6 +2,7 @@ package com.hiccup.cura.controller.admin;
 
 import com.hiccup.cura.dto.response.PatientResponseDto;
 import com.hiccup.cura.service.PatientService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/admin/patients")
+@Tag(name="Admin Patient", description = "Admin control over User with role Patient")
 public class AdminPatientController {
     private final PatientService patientService;
 

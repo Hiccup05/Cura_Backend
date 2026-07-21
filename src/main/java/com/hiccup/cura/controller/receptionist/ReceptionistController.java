@@ -4,6 +4,7 @@ import com.hiccup.cura.dto.reqeust.ReceptionistRequestDto;
 import com.hiccup.cura.dto.response.ReceptionistResponseDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.ReceptionistService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${api.prefix}/receptionist")
+@Tag(name="Receptionists", description = "Fetch, Update")
 public class ReceptionistController {
     private final ReceptionistService receptionistService;
 

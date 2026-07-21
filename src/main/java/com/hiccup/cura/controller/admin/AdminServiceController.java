@@ -5,6 +5,7 @@ import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.MedicalServiceService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +22,7 @@ import java.net.URI;
 @RestController
 @RequestMapping("${api.prefix}/admin/services")
 @RequiredArgsConstructor
+@Tag(name="Admin Services", description = "Admin control on Clinic Service")
 public class AdminServiceController {
     private final MedicalServiceService serviceService;
 

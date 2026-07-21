@@ -11,6 +11,7 @@ import com.hiccup.cura.service.AppointmentService;
 import com.hiccup.cura.service.doctor.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
 import com.hiccup.cura.service.SpecializationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,10 +27,10 @@ import java.util.List;
 @RestController
 @RequestMapping("${api.prefix}/doctors")
 @RequiredArgsConstructor
+@Tag(name = "Doctors", description = "Fetch, Update, Schedules, Appointments")
 public class DoctorController {
     private final DoctorService doctorService;
     private final DoctorScheduleService scheduleService;
-    private final SpecializationService specializationService;
     private final AppointmentService appointmentService;
 
     @GetMapping

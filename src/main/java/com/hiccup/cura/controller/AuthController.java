@@ -5,23 +5,21 @@ import com.hiccup.cura.dto.response.LoginResponseDto;
 import com.hiccup.cura.security.AuthService;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.prefix}/auth")
+@Tag(name="Authentication", description = "Admin login, Get profile, Logout")
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;

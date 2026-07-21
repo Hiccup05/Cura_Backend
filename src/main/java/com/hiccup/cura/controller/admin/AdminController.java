@@ -4,6 +4,7 @@ import com.hiccup.cura.dto.response.AdminProfileDto;
 import com.hiccup.cura.dto.response.AdminStatsResponseDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AdminService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${api.prefix}/admin")
+@Tag(name="Admin ", description = "User with role Admin")
 public class AdminController {
     private final AdminService adminService;
 

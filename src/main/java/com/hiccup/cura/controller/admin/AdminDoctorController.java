@@ -5,6 +5,7 @@ import com.hiccup.cura.dto.response.*;
 import com.hiccup.cura.service.doctor.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
 import com.hiccup.cura.service.doctor.LeaveService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("${api.prefix}/admin/doctors")
 @RequiredArgsConstructor
+@Tag(name="Admin Doctor", description = "Admin control on User with role Doctor")
 public class AdminDoctorController {
     private final DoctorService doctorService;
     private final DoctorScheduleService scheduleService;

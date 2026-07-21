@@ -5,6 +5,7 @@ import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +20,7 @@ import java.net.URI;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${api.prefix}/receptionist/appointment")
+@Tag(name = "Receptionist's Controller", description = "Book, Fetch")
 public class ReceptionistAppointmentController {
     private final AppointmentService appointmentService;
 

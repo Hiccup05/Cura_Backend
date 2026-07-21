@@ -2,6 +2,7 @@ package com.hiccup.cura.controller;
 
 import com.hiccup.cura.model.Specialization;
 import com.hiccup.cura.service.SpecializationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("${api.prefix}/specialization")
 @RequiredArgsConstructor
+@Tag(name="Specialization", description = "About the specialization that doctors in CURA have.")
 public class SpecializationController {
     private final SpecializationService service;
 
