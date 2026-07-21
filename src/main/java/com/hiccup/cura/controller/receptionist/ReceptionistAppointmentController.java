@@ -19,7 +19,7 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.prefix}/receptionist/appointment")
+@RequestMapping("${api.prefix}/receptionist/appointments")
 @Tag(name = "Receptionist's Controller", description = "Book, Fetch")
 public class ReceptionistAppointmentController {
     private final AppointmentService appointmentService;
