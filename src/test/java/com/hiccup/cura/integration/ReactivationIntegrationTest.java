@@ -1,5 +1,6 @@
 package com.hiccup.cura.integration;
 
+import com.hiccup.cura.config.ClockConfig;
 import com.hiccup.cura.dto.reqeust.ReactivationTokenRequestDto;
 import com.hiccup.cura.model.ReactivationToken;
 import com.hiccup.cura.model.User;
@@ -12,7 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -24,7 +28,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import tools.jackson.databind.ObjectMapper;
 
-import java.time.LocalDateTime;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,6 +46,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 @ActiveProfiles("test")
 class ReactivationIntegrationTest {
+
+    static final Clock FIXED_CLOCK =
+            Clock.fixed(Instant.parse("2026-07-19T06:00:00Z"), ClockConfig.CLINIC_ZONE);
+
+    @TestConfiguration
+    static class FixedClockConfig {
+        @Bean
+        @Primary
+        Clock fixedClock() {
+            return FIXED_CLOCK;
+        }
+    }
+
     @Container
     @ServiceConnection(name = "postgres")
     static PostgreSQLContainer postgres=new PostgreSQLContainer("postgres:16");
@@ -98,8 +117,8 @@ class ReactivationIntegrationTest {
 
         reactivationTokenRepository.save(ReactivationToken.builder()
                 .token(token)
-                .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusHours(24))
+                .createdAt(FIXED_CLOCK.instant())
+                .expiresAt(FIXED_CLOCK.instant().plus(24, ChronoUnit.HOURS))
                 .email("bein054717@gmail.com")
                 .used(false)
                 .build());
@@ -128,8 +147,8 @@ class ReactivationIntegrationTest {
 
         reactivationTokenRepository.save(ReactivationToken.builder()
                 .token(token)
-                .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusHours(24))
+                .createdAt(FIXED_CLOCK.instant())
+                .expiresAt(FIXED_CLOCK.instant().plus(24, ChronoUnit.HOURS))
                 .email("bein054717@gmail.com")
                 .used(true)
                 .build());
@@ -159,8 +178,8 @@ class ReactivationIntegrationTest {
 
         reactivationTokenRepository.save(ReactivationToken.builder()
                 .token(token)
-                .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().minusHours(2))
+                .createdAt(FIXED_CLOCK.instant().minus(26, ChronoUnit.HOURS))
+                .expiresAt(FIXED_CLOCK.instant().minus(2, ChronoUnit.HOURS))
                 .email("bein054717@gmail.com")
                 .used(false)
                 .build());

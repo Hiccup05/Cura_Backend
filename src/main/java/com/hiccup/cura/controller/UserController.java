@@ -1,6 +1,6 @@
 package com.hiccup.cura.controller;
 
-import com.hiccup.cura.dto.response.ApiResposne;
+import com.hiccup.cura.dto.response.ApiResponse;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,16 +26,16 @@ public class UserController {
     }
 
     @PostMapping("/profile/picture")
-    public ResponseEntity<ApiResposne> uploadProfilePicture(@RequestParam MultipartFile file, @AuthenticationPrincipal CustomUser user) throws IOException {
+    public ResponseEntity<ApiResponse> uploadProfilePicture(@RequestParam MultipartFile file, @AuthenticationPrincipal CustomUser user) throws IOException {
 
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
-            return ResponseEntity.badRequest().body( new ApiResposne("Only image files are allowed", null) );
+            return ResponseEntity.badRequest().body( new ApiResponse("Only image files are allowed", null) );
         }
         if (file.getSize() > 2 * 1024 * 1024) {
-            return ResponseEntity.badRequest().body(new ApiResposne("File size must be under 2MB", null));
+            return ResponseEntity.badRequest().body(new ApiResponse("File size must be under 2MB", null));
         }
-        return ResponseEntity.ok(new ApiResposne("Upload Successful", userService.updateProfilePictureUrl(user.getId(), file)));
+        return ResponseEntity.ok(new ApiResponse("Upload Successful", userService.updateProfilePictureUrl(user.getId(), file)));
     }
 
     @DeleteMapping("/profile/picture")

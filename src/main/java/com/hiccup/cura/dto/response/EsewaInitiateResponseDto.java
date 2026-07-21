@@ -1,7 +1,6 @@
 package com.hiccup.cura.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.hiccup.cura.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

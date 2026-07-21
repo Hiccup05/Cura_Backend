@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +26,7 @@ public class ReactivationTokenService {
     private final ReactivationTokenRepository reactivationTokenRepository;
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final Clock clock;
 
     public String registerToken(String email){
         User user = userRepository.findByEmail(email).orElse(null);
@@ -50,7 +53,7 @@ public class ReactivationTokenService {
             throw new InvalidReactivationTokenException("Token already used: " + tokenRequestDto.getToken());
         }
 
-        if(token.getExpiresAt().isBefore(LocalDateTime.now())){
+        if(token.getExpiresAt().isBefore(clock.instant())){
             throw new ReactivationTokenExpiredException("Token expired: " + tokenRequestDto.getToken());
         }
         if(!token.getEmail().equals(tokenRequestDto.getEmail())){
@@ -63,10 +66,11 @@ public class ReactivationTokenService {
         emailService.sendReactivationSuccess(user.getEmail(), user.getUsername());
     }
     private ReactivationToken createToken(String email){
+        Instant now = clock.instant();
         return ReactivationToken.builder()
                 .token(UUID.randomUUID().toString())
-                .createdAt(LocalDateTime.now())
-                .expiresAt(LocalDateTime.now().plusHours(24))
+                .createdAt(now)
+                .expiresAt(now.plus(24, ChronoUnit.HOURS))
                 .email(email)
                 .used(false)
                 .build();

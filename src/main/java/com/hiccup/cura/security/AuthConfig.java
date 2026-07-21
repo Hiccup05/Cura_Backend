@@ -10,7 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class AuthConfig {
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config){
         return config.getAuthenticationManager();
     }
 

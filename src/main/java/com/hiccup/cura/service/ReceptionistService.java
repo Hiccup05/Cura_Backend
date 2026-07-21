@@ -7,7 +7,6 @@ import com.hiccup.cura.enums.ReceptionistStatus;
 import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
-import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
 import com.hiccup.cura.mapper.ReceptionistProfileMapper;
 import com.hiccup.cura.model.ReceptionistProfile;
 import com.hiccup.cura.model.User;
@@ -18,11 +17,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Service

@@ -3,18 +3,13 @@ package com.hiccup.cura.service;
 import com.hiccup.cura.dto.reqeust.MedicalServiceRequestDto;
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
-import com.hiccup.cura.enums.RoleType;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
-import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;
+import com.hiccup.cura.mapper.MedicalServiceMapper;
 import com.hiccup.cura.model.MedicalService;
 import com.hiccup.cura.model.Specialization;
-import com.hiccup.cura.model.User;
-import com.hiccup.cura.mapper.MedicalServiceMapper;
 import com.hiccup.cura.repository.MedicalServiceRepository;
 import com.hiccup.cura.repository.SpecializationRepository;
-import com.hiccup.cura.repository.UserRepository;
-import com.hiccup.cura.service.CloudinaryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -115,7 +110,7 @@ public class MedicalServiceService {
                 .orElseThrow(() -> new ResourceNotFoundException("Medical service not found with id " + id));
         service.setIsActive(!service.getIsActive());
         medicalServiceRepository.save(service);
-        return new MessageResponseDto("Service " + (service.getIsActive() ? "activated" : "deactivated") + " successfully", LocalDateTime.now());
+        return new MessageResponseDto("Service " + (Boolean.TRUE.equals(service.getIsActive()) ? "activated" : "deactivated") + " successfully", LocalDateTime.now());
     }
 
     @CacheEvict(value="medical service photo", key="#id")

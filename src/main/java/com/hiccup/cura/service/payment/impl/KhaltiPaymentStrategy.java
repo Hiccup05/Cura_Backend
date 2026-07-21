@@ -1,7 +1,10 @@
 package com.hiccup.cura.service.payment.impl;
 
 import com.hiccup.cura.dto.reqeust.KhaltiRequestDto;
-import com.hiccup.cura.dto.response.*;
+import com.hiccup.cura.dto.response.KhaltiLookupResponseDto;
+import com.hiccup.cura.dto.response.KhaltiResponseDto;
+import com.hiccup.cura.dto.response.PaymentInitiateResponse;
+import com.hiccup.cura.dto.response.PaymentVerificationResponse;
 import com.hiccup.cura.enums.AppointmentStatus;
 import com.hiccup.cura.enums.PaymentStatus;
 import com.hiccup.cura.enums.PaymentType;
@@ -22,7 +25,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +38,7 @@ public class KhaltiPaymentStrategy implements PaymentStrategy {
     private final UserRepository userRepository;
     private final WebClient webClient;
     private final EmailService emailService;
+    private final Clock clock;
 
     @Override
     public PaymentInitiateResponse initiate(Long appointmentId, Long userId) {
@@ -44,8 +48,8 @@ public class KhaltiPaymentStrategy implements PaymentStrategy {
         if(existedPayment!=null && existedPayment.getPaymentStatus().equals(PaymentStatus.COMPLETE)){
             throw new DuplicatePaymentException("Payment is already completed");
         }else if(existedPayment!=null && existedPayment.getPaymentStatus().equals(PaymentStatus.PENDING)){
-            if(OffsetDateTime.now().isAfter(existedPayment.getExpiresAt())){
-                KhaltiResposneDto response = getKhaltiResponse(appointmentId, userId, appointment);
+            if(OffsetDateTime.now(clock).isAfter(existedPayment.getExpiresAt())){
+                KhaltiResponseDto response = getKhaltiResponse(appointmentId, userId, appointment);
                 existedPayment.setExpiresAt(response.getExpiresAt());
                 existedPayment.setPidx(response.getPidx());
                 existedPayment.setPaymentUrl(response.getPaymentUrl());
@@ -56,7 +60,7 @@ public class KhaltiPaymentStrategy implements PaymentStrategy {
             }
         }
 
-        KhaltiResposneDto response = getKhaltiResponse(appointmentId, userId,  appointment);
+        KhaltiResponseDto response = getKhaltiResponse(appointmentId, userId,  appointment);
         Payment payment=new Payment();
         payment.setPaymentType(PaymentType.KHALTI);
         payment.setPaymentStatus(PaymentStatus.PENDING);
@@ -89,7 +93,7 @@ public class KhaltiPaymentStrategy implements PaymentStrategy {
             Payment payment = paymentRepository.findByPidx(block.getPidx());
             payment.setPaymentStatus(PaymentStatus.COMPLETE);
             payment.setTransactionId(block.getTransactionId());
-            payment.setPaidAt(LocalDateTime.now());
+            payment.setPaidAt(OffsetDateTime.now(clock));
 
             Appointment appointment = payment.getAppointment();
             appointment.setStatus(AppointmentStatus.CONFIRMED);
@@ -110,16 +114,16 @@ public class KhaltiPaymentStrategy implements PaymentStrategy {
                 .build();
     }
 
-    private KhaltiResposneDto getKhaltiResponse(Long appointmentId, Long userId, Appointment appointment) {
+    private KhaltiResponseDto getKhaltiResponse(Long appointmentId, Long userId, Appointment appointment) {
         KhaltiRequestDto khaltiRequestDto = getKhaltiRequestDto(appointmentId, userId, appointment);
 
-        KhaltiResposneDto response = webClient.post()
+        KhaltiResponseDto response = webClient.post()
                 .uri("epayment/initiate/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(khaltiRequestDto)
                 .retrieve()
-                .bodyToMono(KhaltiResposneDto.class)
+                .bodyToMono(KhaltiResponseDto.class)
                 .block();
 
         if(response == null){

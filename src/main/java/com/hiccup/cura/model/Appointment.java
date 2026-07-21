@@ -6,8 +6,8 @@ import com.hiccup.cura.enums.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -58,7 +58,7 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
-    private LocalDateTime bookedAt;
+    private Instant bookedAt;
 
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "appointment")
     private Prescription prescription;

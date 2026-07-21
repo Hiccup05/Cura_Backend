@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -16,7 +16,7 @@ public class ReactivationToken {
     @Id
     private String token;
     private String email;
-    private LocalDateTime expiresAt;
+    private Instant expiresAt;
     private boolean used;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }

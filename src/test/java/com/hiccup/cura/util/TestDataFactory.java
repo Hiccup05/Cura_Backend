@@ -1,5 +1,6 @@
 package com.hiccup.cura.util;
 
+import com.hiccup.cura.config.ClockConfig;
 import com.hiccup.cura.enums.*;
 import com.hiccup.cura.model.*;
 import com.hiccup.cura.repository.*;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -89,8 +89,8 @@ public class TestDataFactory {
         payment.setPidx(String.valueOf(faker.number().randomNumber()));
         payment.setPaymentType(PaymentType.KHALTI);
         payment.setAmount(BigDecimal.ONE);
-        payment.setPaidAt(LocalDateTime.now());
-        payment.setExpiresAt(OffsetDateTime.from(LocalDateTime.now().plusHours(10)));
+        payment.setPaidAt(OffsetDateTime.now(ClockConfig.CLINIC_ZONE));
+        payment.setExpiresAt(OffsetDateTime.now(ClockConfig.CLINIC_ZONE).plusMinutes(60));
         return payment;
     }
 
@@ -162,7 +162,7 @@ public class TestDataFactory {
         payment.setAppointment(pendingAppointmentForNewPatient);
         payment.setPidx(String.valueOf(1));
         payment.setPaymentUrl("https://rc-epay.esewa.com.np/api/epay/main/v2/form");
-        payment.setExpiresAt(OffsetDateTime.now().plusMinutes(15));
+        payment.setExpiresAt(OffsetDateTime.now(ClockConfig.CLINIC_ZONE).plusMinutes(15));
         paymentRepository.save(payment);
     }
 }

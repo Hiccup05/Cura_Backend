@@ -1,6 +1,6 @@
 package com.hiccup.cura.service;
 
-import com.hiccup.cura.Specification.AppointmentSpecification;
+import com.hiccup.cura.specification.AppointmentSpecification;
 import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
@@ -17,7 +17,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -37,6 +39,8 @@ public class AppointmentService {
     private final DoctorScheduleService doctorScheduleService;
     private final MedicalServiceRepository medicalServiceRepository;
     private final AppointmentMapper appointmentMapper;
+    private final Clock clock;
+    private static final String APPOINTMENT_NOT_FOUND="Appointment not found with id ";
 
     @Transactional
     public AppointmentResponseDto createAppointment(AppointmentRequestDto appointmentRequestDto, Long userId) {
@@ -82,7 +86,7 @@ public class AppointmentService {
     }
 
     public AppointmentResponseDto getAppointment(Long userId, Long appointmentId){
-        Appointment appointment = appointmentRepository.getAppointmentByIdAndUserId(appointmentId, userId).orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
+        Appointment appointment = appointmentRepository.getAppointmentByIdAndUserId(appointmentId, userId).orElseThrow(() -> new ResourceNotFoundException(APPOINTMENT_NOT_FOUND + appointmentId));
         return appointmentMapper.toDto(appointment);
     }
 
@@ -104,7 +108,7 @@ public class AppointmentService {
     public AppointmentResponseDto getReceptionistAppointmentById(Long appointmentId) {
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(APPOINTMENT_NOT_FOUND + appointmentId));
 
         if (appointment.getType() != AppointmentType.RECEPTIONIST_BOOKED) {
             throw new UnauthorizedUserAccessException("You are not allowed to access this appointment");
@@ -142,7 +146,7 @@ public class AppointmentService {
         DoctorProfile doctor = getDoctor(userId);
 
         Appointment appointment = appointmentRepository.findById(appointmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Appointment not found with id " + appointmentId));
+                .orElseThrow(() -> new ResourceNotFoundException(APPOINTMENT_NOT_FOUND + appointmentId));
 
         if (!appointment.getDoctor().getId().equals(doctor.getId())) {
             throw new UnauthorizedUserAccessException("You are not allowed to access this appointment");
@@ -159,17 +163,18 @@ public class AppointmentService {
         )){
             throw new UnauthorizedUserAccessException("You are not allowed to access appointments");
         }
-        Appointment appointment = appointmentRepository.getAppointmentByIdAndUserId(appointmentId, userId).orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
+        Appointment appointment = appointmentRepository.getAppointmentByIdAndUserId(appointmentId, userId).orElseThrow(() -> new ResourceNotFoundException(APPOINTMENT_NOT_FOUND + appointmentId));
 
         if(appointment.getStatus()==AppointmentStatus.CANCELLED){
             throw new InvalidAppointmentException("Appointment is already cancelled");
         }
 
         LocalDateTime appointmentTime=LocalDateTime.of(appointment.getAppointmentDate(), appointment.getAppointmentTime());
+        Instant appointmentInstant=appointmentTime.atZone(clock.getZone()).toInstant();
 
-        LocalDateTime cancelTime=LocalDateTime.now();
+        LocalDateTime cancelTime=LocalDateTime.now(clock);
 
-        if(ChronoUnit.HOURS.between(appointment.getBookedAt(),appointmentTime)<=24 ){
+        if(ChronoUnit.HOURS.between(appointment.getBookedAt(),appointmentInstant)<=24 ){
             if(cancelTime.isBefore(appointmentTime)){
                 appointment.setStatus(AppointmentStatus.CANCELLED);
             }
@@ -178,7 +183,7 @@ public class AppointmentService {
             }
         }
         else{
-            if(ChronoUnit.HOURS.between(appointment.getBookedAt(), cancelTime)<=24){
+            if(ChronoUnit.HOURS.between(appointment.getBookedAt(), clock.instant())<=24){
                 appointment.setStatus(AppointmentStatus.CANCELLED);
             }else{
                 throw new CancellationNotAllowedException("Cannot cancel appointment as booked appointment exceeds 24 hours mark");
@@ -194,7 +199,7 @@ public class AppointmentService {
 
     private void validateAppointmentTime(LocalDate appointmentDate, LocalTime appointmentTime){
         LocalDateTime appointment=LocalDateTime.of(appointmentDate, appointmentTime);
-        if(LocalDateTime.now().isAfter(appointment)){
+        if(LocalDateTime.now(clock).isAfter(appointment)){
             throw new InvalidBookingTimeException("Appointment time is before booking time");
         }
     }
@@ -305,7 +310,7 @@ public class AppointmentService {
         appointment.setDoctor(doctor);
         appointment.setAppointmentDate(appointmentRequestDto.getAppointmentDate());
         appointment.setAppointmentTime(appointmentRequestDto.getAppointmentTime());
-        appointment.setBookedAt(LocalDateTime.now());
+        appointment.setBookedAt(clock.instant());
         appointment.setReason(appointmentRequestDto.getReason());
         appointment.setStatus(AppointmentStatus.PENDING);
         Prescription prescription=new Prescription();
