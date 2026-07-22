@@ -3,9 +3,14 @@ package com.hiccup.cura.controller.receptionist;
 import com.hiccup.cura.dto.request.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
+import com.hiccup.cura.exception.ErrorResponse;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +32,15 @@ public class ReceptionistAppointmentController {
     private final AppointmentService appointmentService;
 
     @Operation(summary = " Book a walk-in appointment (validated; status CONFIRMED, marked paid).")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Walk-in appointment booked as CONFIRMED and marked paid; Location header points at the created appointment."),
+            @ApiResponse(responseCode = "400", description = "Missing walk-in patient name/phone or payment method; slot already booked; requested time outside the doctor's schedule or in the past; doctor lacks the service's specialization; doctor on leave; or slot capacity full.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "The authenticated receptionist's account is INACTIVE.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Doctor, medical service, or schedule for that weekday not found.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping
     public ResponseEntity<AppointmentResponseDto> createAppointment(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto, @AuthenticationPrincipal CustomUser user){
         AppointmentResponseDto created = appointmentService.createAppointment(appointmentRequestDto, user.getId());

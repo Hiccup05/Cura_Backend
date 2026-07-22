@@ -26,6 +26,7 @@ import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.Base64;
@@ -47,7 +48,7 @@ public class EsewaPaymentStrategy implements PaymentStrategy {
     private final Clock clock;
 
     @Override
-    public PaymentInitiateResponse initiate(Long appointmentId, Long userId) throws Exception {
+    public PaymentInitiateResponse initiate(Long appointmentId, Long userId) {
         Appointment appointment=appointmentRepository.findById(appointmentId).orElseThrow(() -> new ResourceNotFoundException("Appointment with id " + appointmentId + " not found"));
         validateAppointment(appointment, userId);
         Payment existedPayment = paymentRepository.findByAppointment_IdAndPaymentStatusNotIn(appointmentId, List.of(PaymentStatus.CANCELLED, PaymentStatus.FAILED));
@@ -86,7 +87,7 @@ public class EsewaPaymentStrategy implements PaymentStrategy {
 
     @Transactional
     @Override
-    public PaymentVerificationResponse verify(Map<String, String> requestParams) throws Exception {
+    public PaymentVerificationResponse verify(Map<String, String> requestParams) throws IOException {
         String data = requestParams.get("data");
         if (data == null || data.isEmpty()) {
             throw new IllegalArgumentException("Missing secure data payload from eSewa.");
