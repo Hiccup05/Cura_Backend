@@ -16,9 +16,27 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(KhaltiGatewayFailException.class)
-    public ResponseEntity<ErrorResponse> handleKhaltiGatewayFailException(UnauthorizedUserAccessException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleKhaltiGatewayFailException(KhaltiGatewayFailException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(new ErrorResponse(502, "Payment Gateway Failure", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(InvalidAppointmentException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidAppointment(InvalidAppointmentException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ErrorResponse(502, "KhaltiGatewayFailException", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
+                .body(new ErrorResponse(400, "Invalid Appointment State", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler(DuplicatePaymentException.class)
+    public ResponseEntity<ErrorResponse> handleDuplicatePayment(DuplicatePaymentException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(409, "Duplicate Payment", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
+    }
+
+    @ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class, SecurityException.class})
+    public ResponseEntity<ErrorResponse> handleBusinessRuleViolation(RuntimeException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(400, "Invalid Request", ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
     }
 
     @ExceptionHandler(InvalidBookingTimeException.class)
@@ -84,7 +102,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PaymentProviderNotSupported.class)
     public ResponseEntity<ErrorResponse> handlePaymentProviderNotSupported(
             Exception ex, HttpServletRequest request) {
-        return ResponseEntity.status(HttpStatus.GONE)
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(new ErrorResponse(404, "Payment_Provider_NOT_SUPPORTED",
                         ex.getMessage(), request.getRequestURI(), LocalDateTime.now()));
     }
