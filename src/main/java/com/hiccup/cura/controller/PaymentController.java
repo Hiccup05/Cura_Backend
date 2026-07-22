@@ -6,6 +6,7 @@ import com.hiccup.cura.enums.PaymentProvider;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.payment.PaymentFactory;
 import com.hiccup.cura.service.payment.PaymentStrategy;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ public class PaymentController {
 
     private final PaymentFactory paymentFactory;
 
+    @Operation(summary = "Start an online payment for an appointment via KHALTI/ESEWA.")
     @PostMapping("/initiate")
     public ResponseEntity<PaymentInitiateResponse> initiatePayment(
             @RequestParam Long appointmentId,
@@ -35,7 +37,7 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
-
+    @Operation(summary = "Verify a completed gateway transaction and confirm the appointment (public).")
     @PostMapping("/verify/{provider}")
     public ResponseEntity<PaymentVerificationResponse> verifyPayment(
             @PathVariable PaymentProvider provider,
