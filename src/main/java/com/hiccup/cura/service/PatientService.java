@@ -1,6 +1,6 @@
 package com.hiccup.cura.service;
 
-import com.hiccup.cura.dto.reqeust.PatientRequestDto;
+import com.hiccup.cura.dto.request.PatientRequestDto;
 import com.hiccup.cura.dto.response.PatientResponseDto;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
@@ -11,6 +11,8 @@ import com.hiccup.cura.repository.PatientRepository;
 import com.hiccup.cura.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -28,6 +30,10 @@ public class PatientService {
         patientProfile.setUser(user);
 
         return patientProfileMapper.toDto(patientRepository.save(patientProfile));
+    }
+
+    public Page<PatientResponseDto> getAll(Pageable pageable){
+        return patientRepository.findAll(pageable).map(patientProfileMapper::toDto);
     }
 
     public PatientResponseDto getById(Long id){

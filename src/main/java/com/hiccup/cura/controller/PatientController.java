@@ -1,9 +1,10 @@
 package com.hiccup.cura.controller;
 
-import com.hiccup.cura.dto.reqeust.PatientRequestDto;
+import com.hiccup.cura.dto.request.PatientRequestDto;
 import com.hiccup.cura.dto.response.PatientResponseDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.PatientService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +19,14 @@ import org.springframework.web.bind.annotation.*;
 public class PatientController {
     private final PatientService patientService;
 
+    @Operation(summary = "Get my patient profile.")
     @GetMapping
     public ResponseEntity<PatientResponseDto> getPatient(@AuthenticationPrincipal UserDetails userDetails) {
         CustomUser customUser = (CustomUser) userDetails;
         return ResponseEntity.ok(patientService.getById(customUser.getId()));
     }
 
+    @Operation(summary = "Update my patient profile (partial).")
     @PatchMapping
     public ResponseEntity<PatientResponseDto> updatePatient(@AuthenticationPrincipal UserDetails userDetails, @RequestBody PatientRequestDto patientRequestDto) {
         CustomUser customUser = (CustomUser) userDetails;

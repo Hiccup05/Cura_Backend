@@ -1,7 +1,7 @@
 package com.hiccup.cura.service;
 
-import com.hiccup.cura.dto.reqeust.ChangeReceptionistRequestDto;
-import com.hiccup.cura.dto.reqeust.ReceptionistRequestDto;
+import com.hiccup.cura.dto.request.ChangeReceptionistRequestDto;
+import com.hiccup.cura.dto.request.ReceptionistRequestDto;
 import com.hiccup.cura.dto.response.ReceptionistResponseDto;
 import com.hiccup.cura.enums.ReceptionistStatus;
 import com.hiccup.cura.enums.RoleType;

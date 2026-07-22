@@ -1,7 +1,7 @@
 package com.hiccup.cura.integration;
 
 import com.hiccup.cura.config.ClockConfig;
-import com.hiccup.cura.dto.reqeust.ReactivationTokenRequestDto;
+import com.hiccup.cura.dto.request.ReactivationTokenRequestDto;
 import com.hiccup.cura.model.ReactivationToken;
 import com.hiccup.cura.model.User;
 import com.hiccup.cura.repository.ReactivationTokenRepository;

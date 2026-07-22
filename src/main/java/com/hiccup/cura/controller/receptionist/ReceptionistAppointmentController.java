@@ -1,11 +1,18 @@
 package com.hiccup.cura.controller.receptionist;
 
-import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
+import com.hiccup.cura.dto.request.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
+import com.hiccup.cura.exception.ErrorResponse;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,13 +26,23 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.prefix}/receptionist/appointments")
-@Tag(name = "Receptionist's Controller", description = "Book, Fetch")
+@RequestMapping("${api.prefix}/receptionists/appointments")
+@Tag(name = "Receptionist Appointments", description = "Book, Fetch")
 public class ReceptionistAppointmentController {
     private final AppointmentService appointmentService;
 
+    @Operation(summary = " Book a walk-in appointment (validated; status CONFIRMED, marked paid).")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Walk-in appointment booked as CONFIRMED and marked paid; Location header points at the created appointment."),
+            @ApiResponse(responseCode = "400", description = "Missing walk-in patient name/phone or payment method; slot already booked; requested time outside the doctor's schedule or in the past; doctor lacks the service's specialization; doctor on leave; or slot capacity full.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "403", description = "The authenticated receptionist's account is INACTIVE.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Doctor, medical service, or schedule for that weekday not found.",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping
-    public ResponseEntity<AppointmentResponseDto> createAppointment(@RequestBody AppointmentRequestDto appointmentRequestDto, @AuthenticationPrincipal CustomUser user){
+    public ResponseEntity<AppointmentResponseDto> createAppointment(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto, @AuthenticationPrincipal CustomUser user){
         AppointmentResponseDto created = appointmentService.createAppointment(appointmentRequestDto, user.getId());
         URI location= ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -35,15 +52,17 @@ public class ReceptionistAppointmentController {
         return ResponseEntity.created(location).body(created);
     }
 
-    @GetMapping("/{appointmentId}")
+    @Operation(summary = "Get one receptionist-booked appointment.")
+    @GetMapping("/{id}")
     public ResponseEntity<AppointmentResponseDto> getReceptionistAppointmentById(
-            @PathVariable Long appointmentId
+            @PathVariable Long id
     ) {
         return ResponseEntity.ok(
-                appointmentService.getReceptionistAppointmentById(appointmentId)
+                appointmentService.getReceptionistAppointmentById(id)
         );
     }
 
+    @Operation(summary = "List receptionist-booked appointments, filterable by receptionist or walk-in name.")
     @GetMapping
     public ResponseEntity<Page<AppointmentSummaryDto>> getReceptionistAppointments(
             @RequestParam(required = false) Long receptionistId,

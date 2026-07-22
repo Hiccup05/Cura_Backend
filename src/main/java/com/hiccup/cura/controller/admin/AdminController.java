@@ -4,6 +4,7 @@ import com.hiccup.cura.dto.response.AdminProfileDto;
 import com.hiccup.cura.dto.response.AdminStatsResponseDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AdminService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +16,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${api.prefix}/admin")
-@Tag(name="Admin ", description = "User with role Admin")
+@Tag(name="Admin", description = "User with role Admin")
 public class AdminController {
     private final AdminService adminService;
 
+    @Operation(summary = "Admin's own profile")
     @GetMapping("/profile")
     public ResponseEntity<AdminProfileDto> getAdminProfile(@AuthenticationPrincipal CustomUser user) {
         return ResponseEntity.ok(adminService.getAdminProfile(user.getId()));
     }
 
+    @Operation(summary = " clinic-wide statistics.")
     @GetMapping("/stats")
     public ResponseEntity<AdminStatsResponseDto> getStats() {
         return ResponseEntity.ok(adminService.getStats());

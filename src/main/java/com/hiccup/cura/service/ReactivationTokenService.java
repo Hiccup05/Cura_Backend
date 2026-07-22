@@ -1,6 +1,6 @@
 package com.hiccup.cura.service;
 
-import com.hiccup.cura.dto.reqeust.ReactivationTokenRequestDto;
+import com.hiccup.cura.dto.request.ReactivationTokenRequestDto;
 import com.hiccup.cura.exception.custom.InvalidReactivationTokenException;
 import com.hiccup.cura.exception.custom.ReactivationTokenExpiredException;
 import com.hiccup.cura.model.ReactivationToken;

@@ -1,6 +1,6 @@
 package com.hiccup.cura.service;
 
-import com.hiccup.cura.dto.reqeust.MedicalServiceRequestDto;
+import com.hiccup.cura.dto.request.MedicalServiceRequestDto;
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
@@ -9,7 +9,6 @@ import com.hiccup.cura.mapper.MedicalServiceMapper;
 import com.hiccup.cura.model.MedicalService;
 import com.hiccup.cura.model.Specialization;
 import com.hiccup.cura.repository.MedicalServiceRepository;
-import com.hiccup.cura.repository.SpecializationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -27,12 +26,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MedicalServiceService {
    private final MedicalServiceRepository medicalServiceRepository;
-   private final SpecializationRepository specializationRepository;
    private final CloudinaryService cloudinaryService;
    private final MedicalServiceMapper medicalServiceMapper;
     private static final String SERVICE_NOT_FOUND = "Medical service not found with id ";
+    private final SpecializationService specializationService;
 
-   public Page<MedicalServiceResponseDto> getAll(Pageable pageable){
+    public Page<MedicalServiceResponseDto> getAll(Pageable pageable){
        Page<MedicalService> allService = medicalServiceRepository.findAll(pageable);
        return allService.map(medicalServiceMapper::toDto);
    }
@@ -55,6 +54,7 @@ public class MedicalServiceService {
    }
 
     public List<MedicalServiceResponseDto> getActiveSpecializationServices(Long specializationId){
+       specializationService.getEntityById(specializationId);
         return medicalServiceRepository.findAllActiveServicesWithSpecialization(specializationId);
     }
 
@@ -68,8 +68,7 @@ public class MedicalServiceService {
        if(medicalServiceRepository.existsByNameAndSpecialization_id(medicalServiceRequestDto.getName(), medicalServiceRequestDto.getSpecializationId())){
            throw new DuplicateEntryException("Service already exists with this name under this specialization");
        }
-        Specialization specialization=specializationRepository.findById(medicalServiceRequestDto.getSpecializationId())
-                .orElseThrow(()-> new ResourceNotFoundException("Doctor specialization isn't created with id "+medicalServiceRequestDto.getSpecializationId()));
+        Specialization specialization=specializationService.getEntityById(medicalServiceRequestDto.getSpecializationId());
        MedicalService medicalService=MedicalService.builder().
                name(medicalServiceRequestDto.getName())
                .description(medicalServiceRequestDto.getDescription())
@@ -98,7 +97,7 @@ public class MedicalServiceService {
             medicalService.setDescription(medicalServiceRequestDto.getDescription());
         }
         if(medicalServiceRequestDto.getSpecializationId()!=null){
-            Specialization specialization=specializationRepository.findById(medicalServiceRequestDto.getSpecializationId()).orElseThrow(()-> new ResourceNotFoundException("Specialization cannot be found with id "+medicalServiceRequestDto.getSpecializationId()));
+            Specialization specialization=specializationService.getEntityById(medicalServiceRequestDto.getSpecializationId());
             medicalService.setSpecialization(specialization);
         }
         return medicalServiceMapper.toDto(medicalServiceRepository.save(medicalService));

@@ -1,4 +1,4 @@
-package com.hiccup.cura.dto.reqeust;
+package com.hiccup.cura.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,6 +13,5 @@ public class SpecializationRequestDto {
     @NotBlank(message = "Specialization name cannot be blank")
     private String name;
 
-    @NotNull(message = "Slot duration is required")
-    private Integer slotDuration;
+    private String description;
 }

@@ -1,7 +1,7 @@
 package com.hiccup.cura.service.doctor;
 
-import com.hiccup.cura.dto.reqeust.ScheduleRequestDto;
-import com.hiccup.cura.dto.reqeust.ScheduleUpdateRequestDto;
+import com.hiccup.cura.dto.request.ScheduleRequestDto;
+import com.hiccup.cura.dto.request.ScheduleUpdateRequestDto;
 import com.hiccup.cura.dto.response.PublicScheduleResponseDto;
 import com.hiccup.cura.dto.response.ScheduleResponseDto;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;

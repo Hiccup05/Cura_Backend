@@ -1,6 +1,6 @@
 package com.hiccup.cura.security;
 
-import com.hiccup.cura.dto.reqeust.LoginRequestDto;
+import com.hiccup.cura.dto.request.LoginRequestDto;
 import com.hiccup.cura.dto.response.LoginResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

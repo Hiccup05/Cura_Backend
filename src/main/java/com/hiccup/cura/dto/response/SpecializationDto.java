@@ -1,16 +1,14 @@
-package com.hiccup.cura.dto.reqeust;
+package com.hiccup.cura.dto.response;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class SignUpRequestDto {
-    private String username;
-    private String password;
+public class SpecializationDto {
+    private Long id;
     private String name;
+    private String description;
 }
