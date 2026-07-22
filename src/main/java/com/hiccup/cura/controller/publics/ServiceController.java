@@ -10,10 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("${api.prefix}/public/service")
+@RequestMapping("${api.prefix}/public/services")
 @RequiredArgsConstructor
 @Tag(name="Services", description = "Clinic Services")
 public class ServiceController {
@@ -32,11 +30,6 @@ public class ServiceController {
                                                                         @RequestParam(defaultValue = "10") int size){
         Pageable pageable=PageRequest.of(page, size);
         return ResponseEntity.ok(medicalService.searchByKeyword(keyword, pageable));
-    }
-
-    @GetMapping("/{specializationId}")
-    public ResponseEntity<List<MedicalServiceResponseDto>> getAllSpecializationServices(@PathVariable Long specializationId){
-        return ResponseEntity.ok(medicalService.getActiveSpecializationServices(specializationId));
     }
 
     @GetMapping("/{id}/photo")

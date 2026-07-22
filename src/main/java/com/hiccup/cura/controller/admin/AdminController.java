@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("${api.prefix}/admin")
-@Tag(name="Admin ", description = "User with role Admin")
+@Tag(name="Admin", description = "User with role Admin")
 public class AdminController {
     private final AdminService adminService;
 

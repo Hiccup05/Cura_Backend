@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/payments")
+@RequestMapping("${api.prefix}/payments")
 @RequiredArgsConstructor
 @Tag(name="Payment", description = "initiate, verify")
 public class PaymentController {

@@ -1,6 +1,6 @@
 package com.hiccup.cura.service;
 
-import com.hiccup.cura.dto.reqeust.SpecializationRequestDto;
+import com.hiccup.cura.dto.request.SpecializationRequestDto;
 import com.hiccup.cura.dto.response.MessageResponseDto;
 import com.hiccup.cura.dto.response.SpecializationDto;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
@@ -43,13 +43,13 @@ public class SpecializationService {
         }
         Specialization specialization = new Specialization();
         specialization.setName(requestDto.getName());
+        specialization.setDescription(requestDto.getDescription());
         return specializationMapper.toDto(specializationRepository.save(specialization));
     }
 
-    @Transactional
-    public MessageResponseDto delete(Long id) {
+
+    public void delete(Long id) {
         Specialization specialization = getEntityById(id);
         specializationRepository.delete(specialization);
-        return new MessageResponseDto("Specialization deleted with id " + id, LocalDateTime.now());
     }
 }

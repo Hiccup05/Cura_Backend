@@ -4,6 +4,9 @@ import com.hiccup.cura.dto.response.PatientResponseDto;
 import com.hiccup.cura.service.PatientService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name="Admin Patient", description = "Admin control over User with role Patient")
 public class AdminPatientController {
     private final PatientService patientService;
+
+    @GetMapping
+    public ResponseEntity<Page<PatientResponseDto>> getPatients(@RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ResponseEntity.ok(patientService.getAll(pageable));
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<PatientResponseDto> getPatientById(@PathVariable Long id) {

@@ -1,6 +1,6 @@
 package com.hiccup.cura.controller;
 
-import com.hiccup.cura.dto.reqeust.PrescriptionRequestDto;
+import com.hiccup.cura.dto.request.PrescriptionRequestDto;
 import com.hiccup.cura.dto.response.PrescriptionResponseDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.PrescriptionService;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.prefix}/appointment/prescription")
+@RequestMapping("${api.prefix}/appointments/prescriptions")
 @Tag(name="Prescription", description = "Action in prescription by doctor")
 public class PrescriptionController {
     private final PrescriptionService prescriptionService;

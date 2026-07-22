@@ -1,36 +1,31 @@
-package com.hiccup.cura.dto.reqeust;
+package com.hiccup.cura.dto.request;
 
-import com.hiccup.cura.enums.AppointmentStatus;
-import com.hiccup.cura.enums.AppointmentType;
 import com.hiccup.cura.enums.PaymentMethod;
-import com.hiccup.cura.model.DoctorProfile;
-import com.hiccup.cura.model.MedicalService;
-import com.hiccup.cura.model.PatientProfile;
-import com.hiccup.cura.model.ReceptionistProfile;
-import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class AppointmentRequestDto {
+    @NotNull(message = "doctorId is required")
     private Long doctorId;
 
     private Long receptionistId;
 
+    @NotNull(message = "medicalServiceId is required")
     private Long medicalServiceId;
 
+    @NotNull(message = "appointmentDate is required")
     private LocalDate appointmentDate;
 
+    @NotNull(message = "appointmentTime is required")
     private LocalTime appointmentTime;
-
-    private AppointmentStatus status;
 
     private String reason;
 

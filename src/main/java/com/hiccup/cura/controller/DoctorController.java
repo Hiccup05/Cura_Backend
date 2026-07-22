@@ -1,6 +1,6 @@
 package com.hiccup.cura.controller;
 
-import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
+import com.hiccup.cura.dto.request.DoctorRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.dto.response.DoctorDto;
@@ -10,7 +10,6 @@ import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
 import com.hiccup.cura.service.doctor.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
-import com.hiccup.cura.service.SpecializationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,17 +42,17 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.updateDoctor(customUser.getId(), doctorDto));
     }
 
-    @GetMapping("/schedule/{scheduleId}")
+    @GetMapping("/schedules/{scheduleId}")
     public ResponseEntity<ScheduleResponseDto> getDoctorSchedule(@AuthenticationPrincipal CustomUser customUser, @PathVariable Long scheduleId) {
         return ResponseEntity.ok(scheduleService.getScheduleOfDoctor(customUser.getId(), scheduleId));
     }
 
-    @GetMapping("/schedule")
+    @GetMapping("/schedules")
     public ResponseEntity<List<ScheduleResponseDto>> getDoctorSchedules(@AuthenticationPrincipal CustomUser customUser) {
         return ResponseEntity.ok(scheduleService.getSchedulesOfDoctor(customUser.getId()));
     }
 
-    @GetMapping("appointments")
+    @GetMapping("/appointments")
     public ResponseEntity<Page<AppointmentSummaryDto>> getDoctorAppointments(
             @AuthenticationPrincipal CustomUser user,
             @RequestParam(required = false) String patientName,
@@ -84,7 +83,7 @@ public class DoctorController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("appointment/{id}")
+    @GetMapping("/appointments/{id}")
     public ResponseEntity<AppointmentResponseDto> getAppointment(@PathVariable Long id, @AuthenticationPrincipal CustomUser user){
         return ResponseEntity.ok(appointmentService.getDoctorAppointment(user.getId(), id));
     }

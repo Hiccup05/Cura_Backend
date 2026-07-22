@@ -1,6 +1,6 @@
 package com.hiccup.cura.controller;
 
-import com.hiccup.cura.dto.reqeust.PatientRequestDto;
+import com.hiccup.cura.dto.request.PatientRequestDto;
 import com.hiccup.cura.dto.response.PatientResponseDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.PatientService;

@@ -1,7 +1,7 @@
 package com.hiccup.cura.service.doctor;
 
-import com.hiccup.cura.dto.reqeust.ChangeDoctorStatusRequestDto;
-import com.hiccup.cura.dto.reqeust.DoctorRequestDto;
+import com.hiccup.cura.dto.request.ChangeDoctorStatusRequestDto;
+import com.hiccup.cura.dto.request.DoctorRequestDto;
 import com.hiccup.cura.dto.response.DoctorDto;
 import com.hiccup.cura.dto.response.PublicDoctorResponseDto;
 import com.hiccup.cura.enums.DoctorStatus;
@@ -46,7 +46,7 @@ public class DoctorService {
         User user=userRepository.findById(userId).orElseThrow(()->new ResourceNotFoundException("User doesn't exists with id "+ userId));
         user.setRole(Set.of(roleRepository.findByName(RoleType.DOCTOR)));
         Set<Specialization> specializationSet=doctorRequestDto.getSpecializationIds().stream()
-               .map(specializationService::getById).collect(Collectors.toSet());
+               .map(specializationService::getEntityById).collect(Collectors.toSet());
         DoctorProfile doctorProfile=new DoctorProfile();
         doctorProfile.setUser(user);
         doctorProfile.setFirstName(doctorRequestDto.getFirstName());
@@ -61,9 +61,9 @@ public class DoctorService {
         return doctorProfileMapper.toDto(saveDoctor);
     }
 
-    public List<DoctorDto> getDoctors(){
-        return doctorRepository.findAll().stream()
-                .map(doctorProfileMapper::toDto).toList();
+    public Page<DoctorDto> getDoctors(Pageable pageable){
+        Page<DoctorProfile> all = doctorRepository.findAll(pageable);
+        return all.map(doctorProfileMapper::toDto);
     }
 
     public Page<PublicDoctorResponseDto> getPublicDoctors(Pageable pageable){

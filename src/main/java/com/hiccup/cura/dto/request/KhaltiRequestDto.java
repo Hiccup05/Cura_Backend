@@ -1,4 +1,4 @@
-package com.hiccup.cura.dto.reqeust;
+package com.hiccup.cura.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

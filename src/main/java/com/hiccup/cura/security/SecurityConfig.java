@@ -37,13 +37,14 @@ public class SecurityConfig {
     private final Oauth2SuccessHandler oauth2SuccessHandler;
     private static final String G_URL="/api/v1/auth/**";
     private static final String A_URL="/api/v1/admin/**";
-    private static final String D_URL="/api/v1/doctor/**";
+    private static final String D_URL="/api/v1/doctors/**";
     private static final String P_URL="/api/v1/public/**";
     private static final String PA_URL="/api/v1/patients/**";
-    private static final String APPOINTMENT_URL= "/api/v1/appointment/**";
-    private static final String PRESCRIPTION_URL = "/api/v1/appointment/prescription/**";
-    private static final String RECEPTIONIST_URL="/api/v1/receptionist/**";
+    private static final String APPOINTMENT_URL= "/api/v1/appointments/**";
+    private static final String PRESCRIPTION_URL = "/api/v1/appointments/prescriptions/**";
+    private static final String RECEPTIONIST_URL="/api/v1/receptionists/**";
     private static final String REACTIVATE_URL="/api/v1/reactivate/**";
+    private static final String PATIENT_TOGGLE_STATUS_URL="/api/v1/users/toggle";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http){
@@ -53,7 +54,6 @@ public class SecurityConfig {
                 .cors(c-> c.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth->
                         auth.requestMatchers(G_URL).permitAll()
-                                .requestMatchers("/api/v1/payment/verify").permitAll()
                                 .requestMatchers(P_URL).permitAll()
                                 .requestMatchers(A_URL).hasRole(RoleType.ADMIN.name())
                                 .requestMatchers(D_URL).hasRole(RoleType.DOCTOR.name())
@@ -62,6 +62,7 @@ public class SecurityConfig {
                                 .requestMatchers(APPOINTMENT_URL).hasAnyRole(RoleType.PATIENT.name(), RoleType.RECEPTIONIST.name())
                                 .requestMatchers(RECEPTIONIST_URL).hasAnyRole(RoleType.RECEPTIONIST.name())
                                 .requestMatchers(REACTIVATE_URL).permitAll()
+                                .requestMatchers(PATIENT_TOGGLE_STATUS_URL).hasAnyRole(RoleType.PATIENT.name())
                                 .requestMatchers("/api/v1/payments/verify/{provider}").permitAll()
                                 .anyRequest().authenticated()
                 )

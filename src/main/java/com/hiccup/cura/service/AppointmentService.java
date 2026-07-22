@@ -1,7 +1,7 @@
 package com.hiccup.cura.service;
 
 import com.hiccup.cura.specification.AppointmentSpecification;
-import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
+import com.hiccup.cura.dto.request.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.enums.*;
@@ -312,7 +312,6 @@ public class AppointmentService {
         appointment.setAppointmentTime(appointmentRequestDto.getAppointmentTime());
         appointment.setBookedAt(clock.instant());
         appointment.setReason(appointmentRequestDto.getReason());
-        appointment.setStatus(AppointmentStatus.PENDING);
         Prescription prescription=new Prescription();
         prescription.setAppointment(appointment);
         prescription=prescriptionRepository.save(prescription);

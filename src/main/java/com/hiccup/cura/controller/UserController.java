@@ -6,7 +6,6 @@ import com.hiccup.cura.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,14 +13,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("${api.prefix}/user")
+@RequestMapping("${api.prefix}/users")
 @RequiredArgsConstructor
 @Tag(name="User", description = "Toggle status, upload profile, delete profile")
 public class UserController {
     private final UserService userService;
 
-    @PreAuthorize("hasRole('PATIENT')")
-    @PatchMapping
+    @PatchMapping("/toggle")
     public ResponseEntity<Void> toggleStatus(@AuthenticationPrincipal CustomUser user){
         userService.toggleStatus(user.getId());
         return ResponseEntity.noContent().build();

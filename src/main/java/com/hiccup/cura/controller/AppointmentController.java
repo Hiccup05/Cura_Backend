@@ -1,11 +1,12 @@
 package com.hiccup.cura.controller;
 
-import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
+import com.hiccup.cura.dto.request.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,13 +21,13 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.prefix}/appointment")
+@RequestMapping("${api.prefix}/appointments")
 @Tag(name="Appointments", description = "Booking, cancellation, Retrieve")
 public class AppointmentController {
     private final AppointmentService appointmentService;
 
     @PostMapping
-    public ResponseEntity<AppointmentResponseDto> createAppointment(@RequestBody AppointmentRequestDto appointmentRequestDto, @AuthenticationPrincipal CustomUser user){
+    public ResponseEntity<AppointmentResponseDto> createAppointment(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto, @AuthenticationPrincipal CustomUser user){
         AppointmentResponseDto created = appointmentService.createAppointment(appointmentRequestDto, user.getId());
         URI location= ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -52,7 +53,7 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAppointment(user.getId(), id));
     }
 
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/cancel")
     public ResponseEntity<AppointmentResponseDto> cancelAppointment(@PathVariable Long id, @AuthenticationPrincipal CustomUser user){
         return ResponseEntity.ok(appointmentService.cancelAppointment(user.getId(), id));
     }

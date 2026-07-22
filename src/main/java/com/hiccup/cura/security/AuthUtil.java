@@ -1,6 +1,6 @@
 package com.hiccup.cura.security;
 
-import com.hiccup.cura.dto.reqeust.SignUpRequestDto;
+import com.hiccup.cura.dto.request.SignUpRequestDto;
 import com.hiccup.cura.dto.response.LoginResponseDto;
 import com.hiccup.cura.dto.response.SignupResponseDto;
 import com.hiccup.cura.enums.AuthType;

@@ -1,12 +1,16 @@
 package com.hiccup.cura.controller.admin;
 
-import com.hiccup.cura.dto.reqeust.*;
+import com.hiccup.cura.dto.request.*;
 import com.hiccup.cura.dto.response.*;
 import com.hiccup.cura.service.doctor.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
 import com.hiccup.cura.service.doctor.LeaveService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -23,18 +27,20 @@ public class AdminDoctorController {
     private final LeaveService leaveService;
 
     @GetMapping
-    public ResponseEntity<List<DoctorDto>> getDoctors(){
-        return ResponseEntity.ok(doctorService.getDoctors());
+    public ResponseEntity<Page<DoctorDto>> getDoctors(@RequestParam(defaultValue = "0") int page,
+                                                      @RequestParam(defaultValue = "10") int size){
+        Pageable pageable= PageRequest.of(page, size);
+        return ResponseEntity.ok(doctorService.getDoctors(pageable));
     }
 
-    @GetMapping("/doctor/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<DoctorDto> getDoctor(@PathVariable Long id){
         return ResponseEntity.ok(doctorService.getDoctor(id));
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<DoctorDto> createDoctor(@PathVariable Long id, @RequestBody DoctorRequestDto doctorRequestDto){
-        DoctorDto created = doctorService.createDoctor(id, doctorRequestDto);
+    @PostMapping
+    public ResponseEntity<DoctorDto> createDoctor(@Valid @RequestBody DoctorRequestDto doctorRequestDto){
+        DoctorDto created = doctorService.createDoctor(doctorRequestDto.getUserId(), doctorRequestDto);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -59,12 +65,12 @@ public class AdminDoctorController {
         return ResponseEntity.ok(doctorService.changeStatus(id, changeDoctorStatusRequestDto));
     }
 
-    @GetMapping("/{id}/schedule")
+    @GetMapping("/{id}/schedules")
     public ResponseEntity<List<ScheduleResponseDto>> getDoctorScheduleByDoctorProfileId(@PathVariable Long id) {
         return ResponseEntity.ok(scheduleService.getSchedulesOfDoctor(id));
     }
 
-    @GetMapping("/{id}/schedule/{scheduleId}")
+    @GetMapping("/{id}/schedules/{scheduleId}")
     public ResponseEntity<ScheduleResponseDto> getDoctorSchedule(@PathVariable Long id, @PathVariable Long scheduleId) {
         return ResponseEntity.ok(scheduleService.getScheduleOfDoctor(id, scheduleId));
     }
@@ -73,9 +79,9 @@ public class AdminDoctorController {
     public ResponseEntity<ScheduleResponseDto> createSchedule(@PathVariable Long id, @RequestBody ScheduleRequestDto scheduleRequestDto){
         ScheduleResponseDto created = scheduleService.createSchedule(scheduleRequestDto, id);
         URI location=ServletUriComponentsBuilder
-                .fromCurrentContextPath()
-                .path("/api/v1/public/doctors/{id}/schedules")
-                .buildAndExpand(id)
+                .fromCurrentRequest()
+                .path("/{scheduleId}")
+                .buildAndExpand(created.getId())
                 .toUri();
         return ResponseEntity.created(location).body(created);
     }
@@ -112,7 +118,7 @@ public class AdminDoctorController {
         LeaveResponseDto created=leaveService.createLeave(id,leaveRequestDto);
         URI location=ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("{leaveId}")
+                .path("/{leaveId}")
                 .buildAndExpand(created.getId())
                 .toUri();
         return ResponseEntity.created(location).body(created);

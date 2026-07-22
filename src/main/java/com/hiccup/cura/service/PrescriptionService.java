@@ -1,6 +1,6 @@
 package com.hiccup.cura.service;
 
-import com.hiccup.cura.dto.reqeust.PrescriptionRequestDto;
+import com.hiccup.cura.dto.request.PrescriptionRequestDto;
 import com.hiccup.cura.dto.response.PrescriptionResponseDto;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;
 import com.hiccup.cura.exception.custom.UnauthorizedUserAccessException;

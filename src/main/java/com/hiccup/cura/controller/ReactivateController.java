@@ -1,6 +1,6 @@
 package com.hiccup.cura.controller;
 
-import com.hiccup.cura.dto.reqeust.ReactivationTokenRequestDto;
+import com.hiccup.cura.dto.request.ReactivationTokenRequestDto;
 import com.hiccup.cura.service.ReactivationTokenService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

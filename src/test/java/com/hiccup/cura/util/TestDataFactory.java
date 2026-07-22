@@ -78,7 +78,7 @@ public class TestDataFactory {
         doctorProfile.setDoctorStatus(DoctorStatus.ACTIVE);
         doctorProfile.setUser(createDoctor());
         doctorProfile.setId(1L);
-        doctorProfile.setSpecialization(Set.of(new Specialization(1L, "Cardiologist", 60)));
+        doctorProfile.setSpecialization(Set.of(new Specialization(1L, "Cardiologist", "Heart and blood vessel specialist")));
         return doctorProfile;
     }
 

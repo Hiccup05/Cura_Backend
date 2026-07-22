@@ -1,11 +1,12 @@
 package com.hiccup.cura.controller.receptionist;
 
-import com.hiccup.cura.dto.reqeust.AppointmentRequestDto;
+import com.hiccup.cura.dto.request.AppointmentRequestDto;
 import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,13 +20,13 @@ import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("${api.prefix}/receptionist/appointments")
-@Tag(name = "Receptionist's Controller", description = "Book, Fetch")
+@RequestMapping("${api.prefix}/receptionists/appointments")
+@Tag(name = "Receptionist Appointments", description = "Book, Fetch")
 public class ReceptionistAppointmentController {
     private final AppointmentService appointmentService;
 
     @PostMapping
-    public ResponseEntity<AppointmentResponseDto> createAppointment(@RequestBody AppointmentRequestDto appointmentRequestDto, @AuthenticationPrincipal CustomUser user){
+    public ResponseEntity<AppointmentResponseDto> createAppointment(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto, @AuthenticationPrincipal CustomUser user){
         AppointmentResponseDto created = appointmentService.createAppointment(appointmentRequestDto, user.getId());
         URI location= ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -35,12 +36,12 @@ public class ReceptionistAppointmentController {
         return ResponseEntity.created(location).body(created);
     }
 
-    @GetMapping("/{appointmentId}")
+    @GetMapping("/{id}")
     public ResponseEntity<AppointmentResponseDto> getReceptionistAppointmentById(
-            @PathVariable Long appointmentId
+            @PathVariable Long id
     ) {
         return ResponseEntity.ok(
-                appointmentService.getReceptionistAppointmentById(appointmentId)
+                appointmentService.getReceptionistAppointmentById(id)
         );
     }
 

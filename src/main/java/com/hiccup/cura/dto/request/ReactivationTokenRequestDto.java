@@ -1,4 +1,4 @@
-package com.hiccup.cura.dto.reqeust;
+package com.hiccup.cura.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

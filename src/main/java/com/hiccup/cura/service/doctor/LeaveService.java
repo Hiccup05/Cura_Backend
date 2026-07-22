@@ -1,6 +1,6 @@
 package com.hiccup.cura.service.doctor;
 
-import com.hiccup.cura.dto.reqeust.LeaveRequestDto;
+import com.hiccup.cura.dto.request.LeaveRequestDto;
 import com.hiccup.cura.dto.response.LeaveResponseDto;
 import com.hiccup.cura.exception.custom.DuplicateEntryException;
 import com.hiccup.cura.exception.custom.ResourceNotFoundException;

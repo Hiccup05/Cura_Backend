@@ -1,6 +1,6 @@
 package com.hiccup.cura.service.payment.impl;
 
-import com.hiccup.cura.dto.reqeust.KhaltiRequestDto;
+import com.hiccup.cura.dto.request.KhaltiRequestDto;
 import com.hiccup.cura.dto.response.KhaltiLookupResponseDto;
 import com.hiccup.cura.dto.response.KhaltiResponseDto;
 import com.hiccup.cura.dto.response.PaymentInitiateResponse;
@@ -137,7 +137,7 @@ public class KhaltiPaymentStrategy implements PaymentStrategy {
         khaltiRequestDto.setPurchaseOrderId(appointmentId);
         khaltiRequestDto.setAmount(appointment.getMedicalService().getPrice().multiply(BigDecimal.valueOf(100)));
         khaltiRequestDto.setWebsiteUrl("https://lincoln-dittographic-unenergetically.ngrok-free.dev");
-        khaltiRequestDto.setReturnUrl("https://lincoln-dittographic-unenergetically.ngrok-free.dev/api/v1/payment/verify");
+        khaltiRequestDto.setReturnUrl("https://lincoln-dittographic-unenergetically.ngrok-free.dev/api/v1/payments/verify/KHALTI");
         khaltiRequestDto.setPurchaseOrderName(userId +" "+ appointmentId);
         return khaltiRequestDto;
     }
