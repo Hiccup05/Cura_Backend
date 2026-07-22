@@ -2,6 +2,7 @@ package com.hiccup.cura.controller.publics;
 
 import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.service.MedicalServiceService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class ServiceController {
     private final MedicalServiceService medicalService;
 
+    @Operation(summary = " Browse active services (+ /search?keyword=, /{id}/photo).")
     @GetMapping
     public ResponseEntity<Page<MedicalServiceResponseDto>> getAllServices(@RequestParam(defaultValue = "0") int page,
                                                                           @RequestParam(defaultValue = "10") int size){

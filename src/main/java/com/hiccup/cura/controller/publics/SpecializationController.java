@@ -4,6 +4,7 @@ import com.hiccup.cura.dto.response.MedicalServiceResponseDto;
 import com.hiccup.cura.dto.response.SpecializationDto;
 import com.hiccup.cura.service.MedicalServiceService;
 import com.hiccup.cura.service.SpecializationService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ public class SpecializationController {
     private final SpecializationService service;
     private final MedicalServiceService medicalServiceService;
 
+    @Operation(summary = "List specializations (+ /{id} detail, /{id}/services for that specialization's active services).")
     @GetMapping
     public ResponseEntity<List<SpecializationDto>> getAll(){
         return ResponseEntity.ok(service.getAll());

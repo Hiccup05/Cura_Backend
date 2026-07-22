@@ -4,6 +4,7 @@ import com.hiccup.cura.dto.request.PrescriptionRequestDto;
 import com.hiccup.cura.dto.response.PrescriptionResponseDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.PrescriptionService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class PrescriptionController {
     private final PrescriptionService prescriptionService;
 
+    @Operation(summary = "Fill in/update the prescription attached to an appointment.")
     @PatchMapping("/{id}")
     public ResponseEntity<PrescriptionResponseDto> updatePrescription(@Valid @RequestBody PrescriptionRequestDto prescriptionRequestDto, @PathVariable Long id, @AuthenticationPrincipal CustomUser user) {
         return ResponseEntity.ok(prescriptionService.updatePrescription(prescriptionRequestDto, id, user.getId()));

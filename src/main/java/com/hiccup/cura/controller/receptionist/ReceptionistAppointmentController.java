@@ -5,6 +5,7 @@ import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ import java.net.URI;
 public class ReceptionistAppointmentController {
     private final AppointmentService appointmentService;
 
+    @Operation(summary = " Book a walk-in appointment (validated; status CONFIRMED, marked paid).")
     @PostMapping
     public ResponseEntity<AppointmentResponseDto> createAppointment(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto, @AuthenticationPrincipal CustomUser user){
         AppointmentResponseDto created = appointmentService.createAppointment(appointmentRequestDto, user.getId());
@@ -36,6 +38,7 @@ public class ReceptionistAppointmentController {
         return ResponseEntity.created(location).body(created);
     }
 
+    @Operation(summary = "Get one receptionist-booked appointment.")
     @GetMapping("/{id}")
     public ResponseEntity<AppointmentResponseDto> getReceptionistAppointmentById(
             @PathVariable Long id
@@ -45,6 +48,7 @@ public class ReceptionistAppointmentController {
         );
     }
 
+    @Operation(summary = "List receptionist-booked appointments, filterable by receptionist or walk-in name.")
     @GetMapping
     public ResponseEntity<Page<AppointmentSummaryDto>> getReceptionistAppointments(
             @RequestParam(required = false) Long receptionistId,

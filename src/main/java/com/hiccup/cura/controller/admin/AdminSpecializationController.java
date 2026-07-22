@@ -3,6 +3,7 @@ package com.hiccup.cura.controller.admin;
 import com.hiccup.cura.dto.request.SpecializationRequestDto;
 import com.hiccup.cura.dto.response.SpecializationDto;
 import com.hiccup.cura.service.SpecializationService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +21,13 @@ import java.util.List;
 public class AdminSpecializationController {
     private final SpecializationService service;
 
+    @Operation(summary = "List specialization")
     @GetMapping
     public ResponseEntity<List<SpecializationDto>> getAll(){
         return ResponseEntity.ok(service.getAll());
     }
 
+    @Operation(summary = "Create specializations")
     @PostMapping
     public ResponseEntity<SpecializationDto> createSpecialization(@Valid @RequestBody  SpecializationRequestDto specializationRequestDto){
         SpecializationDto created =service.create(specializationRequestDto);
@@ -36,6 +39,7 @@ public class AdminSpecializationController {
         return ResponseEntity.created(location).body(created);
     }
 
+    @Operation(summary = "Remove specialization")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSpecialization(@PathVariable Long id){
         service.delete(id);
