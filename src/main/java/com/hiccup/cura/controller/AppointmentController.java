@@ -5,6 +5,7 @@ import com.hiccup.cura.dto.response.AppointmentResponseDto;
 import com.hiccup.cura.dto.response.AppointmentSummaryDto;
 import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import java.net.URI;
 public class AppointmentController {
     private final AppointmentService appointmentService;
 
+    @Operation(summary = " Book an appointment with a doctor for a medical service (validated; status forced to PENDING, payment ONLINE).")
     @PostMapping
     public ResponseEntity<AppointmentResponseDto> createAppointment(@Valid @RequestBody AppointmentRequestDto appointmentRequestDto, @AuthenticationPrincipal CustomUser user){
         AppointmentResponseDto created = appointmentService.createAppointment(appointmentRequestDto, user.getId());
@@ -37,6 +39,7 @@ public class AppointmentController {
         return ResponseEntity.created(location).body(created);
     }
 
+    @Operation(summary = "List my appointments, paginated and sortable.")
     @GetMapping
     public ResponseEntity<Page<AppointmentSummaryDto>> getMyAppointments(@AuthenticationPrincipal CustomUser user,
                                                                          @RequestParam(defaultValue = "0") int page,
@@ -48,11 +51,13 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getMyAppointments(user.getId(), pageable));
     }
 
+    @Operation(summary = "Get one of my appointments in full detail.")
     @GetMapping("/{id}")
     public ResponseEntity<AppointmentResponseDto> getAppointment(@PathVariable Long id, @AuthenticationPrincipal CustomUser user){
         return ResponseEntity.ok(appointmentService.getAppointment(user.getId(), id));
     }
 
+    @Operation(summary = " Cancel my appointment (subject to the 24-hour cancellation rules).")
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<AppointmentResponseDto> cancelAppointment(@PathVariable Long id, @AuthenticationPrincipal CustomUser user){
         return ResponseEntity.ok(appointmentService.cancelAppointment(user.getId(), id));
