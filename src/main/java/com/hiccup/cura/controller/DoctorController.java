@@ -10,6 +10,7 @@ import com.hiccup.cura.security.CustomUser;
 import com.hiccup.cura.service.AppointmentService;
 import com.hiccup.cura.service.doctor.DoctorScheduleService;
 import com.hiccup.cura.service.doctor.DoctorService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,26 +33,31 @@ public class DoctorController {
     private final DoctorScheduleService scheduleService;
     private final AppointmentService appointmentService;
 
+    @Operation(summary = "Get my doctor profile.")
     @GetMapping
     public ResponseEntity<DoctorDto> getDoctorById(@AuthenticationPrincipal CustomUser customUser) {
         return ResponseEntity.ok(doctorService.getDoctor(customUser.getId()));
     }
 
+    @Operation(summary = "Update my doctor profile (partial).")
     @PatchMapping
     public ResponseEntity<DoctorDto> updateDoctor(@AuthenticationPrincipal CustomUser customUser, @RequestBody DoctorRequestDto doctorDto) {
         return ResponseEntity.ok(doctorService.updateDoctor(customUser.getId(), doctorDto));
     }
 
+    @Operation(summary = "Get one of my schedules.")
     @GetMapping("/schedules/{scheduleId}")
     public ResponseEntity<ScheduleResponseDto> getDoctorSchedule(@AuthenticationPrincipal CustomUser customUser, @PathVariable Long scheduleId) {
         return ResponseEntity.ok(scheduleService.getScheduleOfDoctor(customUser.getId(), scheduleId));
     }
 
+    @Operation(summary = "List my working schedules.")
     @GetMapping("/schedules")
     public ResponseEntity<List<ScheduleResponseDto>> getDoctorSchedules(@AuthenticationPrincipal CustomUser customUser) {
         return ResponseEntity.ok(scheduleService.getSchedulesOfDoctor(customUser.getId()));
     }
 
+    @Operation(summary = "List my appointments with filters (patient, status, date range), paginated.")
     @GetMapping("/appointments")
     public ResponseEntity<Page<AppointmentSummaryDto>> getDoctorAppointments(
             @AuthenticationPrincipal CustomUser user,
@@ -83,6 +89,7 @@ public class DoctorController {
         return ResponseEntity.ok(result);
     }
 
+    @Operation(summary = "Get one of my appointments in detail.")
     @GetMapping("/appointments/{id}")
     public ResponseEntity<AppointmentResponseDto> getAppointment(@PathVariable Long id, @AuthenticationPrincipal CustomUser user){
         return ResponseEntity.ok(appointmentService.getDoctorAppointment(user.getId(), id));
